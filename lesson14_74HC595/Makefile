@@ -1,0 +1,2 @@
+74HC595:74HC595.o
+	gcc 74HC595.c -o 74HC595 -lwiringPi
