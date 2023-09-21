@@ -1,82 +1,21 @@
- # Raspberry pi  Learning Toolbox 
-Welcome to the Raspberry pi  Learning Toolbox, an open-source repository that brings together a diverse range of resources, tools, and materials dedicated to learning about Raspberry Pi. Whether you're a beginner exploring the world of Raspberry Pi or an experienced looking to expand your knowledge, this repository offers a comprehensive collection of tutorials, projects, sample code, documentation, and educational materials.
+![Static Badge](https://img.shields.io/badge/GNU-lic?style=gitlab&label=License%20&labelColor=rgb-rgb&color=rgb)
+ ![Static Badge](https://img.shields.io/badge/Beginner-lic?style=gitlab&label=Level&labelColor=rgb-rgb&color=rgb)
 
+![Raspberrypi](https://img.shields.io/badge/Raspberry%20Pi-A22846?style=for-the-badge&logo=Raspberry%20Pi&logoColor=white)
+![c](https://img.shields.io/badge/C-00599C?style=for-the-badge&logo=c&logoColor=white)
+![shell](https://img.shields.io/badge/Shell_Script-121011?style=for-the-badge&logo=gnu-bash&logoColor=white)
 
-# Table of contents
-- Getting Started
-- Prerequisites
-- Installing
-
-## Getting Started
-
-[(Back to top)](#table-of-contents)
-
-
-
-### Prerequisites
-- Rasberry pi board (Model 3 B /B+)
-- keyboard
-- mouse
-- Type B charger 
-- 
-
-
-### Books 
-- **Exploring Rasberry pi** -*ghg* :fghfh 
-- 
-
-### Installing
-clone into the repository 
-
-    git clone  https://github.com/wissem01chiha/Raspberry_pi_Learning_Toolbox
-    
-### Sample Tests
-
-Explain what these tests test and why
-
-    Give an example
-
-### Style test
-
-Checks if the best practices and the right coding style has been used.
-
-    Give an example
-
-## Deployment
-
-Add additional notes to deploy this on a live system
-
-## Built With
-
-  - [Contributor Covenant](https://www.contributor-covenant.org/) - Used
-    for the Code of Conduct
-  - [Creative Commons](https://creativecommons.org/) - Used to choose
-    the license
-
-## Contributing
-
-Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code
-of conduct, and the process for submitting pull requests to us.
-
-## Versioning
-
-We use [Semantic Versioning](http://semver.org/) for versioning. For the versions
-available, see the [tags on this
-repository](https://github.com/PurpleBooth/a-good-readme-template/tags).
+ # Raspberry-pi Codebase   Repository
+A collection of sample codes for Raspberry Pi enthusiasts and embedded developers is provided by this open-source repository.
+### Books & References
+- **Exploring Rasberry pi** : Derek Molloy -2016
 
 ## Authors
 
-  - **Wissem chiha** 
-    
-
+  - **Wissem chiha**   
+    chihawissem08@gmail.com\
+    wissem.chiha@ept.ucar.tn  
 ## License
 
-This project is licensed under the [CC0 1.0 Universal](LICENSE.md)
-Creative Commons License - see the [LICENSE.md](LICENSE.md) file for
-details
+This project is licensed under the GNU License see the [LICENSE.md](LICENSE.md) file for more details.
 
-## Acknowledgments
-
-  - Hat tip to anyone whose code is used
-  - Inspiration
-  - etc
