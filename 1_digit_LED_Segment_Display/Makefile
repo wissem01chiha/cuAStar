@@ -1,2 +1,0 @@
-1_digit_LED_Segment_Display:1_digit_LED_Segment_Display.o
-	gcc 1_digit_LED_Segment_Display.c -o 1_digit_LED_Segment_Display -lwiringPi

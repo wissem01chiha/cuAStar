@@ -1,2 +1,0 @@
-ADXL345:ADXL345.o
-	gcc ADXL345.c -o ADXL345 -lwiringPi
