@@ -3,4 +3,6 @@ extern/glfw/
 extern/glm/
 extern/mujoco/
 extern/sciplot/
+extern/Eigen/
 build/
+.vscode/

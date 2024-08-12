@@ -18,7 +18,6 @@
 #include "../extern/glm/glm.hpp"
  
 
- 
 #include "mujoco/mjvisualize.h"
 #include "mujoco/mjrender.h"
 
