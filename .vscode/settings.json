@@ -1,5 +1,7 @@
 {
     "files.associations": {
+        "*.cpp": "cpp",
+        "*.hpp": "cpp",
         "iostream": "cpp",
         "array": "cpp",
         "atomic": "cpp",
@@ -63,10 +65,30 @@
         "map": "cpp",
         "valarray": "cpp",
         "variant": "cpp",
-        "*.hpp": "cpp"
+        "charconv": "cpp",
+        "format": "cpp",
+        "ios": "cpp",
+        "list": "cpp",
+        "locale": "cpp",
+        "queue": "cpp",
+        "ranges": "cpp",
+        "span": "cpp",
+        "xfacet": "cpp",
+        "xhash": "cpp",
+        "xiosbase": "cpp",
+        "xlocale": "cpp",
+        "xlocbuf": "cpp",
+        "xlocinfo": "cpp",
+        "xlocmes": "cpp",
+        "xlocmon": "cpp",
+        "xlocnum": "cpp",
+        "xloctime": "cpp",
+        "xmemory": "cpp",
+        "xstring": "cpp",
+        "xtr1common": "cpp",
+        "xutility": "cpp",
+        "cfenv": "cpp"
     },
     "C_Cpp.dimInactiveRegions": false,
-    "C_Cpp.default.compilerPath": "C:\\MinGW\\bin\\g++.exe"
-    
-     
+    "C_Cpp.default.compilerPath": "cl.exe"
 }

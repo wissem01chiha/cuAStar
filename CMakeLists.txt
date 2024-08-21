@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.10 FATAL_ERROR)
-project(mjUr5e)
+project(cuRobotics)
 
 set(Torch FALSE)
 set(enable_test False)
