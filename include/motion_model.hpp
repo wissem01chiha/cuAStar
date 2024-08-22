@@ -1,23 +1,20 @@
-/*************************************************************************
-	> File Name: motion_model.h
-	> Author: TAI Lei
-	> Mail: ltai@ust.hk
-	> Created Time: Thu Mar 21 16:06:07 2019
- ************************************************************************/
-
-#ifndef _MOTION_MODEL_H
-#define _MOTION_MODEL_H
+/**********************************************************************
+ * Motion Model Engine 
+ * 
+ *********************************************************************/
+#ifndef MOTION_MODEL_HPP
+#define MOTION_MODEL_HPP
 
 #include<iostream>
 #include<vector>
 #include<array>
 #include<cmath>
 #include<cfenv>
-#include<Eigen/Eigen>
+
 
 #define YAW_P2P(angle) std::fmod(std::fmod((angle)+M_PI, 2*M_PI)-2*M_PI, 2*M_PI)+M_PI
 
-namespace cpprobotics{
+ 
 
 struct Parameter{
   float distance;
@@ -148,7 +145,5 @@ TrajState MotionModel::generate_last_state(Parameter p){
   }
   return TrajState{state_.x, state_.y, state_.yaw};
 }
-}
-
-
+ 
 #endif

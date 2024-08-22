@@ -1,8 +1,5 @@
 /*************************************************************************
-	> File Name: frenet_path.h
-	> Author: TAI Lei
-	> Mail: ltai@ust.hk
-	> Created Time: Tue Apr  9 17:08:22 2019
+
  ************************************************************************/
 
 #ifndef _FRENET_PATH_H
@@ -14,7 +11,7 @@
 #include<string>
 #include"cpprobotics_types.h"
 
-namespace cpprobotics{
+
 
 class FrenetPath{
 public:
@@ -44,5 +41,5 @@ public:
 };
 
 using Vec_Path=std::vector<FrenetPath>;
-}
+
 #endif

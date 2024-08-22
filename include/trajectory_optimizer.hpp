@@ -1,16 +1,14 @@
 /*************************************************************************
-	> File Name: motion_model.h
-	> Author: TAI Lei
-	> Mail: ltai@ust.hk
-	> Created Time: Thu Mar 21 16:06:07 2019
+
  ************************************************************************/
 
-#ifndef _TRAJECTORY_OPTIMIZER_H
-#define _TRAJECTORY_OPTIMIZER_H
+#ifndef TRAJECTORY_OPTIMIZER_HPP
+#define TRAJECTORY_OPTIMIZER_HPP
 
 #include<iostream>
 #include<cmath>
 #include<cfenv>
+
 #include<Eigen/Eigen>
 #include<opencv2/opencv.hpp>
 #include<opencv2/core/core.hpp>

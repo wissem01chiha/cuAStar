@@ -1,8 +1,5 @@
-extern/libtorch/
-extern/glfw/
 extern/glm/
-extern/mujoco/
-extern/sciplot/
-extern/Eigen/
+extern/catch2/
+extern/rapidcsv/
 build/
 .vscode/

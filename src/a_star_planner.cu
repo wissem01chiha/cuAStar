@@ -1,6 +1,7 @@
 #include "../include/a_star_planner.cuh"
 
-__device__ void computeFinalPath(Node * goal, float step, float* rx, float* ry, int* path_size)
+__device__ void AstarPlanner::computeFinalPath(Node* goal,float step,float* rx,
+                                            float* ry,int* path_size)
 {
   int32_t idx = 0;
   Node* node = goal;
@@ -13,11 +14,11 @@ __device__ void computeFinalPath(Node * goal, float step, float* rx, float* ry, 
   *path_size = idx;
 };
 
-__device__ void computeObstacleMap(
-    const int32_t* ox, const int32_t* oy, int32_t num_obstacles,
-    const int32_t min_ox, const int32_t max_ox,
-    const int32_t min_oy, const int32_t max_oy,
-    float step, float vr, int32_t* obmap)
+__device__ void AstarPlanner::computeObstacleMap(const int32_t* ox, const int32_t* oy, 
+                                              int32_t num_obstacles, const int32_t min_ox, 
+                                              const int32_t max_ox, const int32_t min_oy, 
+                                              const int32_t max_oy, float step, float vr, 
+                                              int32_t* obmap)
 {
 
   int32_t xwidth = max_ox-min_ox;
@@ -41,15 +42,15 @@ __device__ void computeObstacleMap(
     }
   };
 
-__device__ void  verifyNode(Node* node, 
+__device__ void  AstarPlanner::verifyNode(Node* node, 
                           const int32_t* obmap,
                           int32_t min_ox, 
                           int32_t max_ox,
                           int32_t min_oy, 
                           int32_t max_oy,
                           int32_t xwidth,
-                          bool* state){
-
+                          bool* state)
+{
   if (node->x < min_ox || node->y < min_oy || node->x >= max_ox || node->y >= max_oy){
     *state =  false;
   };
@@ -63,22 +64,22 @@ __device__ void  verifyNode(Node* node,
     }
 };
 
-__device__ void computeHeuristic(Node* n1, Node* n2, float w, double* hfun) {
+__device__ void AstarPlanner::computeHeuristic(Node* n1, Node* n2, float w, double* hfun) {
     *hfun = w * sqrt((n1->x - n2->x) * (n1->x - n2->x) + (n1->y - n2->y) * (n1->y - n2->y));
 };
 
-__device__ std::vector<Node> getMotionModel(){
-  return {Node(1,   0,  1),
+__device__ void  AstarPlanner::getMotionModel(){
+         return {Node(1,   0,  1),
           Node(0,   1,  1),
           Node(-1,   0,  1),
           Node(0,   -1,  1),
-          Node(-1,   -1,  std::sqrt(2)),
-          Node(-1,   1,  std::sqrt(2)),
-          Node(1,   -1,  std::sqrt(2)),
-          Node(1,    1,  std::sqrt(2))};
-}
+          Node(-1,   -1, sqrt(2)),
+          Node(-1,   1,  sqrt(2)),
+          Node(1,   -1,  sqrt(2)),
+          Node(1,    1,  sqrt(2))};
+};
 
-__global__ void a_star_planner(double sx, double sy,
+__global__ void AstarPlanner::excute(double sx, double sy,
                               double gx,  double gy,
                               float* ox_, float* oy_,
                               float* step, float* rr){
