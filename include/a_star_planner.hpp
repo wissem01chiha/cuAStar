@@ -1,6 +1,5 @@
 /************************************************************
- * 
- * 
+ *  
  ************************************************************/
 #ifndef A_STAR_PLANNER_HPP
 #define A_STAR_PLANNER_HPP
@@ -30,40 +29,41 @@
   #endif
 #endif
 #include "utils.hpp"
-#include "structs.hpp"
+#include "struct.hpp"
+#include "motion_model.hpp"
 
 class AstarPlanner
 {
 public:
 #ifdef ENABLE_CUDA_ARCH
     __device__ AstarPlanner();
-    __device__ void computeFinalPath(Node * goal, float step, float* rx, float* ry, int* path_size);
+    __device__ void computeFinalPath(internal::Node * goal, float step, float* rx, float* ry, int* path_size);
     __device__ void computeObstacleMap(const int32_t* ox, const int32_t* oy, int32_t num_obstacles,
                                     const int32_t min_ox, const int32_t max_ox,
                                     const int32_t min_oy, const int32_t max_oy,
                                     float step, float vr, int32_t* obmap);
-    __device__ void  verifyNode(Node* node, const int32_t* obmap, int32_t min_ox,int32_t max_ox,
+    __device__ void  verifyNode(internal::Node* node, const int32_t* obmap, int32_t min_ox,int32_t max_ox,
                                     int32_t min_oy, 
                                     int32_t max_oy,
                                     int32_t xwidth,
                                     bool* state);
-    __device__ void computeHeuristic(Node* n1, Node* n2, float w, double* hfun);
+    __device__ void computeHeuristic(internal::Node* n1, internal::Node* n2, float w, double* hfun);
     __device__ void computeMotionModel();
     __global__ void execute(double sx, double sy, double gx,  double gy, float* ox_, 
                            float* oy_, float* step, float* rr);
 #else
     AstarPlanner();
-    void computeFinalPath(Node * goal, float step, float* rx, float* ry, int* path_size);
+    void computeFinalPath(internal::Node * goal, float step, float* rx, float* ry, int* path_size);
     void computeObstacleMap(const int32_t* ox, const int32_t* oy, int32_t num_obstacles,
                                     const int32_t min_ox, const int32_t max_ox,
                                     const int32_t min_oy, const int32_t max_oy,
                                     float step, float vr, int32_t* obmap);
-    void  verifyNode(Node* node, const int32_t* obmap, int32_t min_ox,int32_t max_ox,
+    void  verifyNode(internal::Node* node, const int32_t* obmap, int32_t min_ox,int32_t max_ox,
                                     int32_t min_oy, 
                                     int32_t max_oy,
                                     int32_t xwidth,
                                     bool* state);
-    void computeHeuristic(Node* n1, Node* n2, float w, double* hfun);
+    void computeHeuristic(internal::Node* n1, internal::Node* n2, float w, double* hfun);
     void computeMotionModel();
     void execute(double sx, double sy, double gx,  double gy, float* ox_, 
                            float* oy_, float* step, float* rr);

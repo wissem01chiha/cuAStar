@@ -2,8 +2,8 @@
 
  ************************************************************************/
 
-#ifndef _FRENET_PATH_H
-#define _FRENET_PATH_H
+#ifndef FRENET_PATH_HPP
+#define FRENET_PATH_HPP
 
 #include<iostream>
 #include<vector>

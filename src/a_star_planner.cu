@@ -1,8 +1,11 @@
-#include "../include/a_star_planner.cuh"
+/** 
+ * @file a_star_planner.cu 
+ * 
+ */
+#include "../include/a_star_planner.hpp"
 
 __device__ void AstarPlanner::computeFinalPath(Node* goal,float step,float* rx,
-                                            float* ry,int* path_size)
-{
+                                            float* ry,int* path_size){
   int32_t idx = 0;
   Node* node = goal;
   while (node->p_node != nullptr){
@@ -18,9 +21,7 @@ __device__ void AstarPlanner::computeObstacleMap(const int32_t* ox, const int32_
                                               int32_t num_obstacles, const int32_t min_ox, 
                                               const int32_t max_ox, const int32_t min_oy, 
                                               const int32_t max_oy, float step, float vr, 
-                                              int32_t* obmap)
-{
-
+                                              int32_t* obmap){
   int32_t xwidth = max_ox-min_ox;
   int32_t ywidth = max_oy-min_oy;
 
@@ -49,8 +50,7 @@ __device__ void  AstarPlanner::verifyNode(Node* node,
                           int32_t min_oy, 
                           int32_t max_oy,
                           int32_t xwidth,
-                          bool* state)
-{
+                          bool* state){
   if (node->x < min_ox || node->y < min_oy || node->x >= max_ox || node->y >= max_oy){
     *state =  false;
   };
@@ -68,7 +68,7 @@ __device__ void AstarPlanner::computeHeuristic(Node* n1, Node* n2, float w, doub
     *hfun = w * sqrt((n1->x - n2->x) * (n1->x - n2->x) + (n1->y - n2->y) * (n1->y - n2->y));
 };
 
-__device__ void  AstarPlanner::getMotionModel(){
+__device__ void  AstarPlanner::computeMotionModel(){
          return {Node(1,   0,  1),
           Node(0,   1,  1),
           Node(-1,   0,  1),
@@ -79,11 +79,10 @@ __device__ void  AstarPlanner::getMotionModel(){
           Node(1,    1,  sqrt(2))};
 };
 
-__global__ void AstarPlanner::excute(double sx, double sy,
+__global__ void AstarPlanner::execute(double sx, double sy,
                               double gx,  double gy,
                               float* ox_, float* oy_,
                               float* step, float* rr){
-
   Node* nstart = new Node((int32_t)round(sx / *step), (int32_t)round(sy / *step), 0.0);
   Node* ngoal = new Node((int32_t)round(gx / *step), (int32_t)round(gy / *step), 0.0);
 

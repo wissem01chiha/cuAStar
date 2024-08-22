@@ -1,11 +1,13 @@
 /**
  * utilites functions and routines 
+ * 
  */
 #include <cstdint>
 #include <cuda_runtime.h>
 #include <cublas_v2.h>
 
-#include "structs.hpp"
+#include "struct.hpp"
+using namespace internal;
 
   __host__ __device__ const Node motionModel2d[] = {
     Node(1, 0, 1),

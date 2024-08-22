@@ -2,8 +2,8 @@
  * software structs and lightweight classes
  * 
  *********************************************************/
-#ifndef STRUCTS_HPP
-#define STRUCTS_HPP
+#ifndef STRUCT_HPP
+#define STRUCT_HPP
 
 #include <cstdint>
 #define ENABLE_CUDA_ARCH 1 
@@ -28,7 +28,8 @@
   #endif
 #endif
 
-
+namespace internal {
+   
 class Node{
   public:
     int32_t x;
@@ -36,10 +37,12 @@ class Node{
     double  sum_cost;
     Node*   p_node;
 
-  __host__ __device__ Node(int32_t x_, int32_t y_, 
-                      double sum_cost_=0, 
-                      Node* p_node_=nullptr):x(x_),y(y_),
-                      sum_cost(sum_cost_),p_node(p_node_){};
+  __device__ Node(int32_t x_, int32_t y_,double sum_cost_=0, 
+                Node* p_node_=nullptr){
+ x = x_; y = y_; 
+ sum_cost = sum_cost_; 
+ p_node = p_node_;
+}
 };
 
 class Node3d{
@@ -50,10 +53,13 @@ class Node3d{
     double  sum_cost;
     Node3d*   p_node;
 
-  __host__ __device__ Node3d(int32_t x_, int32_t y_, int32_t z,
+  __device__ Node3d(int32_t x_, int32_t y_, int32_t z,
                   double sum_cost_=0, 
-                  Node3d* p_node_=nullptr):x(x_),y(y_),
-                  sum_cost(sum_cost_),p_node(p_node_){};
+                  Node3d* p_node_=nullptr){
+    x= x_; y = y_;
+    sum_cost = sum_cost_;
+    p_node = p_node_;
+  }
 };
 
 class State2d {
@@ -61,7 +67,8 @@ class State2d {
   double y;
   double yaw;
   double v;
-  __host__ __device__ State2d(double x_,double y_,double yaw_,double v_){
+  __device__ State2d(double x_,double y_,double yaw_
+                        ,double v_){
     x = x_;
     y = y_;
     yaw = yaw_;
@@ -76,7 +83,7 @@ class State3d {
   double yaw;
   double pitch;
   double roll;
-  __host__ __device__ State3d(double x_,double y_,double z_,double yaw_,
+  __device__ State3d(double x_,double y_,double z_,double yaw_,
                             double pitch_, double roll_){
     x = x_;
     y = y_;
@@ -84,5 +91,29 @@ class State3d {
     pitch =pitch_;
     roll = roll_;
   };
+};
+
+struct Parameter{
+  float distance;
+  std::array<float, 3> steering_sequence{{0,0,0}};
+  Parameter(float distance_, std::array<float, 3> steering_sequence_){
+    distance = distance_;
+    steering_sequence = steering_sequence_;
+  };
+};
+
+struct TrajState{
+  float x;
+  float y;
+  float yaw;
+  TrajState(float x_, float y_, float yaw_){
+    x = x_;
+    y = y_;
+    yaw = yaw_;
+  };
+};
+
+
+
 };
 #endif

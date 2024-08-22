@@ -43,6 +43,25 @@ __device__ void cum_sum(const double* input, double* output, int32_t n){
     output[i] = temp;
   }
 };
+
+__device__ void interp_refer(const float* params, float x, float* result){
+  *result =  params[0] * x * x + params[1] * x + params[2];
+};
+
+__device__ std::vector<float> quadratic_interpolation(
+    std::array<float, 3> x, std::array<float, 3> y){
+  Eigen::Matrix3f A;
+  Eigen::Vector3f Y;
+  A<< std::pow(x[0], 2), x[0], 1,
+      std::pow(x[1], 2), x[1], 1,
+      std::pow(x[2], 2), x[2], 1;
+  Y<<y[0], y[1], y[2];
+
+  Eigen::Vector3f result = A.inverse() * Y;
+  float* result_data = result.data();
+  std::vector<float> result_array(result_data, result_data+3);
+  return result_array;
+}
 #endif
 
 #ifdef ENABLE_GLM

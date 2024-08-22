@@ -10,4 +10,5 @@
 #include "rrt_planner.hpp"
 #include "rrt_star_planner.hpp"
 #include "trajectory_optimizer.hpp"
+#include "dijkstra_planner.hpp"
 #include "visualization.hpp"
