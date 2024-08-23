@@ -1,8 +1,5 @@
 /*************************************************************************
-	> File Name: quintic_polynomial.h
-	> Author: TAI Lei
-	> Mail: ltai@ust.hk
-	> Created Time: Tue Apr  2 20:50:31 2019
+	
  ************************************************************************/
 
 #ifndef _QUINTIC_POLYNOMIAL_H
@@ -13,7 +10,7 @@
 #include<array>
 #include<string>
 #include<cmath>
-#include<Eigen/Eigen>
+
 
 namespace cpprobotics{
 

@@ -1,18 +1,12 @@
 /*************************************************************************
-	> File Name: main.cpp
-	> Author: TAI Lei
-	> Mail: ltai@ust.hk
-	> Created Time: Thu Mar  7 19:39:14 2019
+
  ************************************************************************/
 
 #include<iostream>
 #include<vector>
 #include<random>
 #include<cmath>
-#include<Eigen/Eigen>
-#include<opencv2/opencv.hpp>
-#include<opencv2/core/core.hpp>
-#include<opencv2/highgui/highgui.hpp>
+
 
 #define SIM_TIME 50.0
 #define DT 0.1
@@ -20,6 +14,15 @@
 #define MAX_RANGE 20.0
 #define NP 100
 #define NTh NP/2
+
+namespace SimulationParams {
+    constexpr float SIM_TIME = 50.0f;
+    constexpr float DT = 0.1f;
+    constexpr float PI = 3.141592653f;
+    constexpr float MAX_RANGE = 20.0f;
+    constexpr int NP = 100;
+    constexpr int NTh = NP / 2;
+}
 
 
 // x_{t+1} = F@x_{t}+B@u_t

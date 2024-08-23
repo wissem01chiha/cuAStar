@@ -10,7 +10,7 @@
 #include<cmath>
 
 
-#include "../include/cubic_spline_planner.hpp"
+#include "../include/cubic_spline_trajectory.hpp"
 
 __device__ Spline::Spline(int32_t n ): nx(n){
   x = new double[n];

@@ -11,15 +11,7 @@
 using namespace std;
 
 
-class Node{
-public:
-  int x;
-  int y;
-  float cost;
-  Node* p_node;
 
-  Node(int x_, int y_, float cost_, Node* p_node_=NULL):x(x_), y(y_),cost(cost_), p_node(p_node_){};
-};
 
 
 std::vector<std::vector<float> > calc_final_path(Node * goal, float reso, cv::Mat& img, float img_reso){

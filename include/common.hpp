@@ -2,8 +2,8 @@
  * software structs and lightweight classes
  * 
  *********************************************************/
-#ifndef STRUCT_HPP
-#define STRUCT_HPP
+#ifndef common_HPP
+#define common_HPP
 
 #include <cstdint>
 #define ENABLE_CUDA_ARCH 1 
@@ -27,6 +27,16 @@
     #endif
   #endif
 #endif
+
+enum PLANNER {
+  PSO,
+  BSPLINE,
+  PF,
+  RRT,
+  ASTAR,
+  RRTSTAR,
+  DIJKSTRA
+};
 
 namespace internal {
    
@@ -87,33 +97,21 @@ class State3d {
                             double pitch_, double roll_){
     x = x_;
     y = y_;
-    yaw = yaw_;
-    pitch =pitch_;
-    roll = roll_;
+    yaw   = yaw_;
+    pitch = pitch_;
+    roll  = roll_;
   };
 };
 
-struct Parameter{
-  float distance;
-  std::array<float, 3> steering_sequence{{0,0,0}};
-  Parameter(float distance_, std::array<float, 3> steering_sequence_){
-    distance = distance_;
-    steering_sequence = steering_sequence_;
-  };
-};
-
-struct TrajState{
+struct TrajectoryState{
   float x;
   float y;
   float yaw;
-  TrajState(float x_, float y_, float yaw_){
+  __device__ TrajectoryState(float x_, float y_, float yaw_){
     x = x_;
     y = y_;
     yaw = yaw_;
   };
 };
-
-
-
 };
 #endif

@@ -1,6 +1,3 @@
-/************************************************************
- *  
- ************************************************************/
 #ifndef A_STAR_PLANNER_HPP
 #define A_STAR_PLANNER_HPP
 
@@ -29,45 +26,48 @@
   #endif
 #endif
 #include "utils.hpp"
-#include "struct.hpp"
-#include "motion_model.hpp"
+#include "common.hpp"
+#include "math.hpp"
 
 class AstarPlanner
 {
 public:
 #ifdef ENABLE_CUDA_ARCH
     __device__ AstarPlanner();
-    __device__ void computeFinalPath(internal::Node * goal, float step, float* rx, float* ry, int* path_size);
+    __device__ void computeFinalPath(internal::Node * goal, double step, double* rx, double* ry, int* path_size);
     __device__ void computeObstacleMap(const int32_t* ox, const int32_t* oy, int32_t num_obstacles,
                                     const int32_t min_ox, const int32_t max_ox,
                                     const int32_t min_oy, const int32_t max_oy,
-                                    float step, float vr, int32_t* obmap);
+                                    double step, double vr, int32_t* obmap);
     __device__ void  verifyNode(internal::Node* node, const int32_t* obmap, int32_t min_ox,int32_t max_ox,
                                     int32_t min_oy, 
                                     int32_t max_oy,
                                     int32_t xwidth,
                                     bool* state);
-    __device__ void computeHeuristic(internal::Node* n1, internal::Node* n2, float w, double* hfun);
-    __device__ void computeMotionModel();
-    __global__ void execute(double sx, double sy, double gx,  double gy, float* ox_, 
-                           float* oy_, float* step, float* rr);
+    __device__ void computeHeuristic(internal::Node* n1, internal::Node* n2, double w, double* hfun);
+    __device__ void computeMotionModel(internal::Node* motion_model);
+    __global__ void computeTrajectory(double sx, double sy, double gx,  double gy, double* ox_, 
+                           double* oy_, double* step, double* rr, double * traj);
 #else
     AstarPlanner();
-    void computeFinalPath(internal::Node * goal, float step, float* rx, float* ry, int* path_size);
+    void computeFinalPath(internal::Node * goal, double step, double* rx, double* ry, int* path_size);
     void computeObstacleMap(const int32_t* ox, const int32_t* oy, int32_t num_obstacles,
                                     const int32_t min_ox, const int32_t max_ox,
                                     const int32_t min_oy, const int32_t max_oy,
-                                    float step, float vr, int32_t* obmap);
+                                    double step, double vr, int32_t* obmap);
     void  verifyNode(internal::Node* node, const int32_t* obmap, int32_t min_ox,int32_t max_ox,
                                     int32_t min_oy, 
                                     int32_t max_oy,
                                     int32_t xwidth,
                                     bool* state);
-    void computeHeuristic(internal::Node* n1, internal::Node* n2, float w, double* hfun);
-    void computeMotionModel();
-    void execute(double sx, double sy, double gx,  double gy, float* ox_, 
-                           float* oy_, float* step, float* rr);
+    void computeHeuristic(internal::Node* n1, internal::Node* n2, double w, double* hfun);
+    void computeMotionModel(internal::Node* motion_model);
+    void computeTrajectory(double sx, double sy, double gx,  double gy, double* ox_, 
+                           double* oy_, double* step, double* rr);
 #endif
+private:
+
+
 protected:
 #ifndef ENABLE_CUDA_ARCH
     ~AstarPlanner();

@@ -1,7 +1,3 @@
-/*****************************************************************
- * Cubic Spline Planner Engine
- * 
- ****************************************************************/
 #ifndef CUBIC_SPLINE_HPP
 #define CUBIC_SPLINE_HPP
 
@@ -34,8 +30,7 @@
 
 #include "utils.hpp"
 #include "math.hpp"
-#include "struct.hpp"
-
+#include "common.hpp"
 
 #include<iostream>
 #include<vector>
@@ -58,7 +53,6 @@ public:
 
 #if defined(ENABLE_CUDA_ARCH) 
   __device__ Spline(int32_t n );
-  
   __global__ Spline(double* x_, double* y_, int32_t nx);
   __device__ double calc(double t);
   __device__ double calc_d(double t);
@@ -87,9 +81,9 @@ public:
   Vec_f  s;
 #if defined(ENABLE_CUDA_ARCH) 
   __device__ Spline2d(Vec_f x, Vec_f y);
-  __device__ Poi_f calc_postion(double s_t);
-  __global__ double calc_curvature(double s_t);
-  __global__ double calc_yaw(double s_t);
+  __device__ Poi_f computePostion(double s_t);
+  __global__ double computeCurvature(double s_t);
+  __global__ double computeYaw(double s_t);
 #endif
 private:
   Vec_f calc_s(Vec_f x, Vec_f y);
