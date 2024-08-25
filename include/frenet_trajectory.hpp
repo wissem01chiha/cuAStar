@@ -1,6 +1,3 @@
-/*************************************************************************
-
- ************************************************************************/
 
 #ifndef FRENET_PATH_HPP
 #define FRENET_PATH_HPP
@@ -9,9 +6,7 @@
 #include<vector>
 #include<array>
 #include<string>
-#include"cpprobotics_types.h"
-
-
+ 
 
 class FrenetPath{
 public:

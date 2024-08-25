@@ -4,10 +4,12 @@
 #define ENABLE_CUDA_ARCH 1
 #include "../include/a_star_planner.hpp"
 
-__device__ void AstarPlanner::computeFinalPath(internal::Node* goal,double step,double* rx,
+__device__  AstarPlanner::AstarPlanner(){};
+
+__global__ void AstarPlanner::computeFinalPath(internal::Node2d* goal,double step,double* rx,
                                             double* ry,int* path_size){
   int32_t idx = 0;
-  internal::Node* node = goal;
+  internal::Node2d* node = goal;
   while (node->p_node != nullptr){
     rx[idx] = node->x * step;
     ry[idx] = node->y * step;
@@ -17,7 +19,7 @@ __device__ void AstarPlanner::computeFinalPath(internal::Node* goal,double step,
   *path_size = idx;
 };
 
-__device__ void AstarPlanner::computeObstacleMap(const int32_t* ox, const int32_t* oy, 
+__global__ void AstarPlanner::computeObstacleMap(const int32_t* ox, const int32_t* oy, 
                                               int32_t num_obstacles, const int32_t min_ox, 
                                               const int32_t max_ox, const int32_t min_oy, 
                                               const int32_t max_oy, double step, double vr, 
@@ -43,7 +45,7 @@ __device__ void AstarPlanner::computeObstacleMap(const int32_t* ox, const int32_
     }
   };
 
-__device__ void  AstarPlanner::verifyNode(internal::Node* node, 
+__device__ void  AstarPlanner::verifyNode(internal::Node2d* node, 
                           const int32_t* obmap,
                           int32_t min_ox, 
                           int32_t max_ox,
@@ -64,117 +66,92 @@ __device__ void  AstarPlanner::verifyNode(internal::Node* node,
     }
 };
 
-__device__ void AstarPlanner::computeHeuristic(internal::Node* n1,internal::Node* n2,
+__device__ void AstarPlanner::computeHeuristic(internal::Node2d* n1,internal::Node2d* n2,
                                             double w,double* hfun){
     *hfun = w * sqrt((n1->x-n2->x)*(n1->x-n2->x)+(n1->y-n2->y)*(n1->y-n2->y));
 };
 
-__device__ void AstarPlanner::computeMotionModel(internal::Node* motion_model){
+__device__ void AstarPlanner::computeMotionModel(internal::Node2d* motion_model){
     
-    motion_model[0] = internal::Node(1, 0, 1);
-    motion_model[1] = internal::Node(0, 1, 1);
-    motion_model[2] = internal::Node(-1, 0, 1);
-    motion_model[3] = internal::Node(0, -1, 1);
-    motion_model[4] = internal::Node(-1, -1, sqrt(2.0));
-    motion_model[5] = internal::Node(-1, 1, sqrt(2.0));
-    motion_model[6] = internal::Node(1, -1, sqrt(2.0));
-    motion_model[7] = internal::Node(1, 1, sqrt(2.0));
+    motion_model[0] = internal::Node2d(1, 0, 1);
+    motion_model[1] = internal::Node2d(0, 1, 1);
+    motion_model[2] = internal::Node2d(-1, 0, 1);
+    motion_model[3] = internal::Node2d(0, -1, 1);
+    motion_model[4] = internal::Node2d(-1, -1, sqrt(2.0));
+    motion_model[5] = internal::Node2d(-1, 1, sqrt(2.0));
+    motion_model[6] = internal::Node2d(1, -1, sqrt(2.0));
+    motion_model[7] = internal::Node2d(1, 1, sqrt(2.0));
 };
 
-__global__ void AstarPlanner::computeTrajectory(double sx, double sy,
-                                            double gx,  double gy,
-                                            double* ox_, double* oy_,
-                                            double* step, double* rr, 
-                                            double * traj){
+__global__ void AstarPlanner::computeTrajectory(double sx, double sy, double gx, double gy,
+                                  double* ox_, double* oy_, int n,
+                                  double step, double rr,
+                                  int32_t* visit_map, double* path_cost,
+                                  internal::Node2d* motion_model, internal::Node2d* traj_nodes) {
 
-  internal::Node* nstart = new internal::Node((int32_t)round(sx/ *step),
-                            (int32_t)round(sy/ *step),0.0);
-  internal::Node* ngoal = new internal::Node((int32_t)round(gx/ *step),
-                           (int32_t)round(gy/ *step),0.0);
+    // Initialize start and goal nodes
+    internal::Node2d nstart = { (int32_t)round(sx / step), (int32_t)round(sy / step), 0.0, nullptr };
+    internal::Node2d ngoal = { (int32_t)round(gx / step), (int32_t)round(gy / step), 0.0, nullptr };
 
-  int32_t ox[n];
-  int32_t oy[n];
-  
-  int32_t *min_ox = new int32_t;
-  int32_t *max_ox = new int32_t;
-  int32_t *min_oy = new int32_t;
-  int32_t *max_oy = new int32_t;
+    // Compute min and max values for obstacle coordinates
+    int32_t min_ox = INT_MAX, max_ox = INT_MIN;
+    int32_t min_oy = INT_MAX, max_oy = INT_MIN;
 
-  *min_ox = -2147483647;
-  *max_ox = 2147483648;
-  *min_oy = 2147483647;
-  *max_oy = -2147483648;
+    computeUpdateMinMax(ox_, step, &min_ox, &max_ox, n);
+    computeUpdateMinMax(oy_, step, &min_oy, &max_oy, n);
 
-  computeUpdateMinMax(ox_,*step,min_ox,max_ox,n);
-  computeUpdateMinMax(oy_,*step,min_oy,max_oy,n);
+    int32_t xwidth = max_ox - min_ox + 1;
+    int32_t ywidth = max_oy - min_oy + 1;
 
-  int32_t xwidth = max_ox-min_ox;
-  int32_t ywidth = max_oy-min_oy;
+    // Initialize visit map and path cost arrays
+    int32_t tid = blockIdx.x * blockDim.x + threadIdx.x;
+    if (tid < xwidth * ywidth) {
+        visit_map[tid] = 0;
+        path_cost[tid] = DBL_MAX;
+    }
+    __syncthreads();
 
-  int32_t count = 0;
-  int32_t img_reso = 5;
-
-
-  std::vector<std::vector<int32_t>> visit_map(xwidth, vector<int32_t>(ywidth, 0));
-  
-  std::vector<std::vector<double>> path_cost(xwidth, vector<double>(ywidth, std::numeric_limits<double>::max()));
-
-  path_cost[nstart->x][nstart->y] = 0;
-
-  computeObstacleMap(ox, oy, min_ox, max_ox, min_oy, max_oy,step, rr,bg, img_reso);
-
-  
-  auto cmp = [](const Node* left, const Node* right){return left->sum_cost > right->sum_cost;};
-  std::priority_queue<Node*, std::vector<Node*>, decltype(cmp)> pq(cmp);
-
-  pq.push(nstart);
-  internal::Node* motion_model;
-  computeMotionModel(motion_model);
-
-  while (true){
-    internal::Node * node = pq.top();
-
-    if (visit_map[node->x-min_ox][node->y-min_oy] == 1){
-      pq.pop();
-      delete node;
-      continue;
-    }else{
-      pq.pop();
-      visit_map[node->x-min_ox][node->y-min_oy] = 1;
+    // Set the start node's cost
+    if (nstart.x >= min_ox && nstart.y >= min_oy) {
+        path_cost[(nstart.x - min_ox) * ywidth + (nstart.y - min_oy)] = 0.0;
     }
 
-    if (node->x == ngoal->x && node->y==ngoal->y){
-      ngoal->sum_cost = node->sum_cost;
-      ngoal->p_node = node;
-      break;
+    // Initialize a simplified priority queue (manual implementation)
+    int queue_head = 0;
+    traj_nodes[queue_head] = nstart;
+
+    while (queue_head >= 0) {
+        internal::Node2d node = traj_nodes[queue_head--];
+
+        int node_idx = (node.x - min_ox) * ywidth + (node.y - min_oy);
+        if (visit_map[node_idx] == 1) continue;
+
+        visit_map[node_idx] = 1;
+
+        if (node.x == ngoal.x && node.y == ngoal.y) {
+            ngoal.sum_cost = node.sum_cost;
+            ngoal.p_node = node.p_node;
+            break;
+        }
+
+        // Evaluate neighbors
+        for (int i = 0; i < 8; i++) { // 8 possible moves
+            internal::Node2d new_node = { node.x + motion_model[i].x, node.y + motion_model[i].y,
+                              node.sum_cost + motion_model[i].sum_cost, &traj_nodes[queue_head + 1] };
+
+            if (new_node.x < min_ox || new_node.y < min_oy || new_node.x >= max_ox || new_node.y >= max_oy) continue;
+
+            int new_idx = (new_node.x - min_ox) * ywidth + (new_node.y - min_oy);
+            if (visit_map[new_idx] == 1) continue;
+
+            if (path_cost[new_idx] > new_node.sum_cost) {
+                path_cost[new_idx] = new_node.sum_cost;
+                traj_nodes[++queue_head] = new_node;  // Push new node to the queue
+            }
+        }
     }
 
-    for(int32_t i=0; i<motion.size(); i++){
-      internal::Node * new_node = new internal::Node(
-        node->x + motion[i].x,
-        node->y + motion[i].y,
-        path_cost[node->x][node->y] + motion[i].sum_cost + computeHeuristic(ngoal, node),
-        node);
-        bool* state;
-      verifyNode(node, obmap,min_ox, max_ox,min_oy,max_oy,xwidth,state);
+    // Post-processing to extract the trajectory (simplified)
+    // ... (fill traj_nodes to retrieve the final path)
 
-      if (!state){
-        delete new_node;
-        continue;
-      }
-
-      if (visit_map[new_node->x-min_ox][new_node->y-min_oy]){
-        delete new_node;
-        continue;
-      }
-      count++;
-      if (path_cost[node->x][node->y]+motion[i].sum_cost < path_cost[new_node->x][new_node->y]){
-        path_cost[new_node->x][new_node->y]=path_cost[node->x][node->y]+motion[i].sum_cost; 
-        pq.push(new_node);
-      }
-    }
-  }
-  computeFinalPath(ngoal, step, bg, img_reso);
-  delete ngoal;
-  delete nstart;
 };

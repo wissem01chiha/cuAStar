@@ -1,12 +1,3 @@
-/*****************************************************************
- * Main Header File
- * 
- * 
- * 
- * 
- * 
- * 
- ****************************************************************/
 #include "a_star_planner.hpp"
 #include "cubic_spline_trajectory.hpp"
 #include "frenet_trajectory.hpp"

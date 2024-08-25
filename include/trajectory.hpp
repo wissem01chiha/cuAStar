@@ -1,4 +1,3 @@
-#define ENABLE_CUDA_ARCH 1
 #include <cstdint>
 #ifdef _WIN32
   #include <windows.h>
@@ -6,7 +5,7 @@
 #if defined(ENABLE_CUDA_ARCH) && defined(ENABLE_GLM)
     #error "ENABLE_CUDA_ARCH and ENABLE_GLM "
 #elif !defined(ENABLE_CUDA_ARCH) && !defined(ENABLE_GLM)
-    #error "Either ENABLE_CUDA_ARCH or ENABLE_GLM. Required."
+    #warning "Either ENABLE_CUDA_ARCH or ENABLE_GLM. Required."
 #elif defined(ENABLE_CUDA_ARCH)
     #include <cuda_runtime.h>
     #include <cublas_v2.h>
@@ -25,6 +24,14 @@
 #include "utils.hpp"
 #include "common.hpp"
 
+enum TRAJECTORIES {
+    CUBIC_SPLINE,
+    BSPLINE,
+    BEZIER,
+    QUARTIC_POLYNOMIAL,
+    QUINTIC_POLYNOMIAL
+};
+
 class Trajectory
 {
 private:
@@ -34,10 +41,3 @@ public:
     ~Trajectory();
 };
 
-enum TRAJECTORIES {
-    CUBIC_SPLINE,
-    BSPLINE,
-    BEZIER,
-    QUARTIC_POLYNOMIAL,
-    QUINTIC_POLYNOMIAL
-};

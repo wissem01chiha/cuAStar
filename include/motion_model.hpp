@@ -1,9 +1,33 @@
-/**********************************************************************
- * Motion Model Engine 
- * 
- *********************************************************************/
 #ifndef MOTION_MODEL_HPP
 #define MOTION_MODEL_HPP
+
+#include <cstdint>
+#ifdef _WIN32
+  #include <windows.h>
+#endif
+#if defined(ENABLE_CUDA_ARCH) && defined(ENABLE_GLM)
+    #warning "ENABLE_CUDA_ARCH and ENABLE_GLM "
+#elif !defined(ENABLE_CUDA_ARCH) && !defined(ENABLE_GLM)
+    #warning "Either ENABLE_CUDA_ARCH or ENABLE_GLM. Required."
+#elif defined(ENABLE_CUDA_ARCH)
+    #include <cuda_runtime.h>
+    #include <cublas_v2.h>
+#elif defined(ENABLE_GLM)
+    #include <glm/glm.hpp>
+    #include <glm/gtc/constants.hpp>
+#endif
+#ifdef ENABLE_SSE && !defined(ENABLE_CUDA_ARCH)
+  #ifdef _MSC_VER
+    #if defined(_M_IX86_FP) && _M_IX86_FP >= 1
+      #include <intrin.h>
+      #include <xmmintrin.h>
+    #endif
+  #endif
+#endif
+#include "utils.hpp"
+#include "common.hpp"
+#include "math.hpp"
+
 
 #include<iostream>
 #include<vector>
@@ -11,10 +35,50 @@
 #include<cmath>
 #include<cfenv>
 
+namespace internal {
 
-#define YAW_P2P(angle) std::fmod(std::fmod((angle)+M_PI, 2*M_PI)-2*M_PI, 2*M_PI)+M_PI
+ /** @brief */
+ __host__ __device__ void compute2dMotionModel(const int32_t* step, 
+                                            Node2d* model){
+    model[0] = Node2d(*step, 0, *step);
+    model[1] = Node2d(0, *step, *step);
+    model[2] = Node2d(-*step, 0, *step);
+    model[3] = Node2d(0, -*step, *step);
+    model[4] = Node2d(-*step, -*step,*step *sqrt(2));
+    model[5] = Node2d(-*step, *step, *step * sqrt(2));
+    model[6] = Node2d(*step, -*step, *step * sqrt(2));
+    model[7] = Node2d(*step, *step, *step * sqrt(2));
+ };
 
- 
+/** @brief  */
+__host__ __device__ void compute3dMotionModel(const int32_t* step, 
+                                            Node3d* model){
+
+    model[0] = Node3d(1 * (*step), 0 * (*step), 0 * (*step), 1);
+    model[1] = Node3d(-1 * (*step), 0 * (*step), 0 * (*step), 1);
+    model[2] = Node3d(0 * (*step), 1 * (*step), 0 * (*step), 1);
+    model[3] = Node3d(0 * (*step), 0 * (*step), -1 * (*step), 1);
+    model[4] = Node3d(1 * (*step), 1 * (*step), 0 * (*step), sqrt(2));
+    model[5] = Node3d(1 * (*step), -1 * (*step), 0 * (*step), sqrt(2));
+    model[6] = Node3d(-1 * (*step), 1 * (*step), 0 * (*step), sqrt(2));
+    model[7] = Node3d(-1 * (*step), -1 * (*step), 0 * (*step), sqrt(2));
+    model[8] = Node3d(1 * (*step), 0 * (*step), 1 * (*step), sqrt(2));
+    model[9] = Node3d(1 * (*step), 0 * (*step), -1 * (*step), sqrt(2));
+    model[10] = Node3d(-1 * (*step), 0 * (*step), 1 * (*step), sqrt(2));
+    model[11] = Node3d(-1 * (*step), 0 * (*step), -1 * (*step), sqrt(2));
+    model[12] = Node3d(0 * (*step), 1 * (*step), 1 * (*step), sqrt(2));
+    model[13] = Node3d(0 * (*step), 1 * (*step), -1 * (*step), sqrt(2));
+    model[14] = Node3d(0 * (*step), -1 * (*step), 1 * (*step), sqrt(2));
+    model[15] = Node3d(0 * (*step), -1 * (*step), -1 * (*step), sqrt(2));
+    model[16] = Node3d(1 * (*step), 1 * (*step), 1 * (*step), sqrt(3));
+    model[17] = Node3d(1 * (*step), 1 * (*step), -1 * (*step), sqrt(3));
+    model[18] = Node3d(1 * (*step), -1 * (*step), 1 * (*step), sqrt(3));  
+    model[19] = Node3d(1 * (*step), -1 * (*step), -1 * (*step), sqrt(3));  
+    model[20] = Node3d(-1 * (*step), 1 * (*step), 1 * (*step), sqrt(3));
+    model[21] = Node3d(-1 * (*step), 1 * (*step), -1 * (*step), sqrt(3));
+    model[22] = Node3d(-1 * (*step), -1 * (*step), 1 * (*step), sqrt(3));
+    model[23] = Node3d(-1 * (*step), -1 * (*step), -1 * (*step), sqrt(3)); 
+};
 
 struct Parameter{
   float distance;
@@ -25,125 +89,30 @@ struct Parameter{
   };
 };
 
-struct State{
-  float x;
-  float y;
-  float yaw;
-  float v;
-  State(float x_, float y_, float yaw_, float v_){
-    x = x_;
-    y = y_;
-    yaw = yaw_;
-    v = v_;
-  };
-};
 
-struct TrajState{
-  float x;
-  float y;
-  float yaw;
-  TrajState(float x_, float y_, float yaw_){
-    x = x_;
-    y = y_;
-    yaw = yaw_;
-  };
-};
-
-using Traj = std::vector<TrajState>;
-using StateList = std::vector<TrajState>;
+using Traj = std::vector<internal ::TrajectoryState>; // this is for 2d 
+using StateList = std::vector<internal ::TrajectoryState>;
 using ParameterList = std::vector<Parameter>;
 
-std::vector<float> quadratic_interpolation(
-    std::array<float, 3> x, std::array<float, 3> y){
-  Eigen::Matrix3f A;
-  Eigen::Vector3f Y;
-  A<< std::pow(x[0], 2), x[0], 1,
-      std::pow(x[1], 2), x[1], 1,
-      std::pow(x[2], 2), x[2], 1;
-  Y<<y[0], y[1], y[2];
-
-  Eigen::Vector3f result = A.inverse() * Y;
-  float* result_data = result.data();
-  std::vector<float> result_array(result_data, result_data+3);
-  return result_array;
-}
-
-float interp_refer(std::vector<float> para, float x){
-  return para[0] * x * x + para[1] * x + para[2];
-}
-
-
+ 
 class MotionModel{
 public:
   const float base_l;
   const float ds;
-  State state;
+  State2d     state;
 
-  MotionModel(float base_l_, float ds_, State state_):
+#if defined(ENABLE_CUDA_ARCH)
+  __device__ MotionModel(float base_l_, float ds_, State2d state_):
     base_l(base_l_), ds(ds_), state(state_){};
-  void update(float v_, float delta, float dt);
-  State update(State state_, float delta, float dt);
-  Traj generate_trajectory(Parameter);
-  TrajState generate_last_state(Parameter);
-
-};
-
-void MotionModel::update(float v_, float delta, float dt){
-  state.v = v_;
-  state.x = state.x + state.v * std::cos(state.yaw) * dt;
-  state.y = state.y + state.v * std::sin(state.yaw) * dt;
-  state.yaw = state.yaw + state.v / base_l * std::tan(delta) * dt;
-  state.yaw = YAW_P2P(state.yaw);
-};
-
-State MotionModel::update(State state_, float delta, float dt){
-  state_.x = state_.x + state_.v * std::cos(state_.yaw) * dt;
-  state_.y = state_.y + state_.v * std::sin(state_.yaw) * dt;
-  state_.yaw = state_.yaw + state_.v / base_l * std::tan(delta) * dt;
-  state_.yaw = YAW_P2P(state_.yaw);
-  return state_;
-};
-
-Traj MotionModel::generate_trajectory(Parameter p){
-  float n =  p.distance / ds;
-  float horizon = p.distance / state.v;
-
-  // boost::math::cubic_b_spline<float> spline(
-  //   p.steering_sequence.data(), p.steering_sequence.size(),
-  //   0, horizon/p.steering_sequence.size());
-  std::vector<float> spline = quadratic_interpolation(
-    {{0, horizon/2, horizon}},
-    p.steering_sequence);
-
-  Traj output;
-  State state_ = state;
-
-  for(float i=0.0; i<horizon; i+=horizon/n){
-    float kp = interp_refer(spline, i);
-    state_ = update(state_, kp, horizon/n);
-    TrajState xyyaw{state_.x, state_.y, state_.yaw};
-    output.push_back(xyyaw);
-  }
-  return output;
-}
-
-TrajState MotionModel::generate_last_state(Parameter p){
-  float n = p.distance / ds;
-  float horizon = p.distance / state.v;
-
-  // boost::math::cubic_b_spline<float> spline(
-  //   p.steering_sequence.data(), p.steering_sequence.size(),
-  //   0, horizon/p.steering_sequence.size());
-  std::vector<float> spline = quadratic_interpolation(
-    {{0, horizon/2, horizon}},
-    p.steering_sequence);
-
-  State state_ = state;
-  for(float i=0.0; i<horizon; i+=horizon/n){
-      float kp = interp_refer(spline, i);
-      state_ = update(state_, kp, horizon/n);
-  }
-  return TrajState{state_.x, state_.y, state_.yaw};
-}
- 
+  __device__ void update(float v_, float delta, float dt);
+  __device__ State2d update(internal::State2d state_, float delta, float dt);
+  __device__ Traj generate_trajectory(Parameter);
+  __device__ internal ::TrajectoryState  generate_last_state(Parameter);
+#endif
+protected:
+  #if defined(ENABLE_CUDA_ARCH)
+    ~MotionModel();
+  #endif
+}; // class MotionModel
+}; //namespace internal
 #endif

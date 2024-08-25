@@ -1,13 +1,30 @@
+/**
+ * @file test_math.cu 
+ */
 #define ENABLE_CUDA_ARCH 1
 #include "../include/math.hpp"
 #include <iostream>
 
-
-
-__global__ void kernel_vec_diff(const double* d_input, double* d_output, int32_t n) {
+__global__ void ker_vec_diff(const double* d_input,double* d_output,int32_t n){
     vec_diff(d_input, d_output, n);
     __syncthreads();
-}
+};
+
+__global__ void ker_quadratic_interpolation(double* result_array,double* x, 
+                                      double* y){
+    quadratic_interpolation(result_array,x,y);
+    __syncthreads();
+};
+
+__global__ void ker_cum_sum(const double* input, double* output, int32_t n){
+    cum_sum(input, output,n);
+    __syncthreads();
+};
+
+__global__ void interp_refer(const double* params, double x, double* result){
+  *result =  params[0] * x * x + params[1] * x + params[2];
+};
+
 
 int main() {
     const int32_t n = 4;
@@ -25,7 +42,7 @@ int main() {
     int threadsPerBlock = 3;
     int blocksPerGrid = (n + threadsPerBlock - 1) / threadsPerBlock;
 
-    kernel_vec_diff<<<blocksPerGrid, threadsPerBlock>>>(d_input, d_output, n);
+    ker_vec_diff<<<blocksPerGrid, threadsPerBlock>>>(d_input, d_output, n);
     cudaDeviceSynchronize();
 
     cudaMemcpy(h_output, d_output, n * sizeof(double), cudaMemcpyDeviceToHost);
@@ -53,4 +70,4 @@ int main() {
     cudaFree(d_input);
     cudaFree(d_output);
     return 0;
-}
+};

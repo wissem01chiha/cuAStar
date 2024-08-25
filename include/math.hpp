@@ -4,7 +4,7 @@
 #include <cstdint>
 
 #if defined(ENABLE_CUDA_ARCH) && defined(ENABLE_GLM)
-    #error "ENABLE_CUDA_ARCH and ENABLE_GLM "
+    #warning "ENABLE_CUDA_ARCH and ENABLE_GLM "
 #elif !defined(ENABLE_CUDA_ARCH) && !defined(ENABLE_GLM)
     #error "ENABLE_CUDA_ARCH or ENABLE_GLM. Required."
 #elif defined(ENABLE_CUDA_ARCH)
@@ -14,6 +14,8 @@
 #elif defined(ENABLE_GLM)
     #include <glm/glm.hpp>
     #include <glm/gtc/constants.hpp>
+    #include <glm/gtc/matrix_inverse.hpp> 
+    #include <vector_double2.hpp>
 #endif
 #ifdef ENABLE_SSE && !defined(ENABLE_CUDA_ARCH)
   #ifdef _MSC_VER
@@ -24,7 +26,8 @@
   #endif
 #endif
 
-#ifdef ENABLE_CUDA_ARCH
+#ifdef ENABLE_CUDA_ARCH 
+
 namespace linAlg{
   __device__ void inv3x3mat(const double *A, double *A_inv){
       double det = A[0] * (A[4] * A[8] - A[5] * A[7]) -
@@ -52,7 +55,6 @@ __device__ void mat3x3MulVec(const double* A, const double* v, double* result){
     result[1] = A[3] * v[0] + A[4] * v[1] + A[5] * v[2];
     result[2] = A[6] * v[0] + A[7] * v[1] + A[8] * v[2];
 };
-
 }; // namespace linAlg
 
 __device__ void computeUpdateMinMax(double* o_,double step,int32_t* min_o,int32_t* max_o,int32_t n){
@@ -61,7 +63,7 @@ __device__ void computeUpdateMinMax(double* o_,double step,int32_t* min_o,int32_
     int32_t map_x = (int32_t)round(o_[tid] / step);
     atomicMin(min_o, map_x);
     atomicMax(max_o, map_x);
-   }
+   };
 };
 
 __device__ void vec_diff(const double* input,double* output, int32_t n){
@@ -98,9 +100,17 @@ __device__ void quadratic_interpolation(double* result_array,double* x,
   linAlg::mat3x3MulVec(A_inv,Y,result_array);
 };
 
+__global__ void calc_third_derivative(double *t, double *results, double a3, 
+                                    double a4, double a5, int n){
+    int idx = threadIdx.x + blockIdx.x * blockDim.x;
+    if (idx < n) {
+        results[idx] = 6 * a3 + 24 * a4 * t[idx] + 60 * a5 * pow(t[idx], 2);
+    }
+};
+
 #endif
 
-#ifdef ENABLE_GLM
+#ifdef defined(ENABLE_GLM)
 void vec_diff(const glm::dvec2* input, glm::dvec2* output, int32_t n) {
     for (int i = 1; i < n; i++) {
         output[i] = input[i] - input[i - 1];  
@@ -119,20 +129,19 @@ void interp_refer(const double* params, double x, double* result){
   *result =  params[0] * x * x + params[1] * x + params[2];
 };
 
-std::vector<double> quadratic_interpolation(
-    std::array<double, 3> x, std::array<double, 3> y){
-  Eigen::Matrix3f A;
-  Eigen::Vector3f Y;
-  A<< std::pow(x[0], 2), x[0], 1,
-      std::pow(x[1], 2), x[1], 1,
-      std::pow(x[2], 2), x[2], 1;
-  Y<<y[0], y[1], y[2];
+void quadratic_interpolation(const double x[3], const double y[3], double* result) {
+    glm::mat3 A(
+        glm::pow(x[0], 2), x[0], 1,
+        glm::pow(x[1], 2), x[1], 1,
+        glm::pow(x[2], 2), x[2], 1
+    );
 
-  Eigen::Vector3f result = A.inverse() * Y;
-  double* result_data = result.data();
-  std::vector<double> result_array(result_data, result_data+3);
-  return result_array;
+    glm::vec3 Y(y[0], y[1], y[2]);
+
+    glm::vec3 solution = glm::inverse(A) * Y;
+    result[0] = solution[0];
+    result[1] = solution[1];
+    result[2] = solution[2];
 };
-
 #endif
 #endif

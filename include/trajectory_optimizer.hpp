@@ -1,11 +1,7 @@
-/*************************************************************************
-
- ************************************************************************/
-
 #ifndef TRAJECTORY_OPTIMIZER_HPP
 #define TRAJECTORY_OPTIMIZER_HPP
 
-#include<iostream>
+
 #include<cmath>
 #include<cfenv>
 
@@ -14,7 +10,8 @@
 #include<opencv2/core/core.hpp>
 #include<opencv2/highgui/highgui.hpp>
 #include<sys/time.h>
-#include"motion_model.h"
+
+#include"motion_model.hpp"
 
 
 namespace cpprobotics{

@@ -1,5 +1,5 @@
 extern/glm/
 extern/catch2/
 extern/rapidcsv/
-build/
 .vscode/
+data/OpenTrench3D/

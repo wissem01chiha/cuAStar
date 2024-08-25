@@ -1,16 +1,13 @@
 cmake_minimum_required(VERSION 3.10 FATAL_ERROR)
-project(cuRobotics)
+project(cuRobotics VERSION 0.1.0)
 
 set(Torch FALSE)
 set(enable_test False)
 
-# Set the source directory
 set(SRCDIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
-# Set the bin directory
-set(BINDIR ${CMAKE_CURRENT_BINARY_DIR}/bin)
 
-# Compiler settings
-set(CMAKE_CXX_COMPILER g++)
+set(BINDIR ${CMAKE_CURRENT_BINARY_DIR}/build)
+
 set(CMAKE_CXX_STANDARD 14)
 
 # Compiler flags
@@ -44,17 +41,6 @@ add_custom_target(log
 
 
 
-
-if (Torch)
-    set(CMAKE_PREFIX_PATH "extern/libtorch")
-    find_package(Torch REQUIRED)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${TORCH_CXX_FLAGS}")
-    add_executable(example-app src/exemple-app.cpp)
-    target_link_libraries(example-app "${TORCH_LIBRARIES}")
-    set_property(TARGET example-app PROPERTY CXX_STANDARD 17)
-    # The following code block is suggested to be used on Windows.
-    # According to https://github.com/pytorch/pytorch/issues/25457,
-    # the DLLs need to be copied to avoid memory errors.
     if (MSVC)
         file(GLOB TORCH_DLLS "${TORCH_INSTALL_PREFIX}/lib/*.dll")
         add_custom_command(TARGET example-app
@@ -63,4 +49,3 @@ if (Torch)
                        ${TORCH_DLLS}
                        $<TARGET_FILE_DIR:example-app>)
     endif (MSVC)
-endif(Torch)

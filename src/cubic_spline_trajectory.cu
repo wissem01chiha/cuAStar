@@ -9,7 +9,7 @@
 #include<array>
 #include<cmath>
 
-
+#define ENABLE_CUDA_ARCH 1 
 #include "../include/cubic_spline_trajectory.hpp"
 
 __device__ Spline::Spline(int32_t n ): nx(n){

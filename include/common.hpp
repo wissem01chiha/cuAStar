@@ -1,14 +1,10 @@
-/*********************************************************
- * software structs and lightweight classes
- * 
- *********************************************************/
-#ifndef common_HPP
-#define common_HPP
+#ifndef COMMON_HPP
+#define COMMON_HPP
 
 #include <cstdint>
-#define ENABLE_CUDA_ARCH 1 
+
 #if defined(ENABLE_CUDA_ARCH) && defined(ENABLE_GLM)
-    #error "ENABLE_CUDA_ARCH and ENABLE_GLM "
+    #warning "ENABLE_CUDA_ARCH and ENABLE_GLM "
 #elif !defined(ENABLE_CUDA_ARCH) && !defined(ENABLE_GLM)
     #error "ENABLE_CUDA_ARCH or ENABLE_GLM. Required."
 #elif defined(ENABLE_CUDA_ARCH)
@@ -28,27 +24,25 @@
   #endif
 #endif
 
-enum PLANNER {
-  PSO,
-  BSPLINE,
-  PF,
-  RRT,
-  ASTAR,
-  RRTSTAR,
-  DIJKSTRA
-};
 
-namespace internal {
-   
-class Node{
+
+namespace internal{
+/**
+ * @brief Base class for 2d nodes reprsentation
+ * @param p_node : pointer to the parent node
+ * @param sum_cost : cumulative cost from the start node to the current node.
+ * @note the node postion is parmtrised in grid steps integer number 
+ */
+class Node2d{
   public:
     int32_t x;
     int32_t y;
     double  sum_cost;
-    Node*   p_node;
+    Node2d* p_node;
 
-  __device__ Node(int32_t x_, int32_t y_,double sum_cost_=0, 
-                Node* p_node_=nullptr){
+  __host__ __device__ Node2d(int32_t x_, int32_t y_,
+                          double sum_cost_=0, 
+                          Node2d* p_node_=nullptr){
  x = x_; y = y_; 
  sum_cost = sum_cost_; 
  p_node = p_node_;
@@ -61,15 +55,22 @@ class Node3d{
     int32_t y;
     int32_t z;
     double  sum_cost;
-    Node3d*   p_node;
+    Node3d* p_node;
 
-  __device__ Node3d(int32_t x_, int32_t y_, int32_t z,
-                  double sum_cost_=0, 
-                  Node3d* p_node_=nullptr){
+  __host__ __device__  Node3d(int32_t x_, int32_t y_,
+                            int32_t z,
+                            double sum_cost_=0, 
+                            Node3d* p_node_=nullptr){
     x= x_; y = y_;
     sum_cost = sum_cost_;
     p_node = p_node_;
   }
+
+  __host__ __device__ double distanceTo(const Node3d& other){
+
+  };
+
+
 };
 
 class State2d {
@@ -77,8 +78,9 @@ class State2d {
   double y;
   double yaw;
   double v;
-  __device__ State2d(double x_,double y_,double yaw_
-                        ,double v_){
+  State2d* p_state;
+  __host__ __device__ State2d(double x_,double y_,
+                          double yaw_ ,double v_){
     x = x_;
     y = y_;
     yaw = yaw_;
@@ -93,8 +95,10 @@ class State3d {
   double yaw;
   double pitch;
   double roll;
-  __device__ State3d(double x_,double y_,double z_,double yaw_,
-                            double pitch_, double roll_){
+  State3d* p_state;
+  __host__ __device__ State3d(double x_,double y_,double z_,
+                            double yaw_,double pitch_, 
+                            double roll_){
     x = x_;
     y = y_;
     yaw   = yaw_;
@@ -107,11 +111,12 @@ struct TrajectoryState{
   float x;
   float y;
   float yaw;
-  __device__ TrajectoryState(float x_, float y_, float yaw_){
+  __host__ __device__ TrajectoryState(float x_, float y_, 
+                                    float yaw_){
     x = x_;
     y = y_;
     yaw = yaw_;
   };
 };
-};
+}; // namespace internal
 #endif

@@ -1,13 +1,13 @@
 #ifndef A_STAR_PLANNER_HPP
 #define A_STAR_PLANNER_HPP
 
-#define ENABLE_CUDA_ARCH 1
 #include <cstdint>
+#include <cfloat>
 #ifdef _WIN32
   #include <windows.h>
 #endif
 #if defined(ENABLE_CUDA_ARCH) && defined(ENABLE_GLM)
-    #error "ENABLE_CUDA_ARCH and ENABLE_GLM "
+    #warning "ENABLE_CUDA_ARCH and ENABLE_GLM "
 #elif !defined(ENABLE_CUDA_ARCH) && !defined(ENABLE_GLM)
     #error "Either ENABLE_CUDA_ARCH or ENABLE_GLM. Required."
 #elif defined(ENABLE_CUDA_ARCH)
@@ -25,52 +25,91 @@
     #endif
   #endif
 #endif
+#ifdef _DEBUG_
+  #include "../extern/loguru/loguru.hpp"
+  #include "../extern/loguru/loguru.cpp"
+#endif
 #include "utils.hpp"
 #include "common.hpp"
 #include "math.hpp"
+#include "planner.hpp"
 
+/**
+ * @brief 
+ * all public member function should be host function 
+ */
 class AstarPlanner
 {
 public:
 #ifdef ENABLE_CUDA_ARCH
-    __device__ AstarPlanner();
-    __device__ void computeFinalPath(internal::Node * goal, double step, double* rx, double* ry, int* path_size);
-    __device__ void computeObstacleMap(const int32_t* ox, const int32_t* oy, int32_t num_obstacles,
-                                    const int32_t min_ox, const int32_t max_ox,
-                                    const int32_t min_oy, const int32_t max_oy,
-                                    double step, double vr, int32_t* obmap);
-    __device__ void  verifyNode(internal::Node* node, const int32_t* obmap, int32_t min_ox,int32_t max_ox,
-                                    int32_t min_oy, 
-                                    int32_t max_oy,
-                                    int32_t xwidth,
-                                    bool* state);
-    __device__ void computeHeuristic(internal::Node* n1, internal::Node* n2, double w, double* hfun);
-    __device__ void computeMotionModel(internal::Node* motion_model);
-    __global__ void computeTrajectory(double sx, double sy, double gx,  double gy, double* ox_, 
-                           double* oy_, double* step, double* rr, double * traj);
-#else
+
+    /** @brief  Default constructor */
+    __host__  AstarPlanner();
+
+    /** @brief */
+    __host__ void computeTrajectory(double sx, double sy, double gx, double gy,
+                                  double* ox_, double* oy_, int n,
+                                  double step, double rr,
+                                  int32_t* visit_map, double* path_cost,
+                                  internal::Node2d* motion_model,internal::Node2d* traj_nodes);
+#elif defined(ENABLE_GLM)
+
+    /** @brief Default constructor */
     AstarPlanner();
-    void computeFinalPath(internal::Node * goal, double step, double* rx, double* ry, int* path_size);
-    void computeObstacleMap(const int32_t* ox, const int32_t* oy, int32_t num_obstacles,
-                                    const int32_t min_ox, const int32_t max_ox,
-                                    const int32_t min_oy, const int32_t max_oy,
-                                    double step, double vr, int32_t* obmap);
-    void  verifyNode(internal::Node* node, const int32_t* obmap, int32_t min_ox,int32_t max_ox,
-                                    int32_t min_oy, 
-                                    int32_t max_oy,
-                                    int32_t xwidth,
-                                    bool* state);
-    void computeHeuristic(internal::Node* n1, internal::Node* n2, double w, double* hfun);
-    void computeMotionModel(internal::Node* motion_model);
+    
+    /** @brief compute the planning trajectory */
     void computeTrajectory(double sx, double sy, double gx,  double gy, double* ox_, 
                            double* oy_, double* step, double* rr);
 #endif
 private:
+#ifdef ENABLE_CUDA_ARCH
 
+  /** @brief */
+  __global__ void collison();
 
+  /** @brief */
+  __global__ void computeHeuristic(internal::Node2d* n1, internal::Node2d* n2,
+                                double w,double* hfun);
+  /** @brief  */
+  __global__ void  verifyNode(internal::Node2d* node,const int32_t* obmap, 
+                            int32_t min_ox,int32_t max_ox, int32_t min_oy, 
+                            int32_t max_oy, int32_t xwidth, bool* state);
+  /** @brief */
+  __global__ void computeObstacleMap(const int32_t* ox, const int32_t* oy, 
+                                    int32_t num_obstacles,
+                                    const int32_t min_ox, const int32_t max_ox,
+                                    const int32_t min_oy, const int32_t max_oy,
+                                    double step, double vr, int32_t* obmap);
+  /** @brief compute the final path */
+  __global__ void computeFinalPath(internal::Node2d * goal, double step,
+                                double* rx, double* ry, int* path_size);
+
+  /** @brief */
+  __global__ void computeMotionModel(internal::Node2d* motion_model);
+
+#elif defined(ENABLE_GLM)
+
+    /** @brief */
+    void computeFinalPath(internal::Node2d * goal, double step, double* rx, double* ry, int* path_size);
+
+    /** @brief  */
+    void computeObstacleMap(const int32_t* ox, const int32_t* oy, int32_t num_obstacles,
+                                    const int32_t min_ox, const int32_t max_ox,
+                                    const int32_t min_oy, const int32_t max_oy,
+                                    double step, double vr, int32_t* obmap);
+    void  verifyNode(internal::Node2d* node, const int32_t* obmap, int32_t min_ox,int32_t max_ox,
+                                    int32_t min_oy, 
+                                    int32_t max_oy,
+                                    int32_t xwidth,
+                                    bool* state);
+    void computeHeuristic(internal::Node2d* n1, internal::Node2d* n2, double w, double* hfun);
+    void computeMotionModel(internal::Node2d* motion_model);
+#endif
 protected:
-#ifndef ENABLE_CUDA_ARCH
-    ~AstarPlanner();
+#ifdef ENABLE_CUDA_ARCH
+  ~AstarPlanner();
+#elif defined(ENABLE_GLM)
+  ~AstarPlanner();
 #endif
 };
 #endif

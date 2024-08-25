@@ -1,7 +1,6 @@
 #ifndef CUBIC_SPLINE_HPP
 #define CUBIC_SPLINE_HPP
 
-#define ENABLE_CUDA_ARCH 1
 #include <cstdint>
 #ifdef _WIN32
   #include <windows.h>
@@ -9,7 +8,7 @@
 #if defined(ENABLE_CUDA_ARCH) && defined(ENABLE_GLM)
     #error "ENABLE_CUDA_ARCH and ENABLE_GLM "
 #elif !defined(ENABLE_CUDA_ARCH) && !defined(ENABLE_GLM)
-    #error "ENABLE_CUDA_ARCH or ENABLE_GLM. Required."
+    #warning "ENABLE_CUDA_ARCH or ENABLE_GLM. Required."
 #elif defined(ENABLE_CUDA_ARCH)
     #include <cuda_runtime.h>
     #include <cublas_v2.h>
@@ -27,18 +26,18 @@
     #endif
   #endif
 #endif
+#ifdef _DEBUG_
+  #include "../extern/loguru/loguru.hpp"
+  #include "../extern/loguru/loguru.cpp"
+#endif
 
 #include "utils.hpp"
 #include "math.hpp"
 #include "common.hpp"
 
-#include<iostream>
-#include<vector>
-#include<array>
-#include<string>
-#include<stdexcept>
-#include"cpprobotics_types.hpp"
-
+using Vec_f=std::vector<float>;
+using Poi_f=std::array<float, 2>;
+using Vec_Poi=std::vector<Poi_f>;
  // d_i * (x-x_i)^3 + c_i * (x-x_i)^2 + b_i * (x-x_i) + a_i
 class Spline{
 public:
@@ -81,11 +80,39 @@ public:
   Vec_f  s;
 #if defined(ENABLE_CUDA_ARCH) 
   __device__ Spline2d(Vec_f x, Vec_f y);
-  __device__ Poi_f computePostion(double s_t);
+  __device__ Poi_f  computePostion(double s_t);
   __global__ double computeCurvature(double s_t);
   __global__ double computeYaw(double s_t);
+#elif defined(ENABLE_GLM)
+
 #endif
 private:
   Vec_f calc_s(Vec_f x, Vec_f y);
+protected:
+#if defined(ENABLE_CUDA_ARCH)
+  __device__ ~Spline2d();
+#endif
 };
+
+class Spline3d{
+public:
+  Spline sx;
+  Spline sy;
+  Vec_f  s;
+#if defined(ENABLE_CUDA_ARCH) 
+  __device__ Spline3d(Vec_f x, Vec_f y);
+  __device__ Poi_f  computePostion(double s_t);
+  __global__ double computeCurvature(double s_t);
+  __global__ double computeYaw(double s_t);
+#elif defined(ENABLE_GLM)
+
+#endif
+private:
+  Vec_f calc_s(Vec_f x, Vec_f y);
+protected:
+#if defined(ENABLE_CUDA_ARCH)
+  __device__ ~Spline3d();
+#endif
+};
+
 #endif

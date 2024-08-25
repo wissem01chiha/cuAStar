@@ -1,9 +1,5 @@
-/*************************************************************************
-	
- ************************************************************************/
-
-#ifndef _QUINTIC_POLYNOMIAL_H
-#define _QUINTIC_POLYNOMIAL_H
+#ifndef QUINTIC_POLYNOMIAL_HPP
+#define _QUINTIC_POLYNOMIAL_HPP
 
 #include<iostream>
 #include<vector>
@@ -12,7 +8,7 @@
 #include<cmath>
 
 
-namespace cpprobotics{
+ 
 
 class QuinticPolynomial{
 public:
@@ -65,5 +61,4 @@ public:
     return 6*a3 + 24*a4*t + 60*a5*std::pow(t, 2);
   };
 };
-}
 #endif

@@ -1,54 +1,35 @@
-/*************************************************************************
-	> File Name: rrt.h
-	> Author: TAI Lei
-	> Mail: ltai@ust.hk
-	> Created Time: Sat Jul 27 16:46:44 2019
- ************************************************************************/
-
-#ifndef _RRT_H
-#define _RRT_H
+#ifndef RRT_PLANNER_HPP
+#define RRT_PLANNER_HPP
 
 #include<iostream>
 #include<limits>
 #include<random>
 #include<vector>
 #include<cmath>
-#include<opencv2/opencv.hpp>
-#include<opencv2/core/core.hpp>
-#include<opencv2/highgui/highgui.hpp>
 
-namespace cpprobotics{
 
-class Node{
-public:
-	float x;
-	float y;
-  std::vector<float> path_x;
-  std::vector<float> path_y;
-	Node* parent;
-  float cost;
+ 
 
-	Node(float x_, float y_): x(x_), y(y_), parent(NULL), cost(0){};
-};
+
 
 
 class RRT{
 public:
-	RRT(Node*, Node*, std::vector<std::vector<float> >, 
+	RRT(Node2d*, Node2d*, std::vector<std::vector<float> >, 
 		  std::vector<float>, float, float, int, int);
 
-	std::vector<Node*> planning();
+	std::vector<Node2d*> planning();
 	
-	Node* GetNearestNode(const std::vector<float>);
+	Node2d* GetNearestNode(const std::vector<float>);
 	
-	bool CollisionCheck(Node*);
+	bool CollisionCheck(Node2d*);
 
 protected:
 
-  Node* steer(Node* , Node*, float extend_length);
+  Node2d* steer(Node2d* , Node2d*, float extend_length);
 
-	Node* start;
-	Node* end;
+	Node2d* start;
+	Node2d* end;
 	const float expand_dis;
 	const float path_resolution;
 	const int goal_sample_rate;
@@ -56,7 +37,7 @@ protected:
 	const std::vector<std::vector<float> > ob_list;
 
 	std::vector<float> rand_area;
-	std::vector<Node*> node_list;
+	std::vector<Node2d*> node_list;
 
 	std::random_device goal_rd;
   std::mt19937 goal_gen;
@@ -66,13 +47,13 @@ protected:
   std::mt19937 area_gen;
   std::uniform_real_distribution<float> area_dis;
 
-  static std::vector<float> calc_distance_and_angle(Node*, Node*);
+  static std::vector<float> calc_distance_and_angle(Node2d*, Node2d*);
 };
 
-RRT::RRT(Node* start_, Node* end_, std::vector<std::vector<float> > ob_list_, std::vector<float> rand_area_, float expand_dis_=1.0, float path_resolution_=1.0, int goal_sample_rate_=5, int max_iter_=500 ): 
+RRT::RRT(Node2d* start_, Node2d* end_, std::vector<std::vector<float> > ob_list_, std::vector<float> rand_area_, float expand_dis_=1.0, float path_resolution_=1.0, int goal_sample_rate_=5, int max_iter_=500 ): 
 		start(start_), end(end_), ob_list(ob_list_), expand_dis(expand_dis_), path_resolution(path_resolution_), goal_sample_rate(goal_sample_rate_), max_iter(max_iter_), goal_gen(goal_rd()), goal_dis(std::uniform_int_distribution<int>(0, 100)), area_gen(area_rd()), area_dis(std::uniform_real_distribution<float>(rand_area_[0], rand_area_[1])), rand_area(rand_area_){};
 
-std::vector<Node*> RRT::planning(){
+std::vector<Node2d*> RRT::planning(){
 
 	//visualization
 	cv::namedWindow("rrt", cv::WINDOW_NORMAL);
@@ -102,11 +83,11 @@ std::vector<Node*> RRT::planning(){
 			rnd.push_back(end->y);
 		}
 
-		Node* nearest_node =  GetNearestNode(rnd);
+		Node2d* nearest_node =  GetNearestNode(rnd);
 
 		float theta = std::atan2(rnd[1]-nearest_node->y, rnd[0]-nearest_node->x); 
 
-		Node* new_node = new Node(nearest_node->x+expand_dis*std::cos(theta), nearest_node->y+expand_dis*std::sin(theta));
+		Node2d* new_node = new Node2d(nearest_node->x+expand_dis*std::cos(theta), nearest_node->y+expand_dis*std::sin(theta));
 		new_node->parent = nearest_node;
 
 		if (!CollisionCheck(new_node)) continue;
@@ -132,9 +113,9 @@ std::vector<Node*> RRT::planning(){
 		}
 	}
 
-	std::vector<Node*> path;
+	std::vector<Node2d*> path;
 	path.push_back(end);
-	Node* temp = node_list.back();
+	Node2d* temp = node_list.back();
 	while (temp->parent != NULL){
 		//visualization
 		cv::line(
@@ -158,7 +139,7 @@ std::vector<Node*> RRT::planning(){
 	return path;
 };
 
-Node* RRT::GetNearestNode(const std::vector<float> rnd){
+Node2d* RRT::GetNearestNode(const std::vector<float> rnd){
 	int min_id = -1;
 	float min_distance = std::numeric_limits<float>::max();
 
@@ -173,15 +154,15 @@ Node* RRT::GetNearestNode(const std::vector<float> rnd){
 	return node_list[min_id];
 };
 
-bool RRT::CollisionCheck(Node* node){
+bool RRT::CollisionCheck(Node2d* node){
 	for(std::vector<float> item:ob_list){
 		if (std::sqrt(std::pow((item[0] - node->x), 2) + std::pow((item[1] - node->y), 2)) <= item[2]) return false; 
 	}
 	return true;
 }
 
-Node* RRT::steer(Node* from_node, Node* to_node, float extend_length=std::numeric_limits<float>::max()){
-  Node * new_node = new Node(from_node->x, from_node->y);
+Node2d* RRT::steer(Node2d* from_node, Node2d* to_node, float extend_length=std::numeric_limits<float>::max()){
+  Node2d * new_node = new Node2d(from_node->x, from_node->y);
   std::vector<float> dist_angle = calc_distance_and_angle(new_node, to_node);
 
   new_node->path_x.push_back(new_node->x); 
@@ -214,13 +195,11 @@ Node* RRT::steer(Node* from_node, Node* to_node, float extend_length=std::numeri
 
 };
 
-std::vector<float> RRT::calc_distance_and_angle(Node* from_node, Node* to_node){
+std::vector<float> RRT::calc_distance_and_angle(Node2d* from_node, Node2d* to_node){
   float dx = to_node->x - from_node->x;
   float dy = to_node->y - from_node->y;
   float d = std::sqrt(dx*dx + dy*dy);
   float theta = std::atan2(dy, dx);
   return {d, theta};
 };
-
-}
 #endif

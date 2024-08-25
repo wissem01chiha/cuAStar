@@ -1,8 +1,5 @@
 /*************************************************************************
-	> File Name: frenet_optimal_trajectory.cpp
-	> Author: TAI Lei
-	> Mail: ltai@ust.hk
-	> Created Time: Wed Apr  3 09:52:17 2019
+
  ************************************************************************/
 
 #include<iostream>
@@ -37,7 +34,7 @@
 #define KLAT  1.0
 #define KLON  1.0
 
-using namespace cpprobotics;
+
 
 
 float sum_of_power(std::vector<float> value_list){

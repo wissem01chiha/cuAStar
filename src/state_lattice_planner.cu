@@ -24,7 +24,7 @@
 #define CONST_V 3.0  // use a const linear velocity here
 typedef std::vector<std::vector<float>> Table;
 
-using namespace cpprobotics;
+ 
 
 StateList sample_states(std::vector<float> angle_samples,
                         float a_min, float a_max,
