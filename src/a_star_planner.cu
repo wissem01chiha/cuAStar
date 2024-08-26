@@ -1,7 +1,3 @@
-/** 
- * @file a_star_planner.cu 
- */
-#define ENABLE_CUDA_ARCH 1
 #include "../include/a_star_planner.hpp"
 
 __device__  AstarPlanner::AstarPlanner(){};

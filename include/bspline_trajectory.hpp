@@ -1,12 +1,9 @@
-/**
- * @file 
- */
 #include <cstdint>
 
 #if defined(ENABLE_CUDA_ARCH) && defined(ENABLE_GLM)
     #warning "ENABLE_CUDA_ARCH and ENABLE_GLM "
 #elif !defined(ENABLE_CUDA_ARCH) && !defined(ENABLE_GLM)
-    #error "ENABLE_CUDA_ARCH or ENABLE_GLM. Required."
+    #warning "ENABLE_CUDA_ARCH or ENABLE_GLM. Required."
 #elif defined(ENABLE_CUDA_ARCH)
     #include <cuda_runtime.h>
     #include <cublas_v2.h>
@@ -24,10 +21,10 @@
   #endif
 #endif
 
-
 #include "utils.hpp"
 #include "common.hpp"
 #include "math.hpp"
+#include "trajectory.hpp"
 
 class BsplineTrajectory
 {

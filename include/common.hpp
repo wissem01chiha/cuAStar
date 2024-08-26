@@ -3,17 +3,21 @@
 
 #include <cstdint>
 
-#if defined(ENABLE_CUDA_ARCH) && defined(ENABLE_GLM)
-    #warning "ENABLE_CUDA_ARCH and ENABLE_GLM "
-#elif !defined(ENABLE_CUDA_ARCH) && !defined(ENABLE_GLM)
-    #error "ENABLE_CUDA_ARCH or ENABLE_GLM. Required."
-#elif defined(ENABLE_CUDA_ARCH)
+#if defined(__CUDACC__)
+    #define HOST_FUN __host__
+    #define DEVICE_FUN __device__
+    #define HOST_DEVICE_FUN __host__ __device__
+    #define GLOBAL_FUN __global__
     #include <cuda_runtime.h>
-    #include <cublas_v2.h>
-    #include <device_launch_parameters.h>
-#elif defined(ENABLE_GLM)
-    #include <glm/glm.hpp>
-    #include <glm/gtc/constants.hpp>
+    #include <math_constants.h>
+#else
+    #define HOST_FUN 
+    #define DEVICE_FUN 
+    #define HOST_DEVICE_FUN 
+    #include <vector>
+    #include <cmath>
+    #include <string>
+    #include <corecrt_math_defines.h>
 #endif
 #ifdef ENABLE_SSE && !defined(ENABLE_CUDA_ARCH)
   #ifdef _MSC_VER
@@ -23,8 +27,6 @@
     #endif
   #endif
 #endif
-
-
 
 namespace internal{
 /**
@@ -40,13 +42,18 @@ class Node2d{
     double  sum_cost;
     Node2d* p_node;
 
-  __host__ __device__ Node2d(int32_t x_, int32_t y_,
-                          double sum_cost_=0, 
-                          Node2d* p_node_=nullptr){
- x = x_; y = y_; 
- sum_cost = sum_cost_; 
- p_node = p_node_;
-}
+    HOST_DEVICE_FUN Node2d(int32_t x_, int32_t y_,
+                              double sum_cost_=0, 
+                              Node2d* p_node_=nullptr){
+    x = x_; y = y_; 
+    sum_cost = sum_cost_; 
+    p_node = p_node_;
+    }
+    HOST_DEVICE_FUN bool isEqual(const Node2d& other,double eps=1e-6){
+    return fabs(other.x - x) < eps &&
+           fabs(other.y - y) < eps;
+    }
+
 };
 
 class Node3d{
@@ -57,7 +64,7 @@ class Node3d{
     double  sum_cost;
     Node3d* p_node;
 
-  __host__ __device__  Node3d(int32_t x_, int32_t y_,
+  HOST_DEVICE_FUN  Node3d(int32_t x_, int32_t y_,
                             int32_t z,
                             double sum_cost_=0, 
                             Node3d* p_node_=nullptr){
@@ -66,26 +73,17 @@ class Node3d{
     p_node = p_node_;
   }
 
-  __host__ __device__ double distanceTo(const Node3d& other){
+  HOST_DEVICE_FUN double distanceTo(const Node3d& other) const {
+        return sqrt(double((other.x - x) * (other.x - x) +
+                           (other.y - y) * (other.y - y) +
+                           (other.z - z) * (other.z - z)));
+  }
 
-  };
-
-
-};
-
-class State2d {
-  double x;
-  double y;
-  double yaw;
-  double v;
-  State2d* p_state;
-  __host__ __device__ State2d(double x_,double y_,
-                          double yaw_ ,double v_){
-    x = x_;
-    y = y_;
-    yaw = yaw_;
-    v = v_;
-  };
+  HOST_DEVICE_FUN bool isEqual(const Node3d& other,double eps=1e-6){
+    return fabs(other.x - x) < eps &&
+           fabs(other.y - y) < eps &&
+           fabs(other.z - z) < eps;
+  }
 };
 
 class State3d {
@@ -96,23 +94,40 @@ class State3d {
   double pitch;
   double roll;
   State3d* p_state;
-  __host__ __device__ State3d(double x_,double y_,double z_,
-                            double yaw_,double pitch_, 
-                            double roll_){
+
+  HOST_DEVICE_FUN State3d(double x_,double y_,double z_,
+                        double yaw_,double pitch_, 
+                        double roll_){
     x = x_;
     y = y_;
     yaw   = yaw_;
     pitch = pitch_;
     roll  = roll_;
-  };
+    };
 };
 
-struct TrajectoryState{
+class State2d {
+  double x;
+  double y;
+  double yaw;
+  State2d* p_state;
+
+  HOST_DEVICE_FUN State2d(double x_,double y_,double yaw_,
+                        State2d* p_state_=nullptr){
+    x = x_;
+    y = y_;
+    yaw   = yaw_;
+    p_state = p_state_;
+    };
+};
+
+class TrajectoryState{
   float x;
   float y;
   float yaw;
-  __host__ __device__ TrajectoryState(float x_, float y_, 
-                                    float yaw_){
+ 
+  HOST_DEVICE_FUN TrajectoryState(float x_, float y_, 
+                                      float yaw_){
     x = x_;
     y = y_;
     yaw = yaw_;

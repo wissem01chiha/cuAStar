@@ -1,21 +1,60 @@
 /**
  * @file 
+ * @note 
  */
-#include<iostream>
-#include<cmath>
-#include<limits>
-#include<queue>
-#include<vector>
+#ifdef _WIN32
+  #include <windows.h>
+#endif
+#if defined(__CUDACC__)
+    #define HOST_FUN __host__
+    #define DEVICE_FUN __device__
+    #define HOST_DEVICE_FUN __host__ __device__
+    #define GLOBAL_FUN __global__
+    #include <cuda_runtime.h>
+    #include <math_constants.h>
+#else
+    #define HOST_FUN 
+    #define DEVICE_FUN 
+    #define HOST_DEVICE_FUN 
+    #include <vector>
+    #include <cmath>
+    #include <string>
+    #include <corecrt_math_defines.h>
+    #include<iostream>
+    #include<cmath>
+    #include<limits>
+    #include<queue>
+    #include<vector>
+#endif
 
-using namespace std;
+#include "utils.hpp"
+#include "common.hpp"
+#include "math.hpp"
+#include "planner.hpp"
 
 class DijkstraPlanner
 {
-private:
-   
 public:
-  DijkstraPlanner();
-  ~DijkstraPlanner();
+  HOST_DEVICE_FUN DijkstraPlanner();
+  
+private:
+  
+  /** @brief */
+  GLOBAL_FUN calc_final_path(internal::Node2d * goal, float reso, cv::Mat& img, float img_reso);
+
+  /** @brief */
+  GLOBAL_FUN calc_obstacle_map(std::vector<int> ox, std::vector<int> oy,
+    const int min_ox, const int max_ox,
+    const int min_oy, const int max_oy,
+    float reso, float vr,
+    cv::Mat& img, int img_reso);
+
+
+
+
+
+protected: 
+  HOST_DEVICE_FUN ~DijkstraPlanner();
 };
 
 
