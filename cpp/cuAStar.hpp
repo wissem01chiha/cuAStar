@@ -10,18 +10,28 @@
  * If there are no blocked cells/obstacles then we can just find the exact 
  * value of h without any pre-computation using the distance formula/Euclidean Distance
  * all memory errors checks foe cuda are in debug mode !
+ * $ g++ -std=c++0x main.cpp -pthread
  * nvcc -o random_gen_example random_gen_example.cu -lcurand
  * divide the point cloud data into small region called bubles a N pt cloud is divided into 
  * N/k where k is the window size , for each subarea , inti a substarting node
  * explore (like running the normal A star on that subgroups nodes) 
  * with one setp the surouding and at each step , synchonize all subregions 
+ * https://pantelis.github.io/artificial-intelligence/aiml-common/lectures/planning/search/a-star/index.html
+ * 
+ * for the multithreding and concurrency support computations support the c++ 11 standard is required 
+ * see https://en.cppreference.com/w/cpp/thread
  */
 #ifndef CUASTAR_HPP
 #define CUASTAR_HPP
 #define CUASTAR_IMPLEMENTATION 1
 #define __CUDACC__
 #if __cplusplus > 201703L
-    #warning "C++ 17 Required, potenial errors!"
+    #warning "C++ 17 Required, potential errors!"
+#endif
+#ifdef _MSC_VER
+    #if _MSC_VER < 1910
+        #warning "MSVC 2019 or later is officially supported"
+    #endif
 #endif
 #ifdef __GNUC__
 	#pragma GCC system_header
@@ -42,23 +52,39 @@
 #else
     #define HOST_FUN 
     #define DEVICE_FUN 
-    #define HOST_DEVICE_FUN 
+    #define HOST_DEVICE_FUN
+    #define GLOBAL_FUN 
     #include <vector>
+    #ifdef _OPENMP
+        #include <omp.h>
+    #endif
     #include <cmath>
     #include <string>
+    #include <chrono>
     #include <type_traits>
     #include <stdexcept>
+    #include <filesystem>
+    #include <iostream>
     #include <array>
-    #include <corecrt_math_defines.h>
-#endif
-#ifdef ENABLE_SSE && !defined(__CUDACC__)
-  #ifdef _MSC_VER
-    #if defined(_M_IX86_FP) && _M_IX86_FP >= 1
-      #include <intrin.h>
-      #include <xmmintrin.h>
+    #include <algorithm> 
+    #ifdef _MSC_VER
+        #include <corecrt_math_defines.h>
     #endif
-  #endif
+    #ifdef ENABLE_THREADS && __cplusplus >= 201103L
+        #include <thread>
+    #endif
+    #ifdef ENABLE_SSE && !defined(ENABLE_THREADS)
+    #ifdef _MSC_VER
+        #if defined(_M_IX86_FP) && _M_IX86_FP >= 1
+            #include <intrin.h>
+            #include <xmmintrin.h>
+        #endif
+    #else
+        #include <xmmintrin.h>
+    #endif
 #endif
+#endif
+
 #ifdef _DEBUG_
   #include <iostream>
   #define STB_IMAGE_WRITE_IMPLEMENTATION 1
@@ -82,12 +108,6 @@
   #include <vtkAppendPolyData.h>
   #include <vtkSmartPointer.h>
 #endif
-#ifdef ENABLE_GL
-    #include <glm/glm.hpp>
-    #include <glm/gtc/constants.hpp>
-    #include <glm/gtc/matrix_inverse.hpp> 
-    #include <vector_double2.hpp>
-#endif
 
 #include "../extern/rapidcsv/rapidcsv.h"
 #include "../extern/happly/happly.h"
@@ -107,8 +127,12 @@ class Node2d {
 public:
     T x;           
     T y;         
-    T       sum_cost;   
-    Node2d* p_node;      
+    T sum_cost;   
+    Node2d* p_node; 
+
+    uint8_t r = 125;
+    uint8_t g = 100;
+    uint8_t b = 120;      
 
     /** @brief default constructor for the Node2d class */
     HOST_DEVICE_FUN Node2d(){
@@ -155,7 +179,11 @@ public:
     T y;         
     T z;           
     T sum_cost;   
-    Node3d* p_node;     
+    Node3d* p_node;  
+
+    uint8_t r = 125;
+    uint8_t g = 100;
+    uint8_t b = 120;   
 
     /** @brief Default constructor for the Node3d class */
     HOST_DEVICE_FUN Node3d(){
@@ -217,32 +245,43 @@ class AstarPlanner
 {
 public:
 
-    /** @brief  default constructor, allocate the fixed size momory on 
-     * gpu for the member variables  */
+    /** 
+     * @brief  default constructor, allocate the fixed size momory on 
+     * gpu for the member variables  
+     */
     HOST_FUN  AstarPlanner();
 
-    /** @brief init the host and device memory with random nodes, if the number of
-     * ndodes given os diffrent from class alraedy  vars old, ovveride them */
+    /** 
+     * @brief init the host and device memory with random nodes, if the number of
+     * ndodes given os diffrent from class alraedy  vars old, ovveride them 
+     */
     HOST_FUN void initRandomNodesArray(size_t numNodes_, unsigned int seed);
 
-    /** @brief fill the host and device memory with the nodes from the a point
-     * cloud data file .PLY  */
-    HOST_FUN void initNodesArray(const std::string plyFilePath);
+    /** 
+     * @brief fill the host and device memory with the nodes from the a point
+     * cloud data file .PLY  
+     */
+    HOST_FUN void initNodesArray(const std::string& plyFilePath);
 
-    /** @brief set the start and the goal nodes either in 3d or 2d, check if the 
-     * nodes exsits in the h_nodesArray first */
+    /** 
+     * @brief set the start and the goal nodes either in 3d or 2d, check if the 
+     * nodes exsits in the h_nodesArray first 
+     */
     HOST_FUN void setStartAndGoalNodes(NodeType* startNode_, NodeType* goalNode_);
 
-    /** @brief compute the optimal trajectory, ie array of nodeType values, 
-     * this is the final function used to retive the optimal traj   */
+    /**
+     * @brief compute the optimal trajectory, ie array of nodeType values, 
+     * this is the final function used to retive the optimal traj  
+     */
     HOST_FUN  void computeTrajectory();
 
-    /** @brief svaes a trajectory to pointcloud file .PLY using happly librray*/
+    /** @brief svaes a trajectory to pointcloud file .PLY using happly librray */
     HOST_FUN saveTrajectory2csv(const std::string outputFilePath);
 
-    /** @brief read a point cloud data file (now only PLy supported) and fill the gridMap
-     * object memebr of the class with nodes consruted from the point cloud
-    */
+    /** 
+     * @brief read a point cloud data file (now only PLy supported) and fill the gridMap
+     * object memebr of the class with nodes consruted from the point cloud 
+     */
    HOST_FUN void saveTrajectory2png(const std::string outputFilePath);
 
 private:
@@ -251,49 +290,66 @@ private:
     NodeType* d_nodesArray; 
     NodeType* h_nodesArray;
 
-    NodeType*   openList;
-    NodeType*   closedList;
     NodeType*   startNode;
     NodeType*   endNode;
+
+    NodeType*   h_pathArray;
+    NodeType*   d_pathArray;
 
     int threadsPerBlock = 256;
 
     /** @return true if the node exsits in device nodes array*/
     GLOBAL_FUN void checkNodeExsist(const NodeType* nodeToCheck, bool* status);
 
-    /** @brief heuristic function which computes the estimated cost to the goal 
+    /** 
+     * @brief heuristic function which computes the estimated cost to the goal 
      * node, starting from the current given node, it simply the euclidian distances
-     * the manthetn distance could be used */
+     * the manthetn distance could be used 
+     */
     DEVICE_FUN void computeHeuristic(NodeType* Node, T* hfun);
 
-    /** @brief a cuda kernel that given a node and a grdi map get the closed node to 
-     * the given node
-     * the compuation of the distances between the given node and all the nodes in the 
-     * arry gridMpa are done 
-     * paralle way, 
-    */
-    GLOBAL_FUN void getClosedNode(const NodeType* n, NodeType* rhs);
-
-    /** @brief get the cost of the a path computed the path is given as 
+    /** 
+     * @brief get the cost of the a path computed the path is given as 
      * an array of variables  each 
-     * one of NodeType */
-    GLOBAL_FUN void computePathCost(const NodeType* node,T& p_cost_);
+     * one of NodeType  f(n) = g(n) + h(n) 
+     */
+    GLOBAL_FUN void computeTrajectoryCost(const NodeType* node,T* p_cost_);
 
-    /** @return true if this node is the goal node */
-    HOST_DEVICE_FUN bool isGoalReached(NodeType* n);
+    /** 
+     * @return true if this node is the goal node, return true if we resach 
+     * the exact node or true if we are in a very close node, 
+     * within a fixed thresh hold 
+     */
+    HOST_DEVICE_FUN bool isGoalReached(NodeType* n, const T eps=static_cast<T>(1e-6));
 
-    /** @return */
-    GLOBAL_FUN void synchonise();
+    /**
+     * @brief given a current node  at a gievn step it computes the 
+     * potenial sucessors and if it, ther is no predified motion model!,
+     * so each thread will process a sucessor and a globl synchronization will
+     * filter the best sucessor (they compute the f(n) valeur for each sucessor )
+     * hwo get this sucessors in uncontrained motion model, we assume that
+     * the points in the file are not initially sorted, the secah is in 
+     * d_nodesArray, at each time update the node p_node and sum_cost 
+    */
+    GLOBAL_FUN void computeSucessor(NodeType* node);
 
-    /** @brief smooth trajecory after computetion loop the nodes computed [N1, N2, N3]
+
+    /** 
+     * @brief smooth trajecory after computetion loop the nodes computed [N1, N2, N3]
      * if there is a jerk in node N2 it will be elimated of rescaled by recomputed 
      * a window appreoch could be used !
      */
     GLOBAL_FUN void smoothTrajectory();
 
+    /** @brief interpolate the given nodes to get a continus curve trajectory  */
+
+
 protected:
-    /** @brief free all memory on deice or on host , free all 
-     * class device or host varaible , qqsoit */
+
+    /** 
+     * @brief free all memory on deice or on host , free all 
+     * class device or host varaible , qqsoit 
+     */
     HOST_FUN ~AstarPlanner();
 };
 
@@ -308,6 +364,7 @@ typedef AstarPlanner<Node3dDouble, double> AstarPlanner3dDouble;
     HOST_FUN AstarPlanner<NodeType, T>::AstarPlanner(){
 
         cudaError_t err = cudaMalloc((void**)&d_nodesArray, numNodes*sizeof(NodeType));
+        cudaMalloc((void**)&d_pathArray, numNodes * sizeof(NodeType));
         h_nodesArray = new NodeType[numNodes];  
         #ifdef _DEBUG_
             if (err != cudaSuccess) {
@@ -339,43 +396,43 @@ typedef AstarPlanner<Node3dDouble, double> AstarPlanner3dDouble;
         this->d_nodesArray = d_nodesArray_;
     };
 
-template <typename NodeType, typename T>
-HOST_FUN void AstarPlanner<NodeType, T>::initNodesArray(const std::string& plyFilePath) {
+    template <typename NodeType, typename T>
+    HOST_FUN void AstarPlanner<NodeType, T>::initNodesArray(const std::string& plyFilePath) {
 
-    numNodes = static_cast<size_t>(getPlyPointNum(plyFilePath));
-    NodeType* h_nodesArray = new NodeType[numNodes];
-    NodeType* d_nodesArray_ = nullptr;
-    cudaError_t err = cudaMalloc((void**)&d_nodesArray_, numNodes * sizeof(NodeType));
-    #ifdef _DEBUG_
-        if (err != cudaSuccess) {
-            LOG_F(ERROR, "Failed to allocate device memory: %s", cudaGetErrorString(err));
-            delete[] h_nodesArray;   
-            exit(EXIT_FAILURE);
+        numNodes = static_cast<size_t>(getPlyPointNum(plyFilePath));
+        NodeType* h_nodesArray = new NodeType[numNodes];
+        NodeType* d_nodesArray_ = nullptr;
+        cudaError_t err = cudaMalloc((void**)&d_nodesArray_, numNodes * sizeof(NodeType));
+        #ifdef _DEBUG_
+            if (err != cudaSuccess) {
+                LOG_F(ERROR, "Failed to allocate device memory: %s", cudaGetErrorString(err));
+                delete[] h_nodesArray;   
+                exit(EXIT_FAILURE);
+            }
+        #endif
+        for (size_t i = 0; i < numNodes; ++i) {
+            try {
+                NodeType n = getPlyNode<NodeType>(plyFilePath, i);
+                h_nodesArray[i] = n;
+            } catch (const std::exception& e) {
+                #ifdef _DEBUG_
+                LOG_F(ERROR, "Exception while getting PLY node at index %zu: %s", i, e.what());
+                #endif
+                delete[] h_nodesArray;
+                cudaFree(d_nodesArray_);
+            }
         }
-    #endif
-    for (size_t i = 0; i < numNodes; ++i) {
-        try {
-            NodeType n = getPlyNode<NodeType>(plyFilePath, i);
-            h_nodesArray[i] = n;
-        } catch (const std::exception& e) {
-            #ifdef _DEBUG_
-            LOG_F(ERROR, "Exception while getting PLY node at index %zu: %s", i, e.what());
-            #endif
-            delete[] h_nodesArray;
-            cudaFree(d_nodesArray_);
+        err = cudaMemcpy(d_nodesArray_,h_nodesArray,numNodes*sizeof(NodeType),cudaMemcpyHostToDevice);
+        #ifdef _DEBUG_
+            if (err != cudaSuccess) {
+                LOG_F(ERROR, "Failed to copy data from host to device: %s", cudaGetErrorString(err));
+                delete[] h_nodesArray; 
+                cudaFree(d_nodesArray_);
+                exit(EXIT_FAILURE);
+            }
+        #endif
+        this->d_nodesArray = d_nodesArray_;
         }
-    }
-    err = cudaMemcpy(d_nodesArray_,h_nodesArray,numNodes*sizeof(NodeType),cudaMemcpyHostToDevice);
-    #ifdef _DEBUG_
-        if (err != cudaSuccess) {
-            LOG_F(ERROR, "Failed to copy data from host to device: %s", cudaGetErrorString(err));
-            delete[] h_nodesArray; 
-            cudaFree(d_nodesArray_);
-            exit(EXIT_FAILURE);
-        }
-    #endif
-    this->d_nodesArray = d_nodesArray_;
-    }
 
     template <typename NodeType, typename T>
     HOST_FUN AstarPlanner<NodeType, T>::~AstarPlanner(){
@@ -388,7 +445,6 @@ HOST_FUN void AstarPlanner<NodeType, T>::initNodesArray(const std::string& plyFi
     template <typename NodeType, typename T>
     GLOBAL_FUN void AstarPlanner<NodeType, T>::checkNodeExsist(const NodeType* nodeToCheck, 
                                                             bool* status){
-
         int idx = blockIdx.x * blockDim.x + threadIdx.x;
         if (idx < numNodes){
             if (d_nodesArray[idx] == *nodeToCheck) {
@@ -435,9 +491,64 @@ HOST_FUN void AstarPlanner<NodeType, T>::initNodesArray(const std::string& plyFi
         cudaFree(d_goalNodeExists);
     };
 
+    template<typename NodeType, typename T>
+    HOST_FUN  void AstarPlanner<NodeType, T>::computeTrajectory(){
+        
+        h_pathArray[0] = startNode;
+        cudaMemcpy(&h_pathArray,d_pathArray,sizeof(NodeType),cudaMemcpyHostToDevice);
+
+
+        
+        
+
+    }
+    
     template <typename NodeType, typename T>
     DEVICE_FUN void  AstarPlanner<NodeType, T>::computeHeuristic(NodeType* Node, T* hfun){
         T* hfun = Node.distanceTo(endNode);
+    }
+
+    template <typename NodeType, typename T>
+    HOST_DEVICE_FUN bool AstarPlanner<NodeType, T>::isGoalReached(NodeType* n,
+                                         const T eps=static_cast<T>(1e-6)) const {
+    
+        if (*n == endNode) {
+            return true;
+        }
+        return static_cast<T>(n->distanceTo(endNode)) < eps;
+    }
+    
+    template <typename NodeType, typename T>
+    GLOBAL_FUN void AstarPlanner<NodeType, T>::smoothTrajectory(){
+
+    }
+
+    template <typename NodeType, typename T>
+    GLOBAL_FUN void AstarPlanner<NodeType, T>::computeTrajectoryCost(const NodeType* node, T* p_cost_){
+        T h_fun;
+        computeHeuristic(*node, &h_fun); 
+        *p_cost_ = node->sum_cost + h_fun;
+    }
+
+    template <typename NodeType, typename T>
+    HOST_FUN void AstarPlanner<NodeType, T>::saveTrajectory2png(const std::string& outputFilePath){
+
+       namespace fs = std::filesystem;
+       try {
+            fs::path outputPath(outputFilePath);
+            fs::path directory = outputPath.parent_path();
+            if (!directory.empty() && !fs::exists(directory)){
+                fs::create_directories(directory);
+            }
+            if (fs::exists(outputPath)) {
+                fs::remove(outputPath);
+            }
+            array2PointCloudImg(h_pathArray,numNodes,outputFilePath,width,height,radiusRatio);
+        } catch (const fs::filesystem_error& e) {
+            std::cerr << "Filesystem error: " << e.what() << '\n';
+        } catch (const std::exception& e) {
+            std::cerr << "Error: " << e.what() << '\n';
+        }
     }
 
 #endif // CUASTAR_IMPLEMENTATION
@@ -451,54 +562,54 @@ GLOBAL_FUN void rand(unsigned int seed, float* randomValue) {
     *randomValue = curand_uniform(&state);
 }
 
-/** @brief Get a Node3d object from a PLY file using index idx */
-template <typename NodeType>
+/** @brief Get a Node3d object from a .ply file using index idx */
+template <typename NodeType, typename T>
 HOST_FUN NodeType getPlyNode(const std::string& plyFilePath, const size_t idx) {
+    
     if (!isPlyValid(plyFilePath)) {
         #ifdef _DEBUG_
-        LOG_F(ERROR, "Invalid PLY file: '%s'", plyFilePath.c_str());
+            LOG_F(ERROR, "Invalid PLY file: '%s'", plyFilePath.c_str());
         #endif
         throw std::invalid_argument("Invalid PLY file.");
     }
-
     happly::PLYData plyIn(plyFilePath);
     std::vector<std::array<double, 3>> vertices = plyIn.getVertexPositions();
-
     if (idx < vertices.size()) {
         const auto& vertex = vertices[idx];
-
         if constexpr (std::is_same<NodeType, Node2d>::value) {
-            return NodeType(static_cast<int32_t>(vertex[0]), static_cast<int32_t>(vertex[1]));
+            return NodeType(static_cast<T>(vertex[0]), static_cast<T>(vertex[1]));
         } else if constexpr (std::is_same<NodeType, Node3d>::value) {
-            return NodeType(static_cast<int32_t>(vertex[0]), static_cast<int32_t>(vertex[1]), 
+            return NodeType(static_cast<T>(vertex[0]), static_cast<T>(vertex[1]), 
             static_cast<int32_t>(vertex[2]));
         } else {
             #ifdef _DEBUG_
-            LOG_F(ERROR, "Unsupported NodeType in PLY file: '%s'", plyFilePath.c_str());
+                LOG_F(ERROR, "Unsupported NodeType in PLY file: '%s'", plyFilePath.c_str());
             #endif
             throw std::invalid_argument("Unsupported NodeType.");
         }
-    } else {
+    }else {
         #ifdef _DEBUG_
-        LOG_F(ERROR, "Index out of range in PLY file '%s': requested idx = %zu, max idx = %zu",
+            LOG_F(ERROR, "Index out of range in PLY file '%s': requested idx = %zu, max idx = %zu",
               plyFilePath.c_str(), idx, vertices.size() - 1);
         #endif
         throw std::out_of_range("Index out of range in PLY file vertices.");
     }
 }
 
-/** @brief Return the number of points stored in a .PLY file */
-HOST_FUN int getPlyPointNum(const std::string plyFilePath){
+/** @brief Return the number of points stored in a .ply file */
+HOST_FUN size_t getPlyPointNum(const std::string plyFilePath){
 
   if (isPlyValid(plyFilePath)){
     happly::PLYData plyIn(plyFilePath);
     std::vector<std::array<double, 3>> vertices = plyIn.getVertexPositions();
-    return vertices.size();
+    return static_cast<size_t>(vertices.size());
+  }else{
+    return static_cast<size_t>(0);
   }
 };
 
 /** @brief Check if a given .ply file path exists or not */
-  HOST_FUN bool isPlyValid(const std::string plyFilePath){
+HOST_FUN bool isPlyValid(const std::string plyFilePath){
 
     try {
       happly::PLYData plyIn(plyFilePath);
@@ -514,54 +625,80 @@ HOST_FUN int getPlyPointNum(const std::string plyFilePath){
           #endif
           return false;
       };
-  };
+};
 
+/**  @brief Draw and save a given 2D point cloud of nodes as an image, the data
+ * is given as a 1d host array of NodeType template objects. */
+template <typename NodeType>
+HOST_FUN void array2PointCloudImg(const NodeType* h_arrayNodes, size_t numNodes,
+                                  const std::string& pngFilePath, int width, int height, 
+                                  double radiusRatio = 0.01) {
 
-/** @brief Draw a 2D sphere (plain circle) given radius, center, and color */
-HOST_FUN void draw2dNode(uint8_t* image, int width, int height, int centerX, 
-                    int centerY, int radius, uint8_t r, uint8_t g, uint8_t b){
-    for (int y = 0; y < height; ++y) {
-        for (int x = 0; x < width; ++x) {
-            int dx = x - centerX;
-            int dy = y - centerY;
+    std::vector<std::pair<int, int>> centers;
+    std::vector<std::array<uint8_t, 3>> colors;
+    for (size_t i = 0; i < numNodes; ++i) {
+        int x = static_cast<int>(h_arrayNodes[i].x);
+        int y = static_cast<int>(h_arrayNodes[i].y);
+        centers.emplace_back(x, y);
+        std::array<uint8_t, 3> color = {static_cast<uint8_t>(h_arrayNodes[i].r),
+                                        static_cast<uint8_t>(h_arrayNodes[i].g),
+                                        static_cast<uint8_t>(h_arrayNodes[i].b)};
+        colors.push_back(color);
+    }
+    savePointCloudImage(pngFilePath, width, height, centers, colors, radiusRatio);
+}
+
+/**  @brief Draw and save a given 2D points cloud of nodes as an image. */
+HOST_FUN void savePointCloudImage(const std::string& filePath, int width, int height, 
+                      const std::vector<std::pair<int, int>>& centers,
+                      const std::vector<std::array<uint8_t, 3>>& colors, 
+                      double radiusRatio = 0.01) {
+
+    std::vector<uint8_t> image(width * height * 3, 255);   
+    drawFilledCircles(image.data(), width, height, centers, colors, radiusRatio);
+    stbi_write_png(filePath.c_str(), width, height, 3, image.data(), width * 3);
+}
+
+/** @brief Draw a sample of point cloud nodes as 2D colored circles */
+HOST_FUN void drawFilledCircles(uint8_t* image, int width, int height, 
+                       const std::vector<std::pair<int, int>>& centers, 
+                       const std::vector<std::array<uint8_t, 3>>& colors, 
+                       double radiusRatio = 0.01) {
+
+    int radius = static_cast<int>(radiusRatio * std::min(width, height));
+    
+    for (size_t i = 0; i < centers.size(); ++i) {
+        Circle circle = {{centers[i].first, centers[i].second}, radius};
+        Color color = {colors[i][0], colors[i][1], colors[i][2]};
+        drawFilledCircle(image, width, height, circle, color);
+    }
+}
+
+/** @brief Draw a 2D sphere (plain circle) given radius, center, and color. */
+HOST_FUN void drawFilledCircle(uint8_t* image, int width, int height, const Circle& circle, 
+            const Color& color){
+
+    int minX = std::max(0, circle.center.x - circle.radius);
+    int maxX = std::min(width - 1, circle.center.x + circle.radius);
+    int minY = std::max(0, circle.center.y - circle.radius);
+    int maxY = std::min(height - 1, circle.center.y + circle.radius);
+
+    int radiusSquared = circle.radius * circle.radius;
+
+    for (int y = minY; y <= maxY; ++y) {
+        for (int x = minX; x <= maxX; ++x) {
+            int dx = x - circle.center.x;
+            int dy = y - circle.center.y;
             int distanceSquared = dx * dx + dy * dy;
-            if (distanceSquared <= radius * radius) {
+            if (distanceSquared <= radiusSquared) {
                 int offset = (y * width + x) * 3;
-                image[offset] = r;
-                image[offset + 1] = g;
-                image[offset + 2] = b;
+                image[offset] = color.r;
+                image[offset + 1] = color.g;
+                image[offset + 2] = color.b;
             }
         }
     }
 }
-
-/** @brief Draw a sample of point cloud nodes as 2D colored circles */
-HOST_FUN void draw2dNodes(uint8_t* image, int width, int height, 
-                    const std::vector<std::pair<int, int>>& centers, 
-                    const std::vector<std::array<uint8_t, 3>>& colors, 
-                    double radiusRatio = 0.01) {
-
-    int radius = static_cast<int>(radiusRatio * std::min(width, height)); 
-    for (size_t i = 0; i < centers.size(); ++i) {
-        int centerX = centers[i].first;
-        int centerY = centers[i].second;
-        uint8_t r = colors[i][0];
-        uint8_t g = colors[i][1];
-        uint8_t b = colors[i][2];
-        draw2dNode(image, width, height, centerX, centerY, radius, r, g, b);
-    }
-}
-
-/** @brief Draw and save a given 2D point cloud of nodes */
-HOST_FUN void save2dNodesImage(const std::string& filePath, int width, int height, 
-                    const std::vector<std::pair<int, int>>& centers,
-                    const std::vector<std::array<uint8_t, 3>>& colors, 
-                    double radiusRatio = 0.01) {
-
-    std::vector<uint8_t> image(width * height * 3, 255); 
-    draw2dNodes(image.data(), width, height, centers, colors, radiusRatio);
-    stbi_write_png(filePath.c_str(), width, height, 3, image.data(), width * 3);
-};
 
 #ifdef ENABLE_VTK
 
