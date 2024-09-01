@@ -1,5 +1,5 @@
 /**
- * @file a_start_planner.hpp
+ * 
  * dsign tip: public member class are hhost functions to allocate memory and 
  * other private are kernels 
  * Astar
@@ -45,10 +45,11 @@
 
 #include <array>
 #include <chrono>
+#include <ctime>
 #include <string>
 #include <stdexcept>
 #include <algorithm> 
-#include <filesystem> // this is beacuse nvcc do not support 
+#include <filesystem>  
 
 #if defined(__CUDACC__)
     #define HOST_FUN __host__
@@ -57,7 +58,7 @@
     #define GLOBAL_FUN __global__
     #include <cuda_runtime.h>
     #include <curand_kernel.h>
-    #include <math_constants.h>
+    #include <math_constants.h> 
 #else
     #define HOST_FUN 
     #define DEVICE_FUN 
@@ -87,11 +88,13 @@
 #endif
 
 #ifdef _DEBUG_
+    #if defined(__CUDACC__)
     #define CUDA_CHECK_ERROR(err) \
         if (err != cudaSuccess) { \
             LOG_F(ERROR, "CUDA error: %s", cudaGetErrorString(err)); \
             exit(EXIT_FAILURE); \
         }
+    #endif
     #include <iostream>
     #include "../extern/loguru/loguru.hpp"
     #include "../extern/loguru/loguru.cpp"
@@ -120,6 +123,16 @@
 #include "../extern/happly/happly.h"
 #include "../extern/stb/stb_image.h"
 #include "../extern/stb/stb_image_write.h"
+
+/** @brief Generates a random float between 0 and 1 with precision up to 1e-6. */
+template <typename T>
+GLOBAL_FUN void curandx(unsigned int seed, T* d_val) {
+
+    int idx = threadIdx.x + blockIdx.x * blockDim.x;
+    curandState state;
+    curand_init(seed, idx, 0, &state);
+    d_val[idx] = curand_uniform(&state);
+};
 
 /** 
  * @brief   Base class for 2D nodes representation
@@ -159,7 +172,8 @@ public:
         p_node = p_node_;
     }
 
-    /** @brief Constructor for the Node2d class */
+    /** @brief Overlaoding Constructor for the general puropse template 
+     * calls */
     HOST_DEVICE_FUN Node2d(T x_, T y_, T z_){
         x= x_;
         y= y_;
@@ -212,7 +226,7 @@ public:
         sum_cost = T(0);
         p_node = nullptr;
     };
-    /** @brief constract a random node, postion bounds is in [0,1] */
+    /** @brief init a random node, position bounds is in [0,1] */
     HOST_FUN Node3d(unsigned int  seed){
 
         T* d_x;
@@ -222,9 +236,9 @@ public:
         cudaMalloc((void**)&d_y, sizeof(T));
         cudaMalloc((void**)&d_z, sizeof(T));
 
-        rand<<<1,1>>>(seed, d_x);
-        rand<<<1,1>>>(seed, d_y);
-        rand<<<1,1>>>(seed, d_z);
+        curandx<T><<<2, 1>>>(seed, d_x);
+        curandx<T><<<2, 1>>>(seed, d_y);
+        curandx<T><<<2, 1>>>(seed, d_z);
         cudaMemcpy(&x, d_x, sizeof(T), cudaMemcpyDeviceToHost);
         cudaMemcpy(&y, d_y, sizeof(T), cudaMemcpyDeviceToHost);
         cudaMemcpy(&z, d_z, sizeof(T), cudaMemcpyDeviceToHost);
@@ -255,10 +269,12 @@ public:
 
 };
 
-typedef Node2d<double> Node2dDouble;  
-typedef Node2d<float>  Node2dFloat;   
-typedef Node3d<double> Node3dDouble; 
-typedef Node3d<float>  Node3dFloat;  
+#ifdef USE_CUASTAR_TYPEDEF
+    typedef Node2d<double> Node2dDouble;  
+    typedef Node2d<float>  Node2dFloat;   
+    typedef Node3d<double> Node3dDouble; 
+    typedef Node3d<float>  Node3dFloat;  
+#endif
 
 typedef struct {
     unsigned char r;
@@ -272,20 +288,166 @@ typedef struct {
     int radius;
 } Circle;
 
-int threadsPerBlock = 256;
+/** @brief This is the default threads number, but you can choose up to 1024 */ 
+const int threadsPerBlock = 256; 
 
+/** 
+ * @brief Cuda kernel for sort a numerical array using enumeration sort alorithm.
+ * original implenatation by: Meng Hongyu, Guo Fangjin, UCAS, China
+ * https://arxiv.org/pdf/1505.07605
+ * modified by : wissem chiha 01-09-2024, use templates
+ */
+template <typename T>
+GLOBAL_FUN void enumerationSort(T * a, T * b){
+    int cnt = 0; 
+    int tid = threadIdx.x; 
+    int ttid = blockIdx.x * threadsPerBlock + tid; 
+    T val = a[ttid]; 
+    __shared__ T cache[threadPerBlock]; 
+    for ( int i = tid; i < N; i += threadsPerBlock ){ 
+    cache[tid] = a[i]; 
+    __syncthreads();   
+    for ( int j = 0; j < threadsPerBlock; ++j ) 
+    if ( val > cache[j] )             
+    cnt++;            
+    __syncthreads(); 
+    } 
+    b[cnt] = val;
+}
 
-/** @return true if the node exsits in device nodes array*/
+/**
+ * @brief cuda kernel to sort a given node array based 
+ * @note when calling this method with Node2d and ax=3 rteun error, it
+ * not handeled yet.
+ * @param ax = 1 for x , 2 y, 3 z 
+ */
+template <typename NodeType, typename T>
+GLOBAL_FUN void sortNodesWrtAxis(NodeType* d_nodesArray, int ax, 
+                            NodeType* d_nodesArraySorted){
+
+    int cnt = 0;
+    int tid = threadIdx.x;
+    int ttid = blockIdx.x * threadsPerBlock + tid; 
+    NodeType val = d_nodesArray[ttid];
+    __shared__ NodeType cache[threadsPerBlock];
+    for ( int i = tid; i < N; i += threadsPerBlock ){ 
+        cache[tid] = d_nodesArray[i]; 
+        __syncthreads();   
+        for ( int j = 0; j < threadsPerBlock; ++j ){ 
+            if ( ax == 1 ){
+                if ( val.x > cache[j].x )             
+                cnt++;
+            }else if ( ax == 2){
+                if ( val.y > cache[j].y )             
+                cnt++;
+            }else if ( ax == 3 ){
+                if ( val.z > cache[j].z )             
+                cnt++;
+            }
+        }            
+        __syncthreads(); 
+    } 
+    d_nodesArraySorted[cnt] = val;
+}
+
+/** 
+ * @brief compute the median point of a given point cloud distribuation,
+ * the initial arry is not sorted by default, the midian point along an axis 
+ * is the point wich axis attribute (x,y,z)
+ */
+template <typename NodeType, typename T>
+HOST_FUN void getMedianNodeWrtAxis(const NodeType* h_nodesArray, size_t numNodes, int ax, 
+                                NodeType& mNode) {
+    NodeType *d_nodesArray = nullptr;
+    NodeType *d_nodesArraySorted = nullptr;
+    NodeType *h_medianNode = new NodeType; 
+    int numBlocks  = (numNodes + threadsPerBlock -1 )/ threadsPerBlock ;
+
+    cudaError_t err1 = cudaMalloc((void**)&d_nodesArray, numNodes * sizeof(NodeType));
+    cudaError_t err2 = cudaMalloc((void**)&d_nodesArraySorted, numNodes * sizeof(NodeType));
+    CUDA_CHECK(err1);
+    CUDA_CHECK(err2);
+
+    cudaMemcpy(d_nodesArray, h_nodesArray, numNodes * sizeof(NodeType), cudaMemcpyHostToDevice);
+
+    sortNodesWrtAxis<T><<<numBlocks, threadsPerBlock>>>(d_nodesArray, ax, d_nodesArraySorted);
+    cudaDeviceSynchronize();
+    CUDA_CHECK(cudaGetLastError());
+
+    size_t medianIndex = numNodes / 2;
+    cudaMemcpy(h_medianNode, d_nodesArraySorted[medianIndex],sizeof(NodeType),cudaMemcpyDeviceToHost);
+
+    mNode = *h_medianNode;
+
+    cudaFree(d_nodesArray);
+    cudaFree(d_nodesArraySorted);
+    delete h_medianNode;
+}
+
+/** 
+ * @brief this class is base struct for building a K-D tree for the point cloud 
+ * data see ref : https://yasenh.github.io/post/kd-tree/ each node parent
+ * has 2 childs 
+ * this code is a modfied version of :
+ *  https://github.com/gishi523/kd-tree/blob/master/kdtree.h
+ * to ensure cuda compatibilty and paralle computations 
+ * complexisty is O(nlog(n)),
+ * 
+ */
+template<typename NodeType, typename T>
+class KDTree{
+    public:
+
+        /** @brief Default constructor */
+        HOST_DEVICE_FUN KDTree();
+
+        /** @brief build the D-K tree  */
+        HOST_DEVICE_FUN void build(const std::vector<PointT>& points);
+
+    private:
+        NodeType* d_nodesArray;
+        int numNodes; 
+
+    protected:
+        ~KDTree();
+}
+
+#ifdef USE_CUASTAR_TYPEDEF
+    typedef KDTree<Node2dDouble, double> KDTreeDouble;  
+    typedef KDTree<Node2dFloat, float>   KDTreeFloat;   
+    typedef KDTree<Node3dDouble, double> KDTreeDouble; 
+    typedef KDTree<Node3dFloat, float>   KDTreeFloat;  
+#endif
+
+#ifdef CUASTAR_IMPLEMENTATION 
+
+    template<typename NodeType, typename T>
+    HOST_DEVICE_FUN void KDTree<NodeType,T>::KDTree(){
+
+    }
+
+    template<typename NodeType, typename T>
+    HOST_DEVICE_FUN void KDTree<NodeType,T>::build(const std::vector<PointT>& points)
+		{
+			points_ = points;
+			std::vector<int> indices(points.size());
+			std::iota(std::begin(indices), std::end(indices), 0);
+			root_ = buildRecursive(indices.data(), (int)points.size(), 0);
+		}
+	
+#endif
+
+/**  @brief check if a given node exsits in device nodes array or not  */
 template <typename NodeType, typename T>
 GLOBAL_FUN void checkNodeExsist(NodeType* d_nodesArray, const NodeType* nodeToCheck,
                             bool* status,size_t numNodes){
 
     int idx = blockIdx.x * blockDim.x + threadIdx.x;
     if (idx < numNodes){
-        if (d_nodesArray[idx] == *nodeToCheck) {
+        if (d_nodesArray[idx].isEqual(*nodeToCheck)) {
             *status = true;
     }}
-}
+};
 
 /** 
  * @brief heuristic function which computes the estimated cost to the goal 
@@ -293,7 +455,7 @@ GLOBAL_FUN void checkNodeExsist(NodeType* d_nodesArray, const NodeType* nodeToCh
  * the manthetn distance could be used 
  */
 template <typename NodeType, typename T>
-DEVICE_FUN void computeHeuristic(NodeType* Node, T* hfun){
+DEVICE_FUN void computeHeuristicDistance(NodeType* Node, T* hfun){
     *hfun = Node->distanceTo(endNode);
 }
 
@@ -459,10 +621,12 @@ protected:
     HOST_FUN ~AstarPlanner();
 };
 
-typedef AstarPlanner<Node2dFloat,  float>  AstarPlanner2dFloat;
-typedef AstarPlanner<Node2dDouble, double> AstarPlanner2dDouble;
-typedef AstarPlanner<Node3dFloat,  float>  AstarPlanner3dFloat;
-typedef AstarPlanner<Node3dDouble, double> AstarPlanner3dDouble;
+#ifdef USE_CUASTAR_TYPEDEF
+    typedef AstarPlanner<Node2dFloat,  float>  AstarPlanner2dFloat;
+    typedef AstarPlanner<Node2dDouble, double> AstarPlanner2dDouble;
+    typedef AstarPlanner<Node3dFloat,  float>  AstarPlanner3dFloat;
+    typedef AstarPlanner<Node3dDouble, double> AstarPlanner3dDouble;
+#endif
 
 #ifdef CUASTAR_IMPLEMENTATION 
 
@@ -608,14 +772,6 @@ typedef AstarPlanner<Node3dDouble, double> AstarPlanner3dDouble;
 #endif // CUASTAR_IMPLEMENTATION
 
 
-/** @brief  Generate a single random float between 0 and 1 */
-GLOBAL_FUN void rand(unsigned int seed, float* randomValue) {
-
-    curandState state;
-    curand_init(seed, 0, 0, &state);
-    *randomValue = curand_uniform(&state);
-}
-
 /** @brief Check if a given .ply file path exists or not */
 HOST_FUN bool isPlyValid(const std::string plyFilePath){
 
@@ -730,8 +886,10 @@ HOST_FUN void savePointCloudImage(const char* filePath, int width, int height,
     delete[] image;
 }
 
-/**  @brief Draw and save a given 2D point cloud of nodes as an image, 
- * the data is given as a 1d host array of NodeType template objects. */
+/**  
+ * @brief Draw and save a given 2D point cloud of nodes as an image, 
+ * the data is given as a 1d host array of NodeType template objects.
+ */
 template <typename NodeType>
 HOST_FUN void array2PointCloudImg(const NodeType* h_arrayNodes, size_t numNodes,
                          const char* pngFilePath, int width, int height, 
