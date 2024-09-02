@@ -55,15 +55,19 @@
     #define HOST_FUN __host__
     #define DEVICE_FUN __device__
     #define HOST_DEVICE_FUN __host__ __device__
-    #define GLOBAL_FUN __global__
     #include <cuda_runtime.h>
     #include <curand_kernel.h>
     #include <math_constants.h> 
+    #include <device_launch_parameters.h>
+    #include <stack>
+    #ifdef _DEBUG_
+        #include <cstdio>
+        #include <cstdlib>
+    #endif
 #else
     #define HOST_FUN 
     #define DEVICE_FUN 
     #define HOST_DEVICE_FUN
-    #define GLOBAL_FUN 
     #include <vector>
     #ifdef _OPENMP
         #include <omp.h>
@@ -126,7 +130,7 @@
 
 /** @brief Generates a random float between 0 and 1 with precision up to 1e-6. */
 template <typename T>
-GLOBAL_FUN void curandx(unsigned int seed, T* d_val) {
+__global__ void curandx(unsigned int seed, T* d_val) {
 
     int idx = threadIdx.x + blockIdx.x * blockDim.x;
     curandState state;
@@ -139,6 +143,9 @@ GLOBAL_FUN void curandx(unsigned int seed, T* d_val) {
  * @tparam  T Numeric type for the sum_cost (e.g., T, float)
  * @param x : x-coordinate in the grid
  * @param y : y-coordinate in the grid
+ * @param z = 0 : this coordinate is used only to ensure generic function call 
+ *          that do not throw an error in using 3d nodes specific operations 
+ *          to 2d nodes based template methods.
  * @param sum_cost : cumulative cost from the start node to the current node
  * @param p_node : pointer to the parent node
  * @param c_nodes array of the 8 nearest neighbors considered as childs nodes 
@@ -147,10 +154,11 @@ template <typename T>
 class Node2d {
 public:
     T x;           
-    T y;         
+    T y;
+    T z = static_cast<T>(0);         
     T sum_cost;   
     Node2d* p_node; 
-    Node2d* c_nodes[8];
+    Node2d* c_nodes[2];
 
     uint8_t r = 125;
     uint8_t g = 100;
@@ -162,6 +170,8 @@ public:
         y= T(0);
         sum_cost = T(0);
         p_node = nullptr;
+        c_nodes[0] = nullptr;
+        c_nodes[1] = nullptr;
     }
 
     /** @brief Constructor for the Node2d class */
@@ -170,6 +180,8 @@ public:
         y= y_;
         sum_cost = sum_cost_;
         p_node = p_node_;
+        c_nodes[0] = nullptr;
+        c_nodes[1] = nullptr;
     }
 
     /** @brief Overlaoding Constructor for the general puropse template 
@@ -179,6 +191,8 @@ public:
         y= y_;
         sum_cost = T(0);
         p_node = nullptr;
+        c_nodes[0] = nullptr;
+        c_nodes[1] = nullptr;
     }
 
     /** @brief Checks if two nodes are equal based on their positions */
@@ -192,6 +206,15 @@ public:
         return sqrt(static_cast<T>((other.x - x) * (other.x - x) +
                                    (other.y - y) * (other.y - y)));
     }
+
+    #ifdef _DEBUG_
+        /** @brief Prints the information of this node */
+        HOST_FUN void printNodeInfo() const {
+            std::cout << "Node: (x: " << x << ", y: " << y 
+                    << ", sum_cost: " << sum_cost << ", color: (" << static_cast<int>(r) 
+                    << ", " << static_cast<int>(g) << ", " << static_cast<int>(b) << "))\n";
+        }
+    #endif
 };
 
 /** 
@@ -212,7 +235,7 @@ public:
     T z;           
     T sum_cost;   
     Node3d* p_node;
-    Node3d* c_nodes[8];  
+    Node3d* c_nodes[2];  
 
     uint8_t r = 125;
     uint8_t g = 100;
@@ -225,6 +248,8 @@ public:
         z = T(0);
         sum_cost = T(0);
         p_node = nullptr;
+        c_nodes[0] = nullptr;
+        c_nodes[1] = nullptr;
     };
     /** @brief init a random node, position bounds is in [0,1] */
     HOST_FUN Node3d(unsigned int  seed){
@@ -242,6 +267,11 @@ public:
         cudaMemcpy(&x, d_x, sizeof(T), cudaMemcpyDeviceToHost);
         cudaMemcpy(&y, d_y, sizeof(T), cudaMemcpyDeviceToHost);
         cudaMemcpy(&z, d_z, sizeof(T), cudaMemcpyDeviceToHost);
+
+        c_nodes[0] = nullptr;
+        c_nodes[1] = nullptr;
+        sum_cost = T(0);
+        p_node = nullptr;
     };
 
     /** @brief Constructor for the Node3d class */
@@ -267,6 +297,14 @@ public:
                fabs(other.z - z) < eps;
     }
 
+    #ifdef _DEBUG_
+        /** @brief Prints the information of this node */
+        HOST_FUN void printNodeInfo() const {
+            std::cout << "Node: (x: " << x << ", y: " << y << ", z: " << z
+                    << ", sum_cost: " << sum_cost << ", color: (" << static_cast<int>(r) 
+                    << ", " << static_cast<int>(g) << ", " << static_cast<int>(b) << "))\n";
+        }
+    #endif
 };
 
 #ifdef USE_CUASTAR_TYPEDEF
@@ -291,19 +329,55 @@ typedef struct {
 /** @brief This is the default threads number, but you can choose up to 1024 */ 
 const int threadsPerBlock = 256; 
 
-/** 
- * @brief Cuda kernel for sort a numerical array using enumeration sort alorithm.
- * original implenatation by: Meng Hongyu, Guo Fangjin, UCAS, China
+#ifdef _DEBUG_
+    /** @brief Debug function to print given 3d nodes array to user shell*/
+    template <typename T>
+    HOST_FUN void print3dNodes(Node3d<T>* nodes, int N) {
+        for (int i = 0; i < N; ++i) {
+            std::cout << "Node " << i << ": ( " << nodes[i].x << ", " 
+                        << nodes[i].y << ", " << nodes[i].z << ")\n";
+        }
+    };
+
+    /** @brief Debug function to print given 2d nodes array to user shell*/
+    template <typename T>
+    HOST_FUN void print2dNodes(Node2d<T>* nodes, int N) {
+        for (int i = 0; i < N; ++i) {
+            std::cout << "Node " << i << ": ( " << nodes[i].x << ", " 
+                                                << nodes[i].y << ")\n";
+        }
+    };
+
+    /** 
+     * @brief Debug recursive function to print a nodes tree to user shell,
+     * @note This function is not recommended to invoke with large trees data,
+     * structures
+     */
+    template<typename NodeType>
+    HOST_FUN void printTree(NodeType* node, int depth = 0) {
+        if (!node) return;
+        for (int i = 0; i < depth; ++i) std::cout << "  ";
+        std::cout << "Node(" << node->x << ", " << node->y << ", " << node->z << ")\n";
+        printTree(node->c_nodes[0], depth + 1); 
+        printTree(node->c_nodes[1], depth + 1);  
+    };    
+
+#endif
+
+/**
+ * @brief CUDA kernel for sorting a numerical array using the enumeration sort algorithm.
+ * Original implementation by: Meng Hongyu, Guo Fangjin, UCAS, China
  * https://arxiv.org/pdf/1505.07605
- * modified by : wissem chiha 01-09-2024, use templates
+ * Modified by: Wissem Chiha, 01-09-2024, using templates.
  */
 template <typename T>
-GLOBAL_FUN void enumerationSort(T * a, T * b){
+__global__ void enumerationSort(T * a, int N,  T * b){
+
     int cnt = 0; 
     int tid = threadIdx.x; 
     int ttid = blockIdx.x * threadsPerBlock + tid; 
     T val = a[ttid]; 
-    __shared__ T cache[threadPerBlock]; 
+    __shared__ T cache[threadsPerBlock]; 
     for ( int i = tid; i < N; i += threadsPerBlock ){ 
     cache[tid] = a[i]; 
     __syncthreads();   
@@ -313,17 +387,22 @@ GLOBAL_FUN void enumerationSort(T * a, T * b){
     __syncthreads(); 
     } 
     b[cnt] = val;
-}
+};
 
-/**
- * @brief cuda kernel to sort a given node array based 
- * @note when calling this method with Node2d and ax=3 rteun error, it
- * not handeled yet.
- * @param ax = 1 for x , 2 y, 3 z 
+/** 
+ * @brief CUDA kernel that sorts an array of nodes based on a specified axis.
+ * This kernel sorts the nodes in ascending order according to their value 
+ * along the given axis (1: x, 2: y, 3: z).
+ * @param d_nodesArray          Device pointer to the array of nodes to be sorted.
+ * @param ax                    Axis to sort by (1: x, 2: y, 3: z).
+ * @param N                     Number of nodes in the array.
+ * @param d_nodesArraySorted    Device pointer to the array where sorted nodes will be stored.
+ * @note the call of this kernel with ax = 3 and Node2d class has no effect, and it do
+ * not throw any error
  */
 template <typename NodeType, typename T>
-GLOBAL_FUN void sortNodesWrtAxis(NodeType* d_nodesArray, int ax, 
-                            NodeType* d_nodesArraySorted){
+__global__ void enumerationSortNodes(NodeType* d_nodesArray,int N,int ax,
+                            NodeType *d_nodesArraySorted){
 
     int cnt = 0;
     int tid = threadIdx.x;
@@ -347,99 +426,84 @@ GLOBAL_FUN void sortNodesWrtAxis(NodeType* d_nodesArray, int ax,
         }            
         __syncthreads(); 
     } 
-    d_nodesArraySorted[cnt] = val;
+    atomicExch(&d_nodesArraySorted[cnt], val);
 }
 
-/** 
- * @brief compute the median point of a given point cloud distribuation,
- * the initial arry is not sorted by default, the midian point along an axis 
- * is the point wich axis attribute (x,y,z)
- */
+/** @brief Update nearest neighbors list if the new node is closer  */ 
 template <typename NodeType, typename T>
-HOST_FUN void getMedianNodeWrtAxis(const NodeType* h_nodesArray, size_t numNodes, int ax, 
-                                NodeType& mNode) {
-    NodeType *d_nodesArray = nullptr;
-    NodeType *d_nodesArraySorted = nullptr;
-    NodeType *h_medianNode = new NodeType; 
-    int numBlocks  = (numNodes + threadsPerBlock -1 )/ threadsPerBlock ;
+DEVICE_FUN void updateNearest(NodeType* nearestNodes, T* distances, 
+                const NodeType& node, const NodeType& otherNode, int k) {
 
-    cudaError_t err1 = cudaMalloc((void**)&d_nodesArray, numNodes * sizeof(NodeType));
-    cudaError_t err2 = cudaMalloc((void**)&d_nodesArraySorted, numNodes * sizeof(NodeType));
-    CUDA_CHECK(err1);
-    CUDA_CHECK(err2);
-
-    cudaMemcpy(d_nodesArray, h_nodesArray, numNodes * sizeof(NodeType), cudaMemcpyHostToDevice);
-
-    sortNodesWrtAxis<T><<<numBlocks, threadsPerBlock>>>(d_nodesArray, ax, d_nodesArraySorted);
-    cudaDeviceSynchronize();
-    CUDA_CHECK(cudaGetLastError());
-
-    size_t medianIndex = numNodes / 2;
-    cudaMemcpy(h_medianNode, d_nodesArraySorted[medianIndex],sizeof(NodeType),cudaMemcpyDeviceToHost);
-
-    mNode = *h_medianNode;
-
-    cudaFree(d_nodesArray);
-    cudaFree(d_nodesArraySorted);
-    delete h_medianNode;
-}
-
-/** 
- * @brief this class is base struct for building a K-D tree for the point cloud 
- * data see ref : https://yasenh.github.io/post/kd-tree/ each node parent
- * has 2 childs 
- * this code is a modfied version of :
- *  https://github.com/gishi523/kd-tree/blob/master/kdtree.h
- * to ensure cuda compatibilty and paralle computations 
- * complexisty is O(nlog(n)),
- * 
- */
-template<typename NodeType, typename T>
-class KDTree{
-    public:
-
-        /** @brief Default constructor */
-        HOST_DEVICE_FUN KDTree();
-
-        /** @brief build the D-K tree  */
-        HOST_DEVICE_FUN void build(const std::vector<PointT>& points);
-
-    private:
-        NodeType* d_nodesArray;
-        int numNodes; 
-
-    protected:
-        ~KDTree();
-}
-
-#ifdef USE_CUASTAR_TYPEDEF
-    typedef KDTree<Node2dDouble, double> KDTreeDouble;  
-    typedef KDTree<Node2dFloat, float>   KDTreeFloat;   
-    typedef KDTree<Node3dDouble, double> KDTreeDouble; 
-    typedef KDTree<Node3dFloat, float>   KDTreeFloat;  
-#endif
-
-#ifdef CUASTAR_IMPLEMENTATION 
-
-    template<typename NodeType, typename T>
-    HOST_DEVICE_FUN void KDTree<NodeType,T>::KDTree(){
-
+    T dist = node.distanceTO(otherNode);
+    for (int i = 0; i < k; ++i) {
+        if (dist < distances[i]) {
+        
+            for (int j = k - 1; j > i; --j) {
+                distances[j] = distances[j - 1];
+                nearestNodes[j] = nearestNodes[j - 1];
+            }
+            distances[i] = dist;
+            nearestNodes[i] = otherNode;
+            break;
+        }
     }
+}
 
-    template<typename NodeType, typename T>
-    HOST_DEVICE_FUN void KDTree<NodeType,T>::build(const std::vector<PointT>& points)
-		{
-			points_ = points;
-			std::vector<int> indices(points.size());
-			std::iota(std::begin(indices), std::end(indices), 0);
-			root_ = buildRecursive(indices.data(), (int)points.size(), 0);
-		}
-	
-#endif
 
-/**  @brief check if a given node exsits in device nodes array or not  */
+/**
+ * @brief Computes the K-nereast neighoods of a given node in a device 
+ * array structure , by sorting x, y, z attributes, without building the K-D tree
+ * this kernel should excute on 1 block, 
+ * @param range: control the exploration range of the KNN, fixed , adjustee based 
+ * on the point cloud distribution density  , low for high dense data and high for low 
+ * dense distrubution
+ * @param k should be < 256 
+ */
 template <typename NodeType, typename T>
-GLOBAL_FUN void checkNodeExsist(NodeType* d_nodesArray, const NodeType* nodeToCheck,
+__global__ void computeKnnNodes(NodeType* d_sortedX, 
+                                NodeType* d_sortedY, 
+                                NodeType* d_sortedZ,
+                                NodeType targetNode, 
+                                int N, int k, int range, 
+                                NodeType* d_kNodes) {
+    int idx = threadIdx.x;
+
+    if (idx < N) {
+        __shared__ NodeType nearestNodes[256];
+        __shared__ T distances[256];
+
+        T maxDist = 1e30f;   
+        if (idx == 0) {
+            for (int i = 0; i < k; ++i) {
+                distances[i] = maxDist;
+                nearestNodes[i] = targetNode;  
+            }
+        }
+        __syncthreads();
+
+        for (int i = max(0, idx - range); i < min(N, idx + range); ++i) {
+            updateNearest(nearestNodes, distances, targetNode, d_sortedX[i], k);
+        }
+        for (int i = max(0, idx - range); i < min(N, idx + range); ++i) {
+            updateNearest(nearestNodes, distances, targetNode, d_sortedY[i], k);
+        }
+        for (int i = max(0, idx - range); i < min(N, idx + range); ++i) {
+            updateNearest(nearestNodes, distances, targetNode, d_sortedZ[i], k);
+        }
+        if (idx == 0) {  
+            for (int i = 0; i < k; ++i) {
+                d_kNodes[i] = nearestNodes[i];
+            }
+        }
+    }
+}
+
+/**  
+ * @brief check if a given node exsits in device nodes array or not
+ * @note this method will be decpatred in next versions 
+*/
+template <typename NodeType, typename T>
+__global__ void checkNodeExsist(NodeType* d_nodesArray, const NodeType* nodeToCheck,
                             bool* status,size_t numNodes){
 
     int idx = blockIdx.x * blockDim.x + threadIdx.x;
@@ -452,12 +516,12 @@ GLOBAL_FUN void checkNodeExsist(NodeType* d_nodesArray, const NodeType* nodeToCh
 /** 
  * @brief heuristic function which computes the estimated cost to the goal 
  * node, starting from the current given node, it simply the euclidian distances
- * the manthetn distance could be used 
+ * or the manthetn distance could be used 
  */
 template <typename NodeType, typename T>
 DEVICE_FUN void computeHeuristicDistance(NodeType* Node, T* hfun){
     *hfun = Node->distanceTo(endNode);
-}
+};
 
 /** 
  * @brief get the cost of the a path computed the path is given as 
@@ -465,97 +529,72 @@ DEVICE_FUN void computeHeuristicDistance(NodeType* Node, T* hfun){
  * one of NodeType  f(n) = g(n) + h(n) 
 */
 template <typename NodeType, typename T>
-GLOBAL_FUN void computeTrajectoryCost(const NodeType* node, T* p_cost_){
+DEVICE_FUN void computeTrajectoryCost(const NodeType* node, T* p_cost_){
     T h_fun;
-    computeHeuristic(*node, &h_fun); 
+    computeHeuristicDistance(*node, &h_fun); 
     *p_cost_ = node->sum_cost + h_fun;
-}
-
-/**
- * @brief this method compute for each chunk of the point cloud data, to a GPU thread block
- * the D-K tree structure, based on 8- nereast neigboohds , pick randomlly a node 
- * from the chunk, at each node update the p_node wich is the parent node pointer 
- * of this node.
- */
-template <typename NodeType, typename T>
-GLOBAL_FUN void computeChunkDkTree(NodeType* d_nodesArray, int numNodes, int chunkSize){
-
-    // Calculate the global index for each thread
-    int tid = blockIdx.x * blockDim.x + threadIdx.x;
-
-    // Ensure we do not go out of bounds
-    if (tid >= numNodes) return;
-
-    // Calculate the chunk this thread is responsible for
-    int chunkStart = (tid / chunkSize) * chunkSize;
-    int chunkEnd = min(chunkStart + chunkSize, numNodes);
-
-    // Randomly pick a node within the chunk
-    int randomIndex = chunkStart + (tid % chunkSize);  // Example random selection
-
-    // Set the initial parent node (can be NULL or a specific initialization)
-    d_nodesArray[randomIndex].p_node = nullptr;  // Assuming no parent at the start
-
-    // Iterate through the nodes in the chunk
-    for (int i = chunkStart; i < chunkEnd; ++i) {
-        // Find the 8 nearest neighbors
-        // This requires computing distances from the current node to all others in the chunk
-        // and selecting the closest 8 nodes. For simplicity, a brute force approach is described here.
-        
-        float distances[8] = {FLT_MAX, FLT_MAX, FLT_MAX, FLT_MAX, FLT_MAX, FLT_MAX, FLT_MAX, FLT_MAX};
-        NodeType* nearest[8] = {nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr};
-
-        for (int j = chunkStart; j < chunkEnd; ++j) {
-            if (i == j) continue;
-
-            float dist = d_nodesArray[i].distanceTo(d_nodesArray[j]);
-            // Insert into the array of nearest neighbors
-            for (int k = 0; k < 8; ++k) {
-                if (dist < distances[k]) {
-                    // Shift elements
-                    for (int l = 7; l > k; --l) {
-                        distances[l] = distances[l-1];
-                        nearest[l] = nearest[l-1];
-                    }
-                    // Insert new neighbor
-                    distances[k] = dist;
-                    nearest[k] = &d_nodesArray[j];
-                    break;
-                }
-            }
-        }
-        // Assign the nearest neighbors to the current node
-        for (int k = 0; k < 8; ++k) {
-            d_nodesArray[i].neighbors[k] = nearest[k];
-        }
-        // Update the parent node pointer (p_node) based on your logic
-        // Example: Set the first neighbor as the parent node
-        d_nodesArray[i].p_node = nearest[0];  // This is a simple placeholder logic
-    }
-}
+};
 
 /** 
- * @brief smooth trajecory after computetion loop the nodes computed [N1, N2, N3]
- * if there is a jerk in node N2 it will be elimated of rescaled by recomputed 
- * a window appreoch could be used !
+ * @brief computes the best node sucessor based on path metric :f(n) = g(n) + h(n) 
+ * from the k neiregst neighbbodes nodes, each thread will compute the trajecory cost 
+ * and then get the node of the mimium cost, 
+*/
+template <typename NodeType, typename T>
+__global__ void computeSucessorNode(const NodeType* d_knnNodesArray, int k,
+                                    const NodeType* endNode,
+                                    NodeType* d_bestNode){
+
+    int idx  = threadIdx.x;
+    extern __shared__ T sharedCost[];
+    extern __shared__ int sharedIndex[];
+
+    if (idx < k) {
+        sharedIndex[idx] = idx;
+    }
+
+    if ( idx < k  ){
+        T cost;
+        TT* idx_cost = &cost;
+        computeTrajectoryCost<NodeType, T>(d_knnNodesArray[idx],idx_cost);
+       sharedCost[idx] = cost;
+    }
+    __syncthreads();
+
+    int* d_minIndex;
+    for (unsigned int s  = blockDim.x/2; s > 0; s >>= 1 ){
+
+        if (idx < s ){
+            if (sharedCost[idx] > sharedCost[idx + s]) {
+                sharedCost[idx] = sharedCost[idx + s];
+                sharedIndex[idx] = sharedIndex[idx + s];
+            }
+        }
+    }
+    if (idx == 0) {
+        *d_minIndex = sharedIndex[0];
+    }
+    *d_bestNode =   d_knnNodesArray[d_minIndex];
+};
+
+
+/** 
+ * @brief soothing the distcreate computed trajectory, using either spline 
+ * basis or bezier curves , or just normale interpolations.
+ * @param N number of points or control points in the trajectory 
+ * @param k number of the evaulation point of the new trajectory  
  */ 
 template <typename NodeType, typename T>
-GLOBAL_FUN void smoothTrajectory(size_t numNodes){
-
-}
-
-/** @brief thi sfunction  */
-template <typename NodeType, typename T>
-HOST_DEVICE_FUN bool isGoalReached(NodeType* n, const T eps) {
-    
-    if (*n == endNode) {
-        return true;
-    }
-    return static_cast<T>(n->distanceTo(endNode)) < eps;
-}
+__global__ void smoothTrajectory(const NodeType* d_trajNodesArray,int N,int k,
+                            NodeType* d_trajNodesArraySmooth){
 
 
+};
 
+/**
+ * @class AstarPlanner
+ * 
+ */
 template <typename NodeType, typename T>
 class AstarPlanner
 {
@@ -600,11 +639,11 @@ public:
      */
    HOST_FUN void saveTrajectory2png(const std::string& outputFilePath);
 
+ 
 private:
-
     size_t    numNodes;
-    NodeType* d_nodesArray; 
-    NodeType* h_nodesArray;
+    NodeType * d_nodesArray; 
+    NodeType * h_nodesArray;
 
     NodeType*   startNode;
     NodeType*   endNode;
@@ -612,8 +651,11 @@ private:
     NodeType*   h_pathArray;
     NodeType*   d_pathArray;
 
-protected:
+    /** @brief Check wahat ever we get into the gail node or not   */
+    template <typename NodeType, typename T>
+    HOST_DEVICE_FUN bool isGoalReached(NodeType* n, const T eps);
 
+protected:
     /** 
      * @brief free all memory on deice or on host , free all 
      * class device or host varaible , qqsoit 
@@ -622,10 +664,10 @@ protected:
 };
 
 #ifdef USE_CUASTAR_TYPEDEF
-    typedef AstarPlanner<Node2dFloat,  float>  AstarPlanner2dFloat;
-    typedef AstarPlanner<Node2dDouble, double> AstarPlanner2dDouble;
-    typedef AstarPlanner<Node3dFloat,  float>  AstarPlanner3dFloat;
-    typedef AstarPlanner<Node3dDouble, double> AstarPlanner3dDouble;
+    typedef AstarPlanner<Node2d<float>,  float>  AstarPlanner2dFloat;
+    typedef AstarPlanner<Node2d<double>, double> AstarPlanner2dDouble;
+    typedef AstarPlanner<Node3d<float>,  float>  AstarPlanner3dFloat;
+    typedef AstarPlanner<Node3d<double>, double> AstarPlanner3dDouble;
 #endif
 
 #ifdef CUASTAR_IMPLEMENTATION 
@@ -637,7 +679,7 @@ protected:
         cudaMalloc((void**)&d_pathArray, numNodes * sizeof(NodeType));
         h_nodesArray = new NodeType[numNodes];  
         CUDA_CHECK_ERROR(err);
-    };
+    }
 
     template <typename NodeType, typename T>
     HOST_FUN void AstarPlanner<NodeType, T>::initRandomNodesArray(size_t numNodes_,unsigned int seed){
@@ -653,7 +695,7 @@ protected:
         CUDA_CHECK_ERROR(err);
         cudaMemcpy(d_nodesArray_, h_nodesArray,numNodes*sizeof(NodeType),cudaMemcpyHostToDevice);
         this->d_nodesArray = d_nodesArray_;
-    };
+    }
 
     template <typename NodeType, typename T>
     HOST_FUN void AstarPlanner<NodeType, T>::initNodesArray(const std::string& plyFilePath) {
@@ -678,7 +720,7 @@ protected:
                     LOG_F(ERROR, "Exception while getting PLY node at index %zu: %s", i, e.what());
                 #endif
                 delete[] h_nodesArray;
-                cudaFree(d_nodesArray_);
+                cudaError_t err = cudaFree(d_nodesArray_);
             }
         }
         err = cudaMemcpy(d_nodesArray_,h_nodesArray,numNodes*sizeof(NodeType),cudaMemcpyHostToDevice);
@@ -691,7 +733,7 @@ protected:
             }
         #endif
         this->d_nodesArray = d_nodesArray_;
-        }
+    }
 
     template <typename NodeType, typename T>
     HOST_FUN AstarPlanner<NodeType, T>::~AstarPlanner(){
@@ -767,6 +809,14 @@ protected:
         } catch (const std::exception& e) {
             std::cerr << "Error: " << e.what() << '\n';
         }
+    };
+
+    template <typename NodeType, typename T>
+    HOST_DEVICE_FUN bool  AstarPlanner<NodeType, T>::isGoalReached(NodeType* n, const T eps){
+        if (*n == endNode) {
+            return true;
+        }
+        return static_cast<T>(n->distanceTo(endNode)) < eps;
     }
 
 #endif // CUASTAR_IMPLEMENTATION
@@ -781,16 +831,11 @@ HOST_FUN bool isPlyValid(const std::string plyFilePath){
       } 
       catch (const std::runtime_error& e) {
           #ifdef _DEBUG_
-          LOG_F(ERROR, "Error opening PLY file: %s", e.what());
-            #ifdef _WIN32
-              MessageBox(NULL, TEXT("Error opening PLY file."), TEXT("File Error"),       
-              MB_ICONERROR | MB_OK);
-            #endif
+            LOG_F(ERROR, "Error opening PLY file: %s", e.what());
           #endif
           return false;
       };
 }
-
 
 /** @brief Get a Node3d object from a .ply file using index idx */
 template <typename NodeType, typename T>
