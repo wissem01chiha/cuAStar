@@ -24,8 +24,6 @@
 #ifndef CUASTAR_HPP
 #define CUASTAR_HPP
 
-#define STB_IMAGE_WRITE_IMPLEMENTATION 
-
 #if __cplusplus > 201703L
     #warning "C++ 17 Required, potential errors!"
 #endif
@@ -60,7 +58,7 @@
     #include <math_constants.h> 
     #include <device_launch_parameters.h>
     #include <stack>
-    #ifdef _DEBUG_
+    #ifdef CUASTAR_DEBUG
         #include <cstdio>
         #include <cstdlib>
     #endif
@@ -91,7 +89,11 @@
 #endif
 #endif
 
-#ifdef _DEBUG_
+#define STB_IMAGE_WRITE_IMPLEMENTATION 
+
+#define ARRAY_SIZE(arr) (sizeof(arr) / sizeof((arr)[0]))
+
+#ifdef CUASTAR_DEBUG
     #if defined(__CUDACC__)
     #define CUDA_CHECK_ERROR(err) \
         if (err != cudaSuccess) { \
@@ -99,13 +101,17 @@
             exit(EXIT_FAILURE); \
         }
     #endif
+    #define LOG_MESSAGE(level, format, ...) \
+        LOG_F(level, format, ##__VA_ARGS__)
     #include <iostream>
     #include "../extern/loguru/loguru.hpp"
     #include "../extern/loguru/loguru.cpp"
 #else
     #define CUDA_CHECK_ERROR(err)
+    #define LOG_MESSAGE(level, format, ...) \
+        do {} while (0)
 #endif
-#ifdef ENABLE_VTK
+#ifdef CUASTAR_USE_VTK
   #include <vtkActor.h>
   #include <vtkNamedColors.h>
   #include <vtkNew.h>
@@ -148,7 +154,6 @@ __global__ void curandx(unsigned int seed, T* d_val) {
  *          to 2d nodes based template methods.
  * @param sum_cost : cumulative cost from the start node to the current node
  * @param p_node : pointer to the parent node
- * @param c_nodes array of the 8 nearest neighbors considered as childs nodes 
  */
 template <typename T>
 class Node2d {
@@ -158,7 +163,6 @@ public:
     T z = static_cast<T>(0);         
     T sum_cost;   
     Node2d* p_node; 
-    Node2d* c_nodes[2];
 
     uint8_t r = 125;
     uint8_t g = 100;
@@ -170,8 +174,6 @@ public:
         y= T(0);
         sum_cost = T(0);
         p_node = nullptr;
-        c_nodes[0] = nullptr;
-        c_nodes[1] = nullptr;
     }
 
     /** @brief Constructor for the Node2d class */
@@ -180,8 +182,6 @@ public:
         y= y_;
         sum_cost = sum_cost_;
         p_node = p_node_;
-        c_nodes[0] = nullptr;
-        c_nodes[1] = nullptr;
     }
 
     /** @brief Overlaoding Constructor for the general puropse template 
@@ -191,8 +191,6 @@ public:
         y= y_;
         sum_cost = T(0);
         p_node = nullptr;
-        c_nodes[0] = nullptr;
-        c_nodes[1] = nullptr;
     }
 
     /** @brief Checks if two nodes are equal based on their positions */
@@ -207,7 +205,7 @@ public:
                                    (other.y - y) * (other.y - y)));
     }
 
-    #ifdef _DEBUG_
+    #ifdef CUASTAR_DEBUG
         /** @brief Prints the information of this node */
         HOST_FUN void printNodeInfo() const {
             std::cout << "Node: (x: " << x << ", y: " << y 
@@ -225,7 +223,6 @@ public:
  * @param z : z-coordinate in the grid
  * @param sum_cost : cumulative cost from the start node to the current node
  * @param p_node : pointer to the parent node
- * @param c_nodes array of the 8 nearest neighbors considered as childs nodes 
  */
 template <typename T>
 class Node3d {
@@ -235,7 +232,6 @@ public:
     T z;           
     T sum_cost;   
     Node3d* p_node;
-    Node3d* c_nodes[2];  
 
     uint8_t r = 125;
     uint8_t g = 100;
@@ -248,8 +244,6 @@ public:
         z = T(0);
         sum_cost = T(0);
         p_node = nullptr;
-        c_nodes[0] = nullptr;
-        c_nodes[1] = nullptr;
     };
     /** @brief init a random node, position bounds is in [0,1] */
     HOST_FUN Node3d(unsigned int  seed){
@@ -268,8 +262,6 @@ public:
         cudaMemcpy(&y, d_y, sizeof(T), cudaMemcpyDeviceToHost);
         cudaMemcpy(&z, d_z, sizeof(T), cudaMemcpyDeviceToHost);
 
-        c_nodes[0] = nullptr;
-        c_nodes[1] = nullptr;
         sum_cost = T(0);
         p_node = nullptr;
     };
@@ -297,7 +289,7 @@ public:
                fabs(other.z - z) < eps;
     }
 
-    #ifdef _DEBUG_
+    #ifdef CUASTAR_DEBUG
         /** @brief Prints the information of this node */
         HOST_FUN void printNodeInfo() const {
             std::cout << "Node: (x: " << x << ", y: " << y << ", z: " << z
@@ -307,7 +299,7 @@ public:
     #endif
 };
 
-#ifdef USE_CUASTAR_TYPEDEF
+#ifdef CUASTAR_USE_TYPEDEF
     typedef Node2d<double> Node2dDouble;  
     typedef Node2d<float>  Node2dFloat;   
     typedef Node3d<double> Node3dDouble; 
@@ -327,9 +319,9 @@ typedef struct {
 } Circle;
 
 /** @brief This is the default threads number, but you can choose up to 1024 */ 
-const int threadsPerBlock = 256; 
+const int threadsPerBlock = 1024; 
 
-#ifdef _DEBUG_
+#ifdef CUASTAR_DEBUG
     /** @brief Debug function to print given 3d nodes array to user shell*/
     template <typename T>
     HOST_FUN void print3dNodes(Node3d<T>* nodes, int N) {
@@ -351,7 +343,7 @@ const int threadsPerBlock = 256;
     /** 
      * @brief Debug recursive function to print a nodes tree to user shell,
      * @note This function is not recommended to invoke with large trees data,
-     * structures
+     * structures, this function will be decaprted
      */
     template<typename NodeType>
     HOST_FUN void printTree(NodeType* node, int depth = 0) {
@@ -434,10 +426,14 @@ template <typename NodeType, typename T>
 DEVICE_FUN void updateNearest(NodeType* nearestNodes, T* distances, 
                 const NodeType& node, const NodeType& otherNode, int k) {
 
-    T dist = node.distanceTO(otherNode);
+    for (int i = 0; i < k; ++i) {
+        if (nearestNodes[i].isEqual(otherNode,static_cast<T>(1e-8))) {
+            return;  
+        }
+    }
+    T dist = node.distanceTo(otherNode);
     for (int i = 0; i < k; ++i) {
         if (dist < distances[i]) {
-        
             for (int j = k - 1; j > i; --j) {
                 distances[j] = distances[j - 1];
                 nearestNodes[j] = nearestNodes[j - 1];
@@ -449,18 +445,18 @@ DEVICE_FUN void updateNearest(NodeType* nearestNodes, T* distances,
     }
 }
 
-
 /**
  * @brief Computes the K-nereast neighoods of a given node in a device 
  * array structure , by sorting x, y, z attributes, without building the K-D tree
- * this kernel should excute on 1 block, 
+ * this kernel should excute on 1 block, so the maxium nodes number sorted arrays 
+ * is 1024 
  * @param range: control the exploration range of the KNN, fixed , adjustee based 
- * on the point cloud distribution density  , low for high dense data and high for low 
+ * on the point cloud distribution density , low for high dense data and high for low 
  * dense distrubution
- * @param k should be < 256 
+ * @param k should be < threadsPerBlock
  */
 template <typename NodeType, typename T>
-__global__ void computeKnnNodes(NodeType* d_sortedX, 
+__global__ void computeChunKnnNodes(NodeType* d_sortedX, 
                                 NodeType* d_sortedY, 
                                 NodeType* d_sortedZ,
                                 NodeType targetNode, 
@@ -469,8 +465,8 @@ __global__ void computeKnnNodes(NodeType* d_sortedX,
     int idx = threadIdx.x;
 
     if (idx < N) {
-        __shared__ NodeType nearestNodes[256];
-        __shared__ T distances[256];
+       extern __shared__ NodeType nearestNodes[];
+       extern __shared__ T distances[];
 
         T maxDist = 1e30f;   
         if (idx == 0) {
@@ -498,10 +494,10 @@ __global__ void computeKnnNodes(NodeType* d_sortedX,
     }
 }
 
-/**  
- * @brief check if a given node exsits in device nodes array or not
- * @note this method will be decpatred in next versions 
-*/
+/**
+ * @brief Checks if a given node exists in the device nodes array.
+ * @note This method will be deprecated in future versions.
+ */
 template <typename NodeType, typename T>
 __global__ void checkNodeExsist(NodeType* d_nodesArray, const NodeType* nodeToCheck,
                             bool* status,size_t numNodes){
@@ -519,29 +515,40 @@ __global__ void checkNodeExsist(NodeType* d_nodesArray, const NodeType* nodeToCh
  * or the manthetn distance could be used 
  */
 template <typename NodeType, typename T>
-DEVICE_FUN void computeHeuristicDistance(NodeType* Node, T* hfun){
-    *hfun = Node->distanceTo(endNode);
+DEVICE_FUN void computeHeuristicDistance(const NodeType& node, 
+                                    const NodeType& targetNode,
+                                    T* hfun){
+    *hfun = node.distanceTo(targetNode);
 };
 
-/** 
- * @brief get the cost of the a path computed the path is given as 
- * an array of variables  each 
- * one of NodeType  f(n) = g(n) + h(n) 
-*/
+/**
+ * @brief Computes the trajectory cost metric starting from a given node.
+ * The objective function is: f(n) = g(n) + h(n),
+ * where g(n) is the path cost from the start node to the current node,
+ * and h(n) is the heuristic function value.
+ *
+ * @param node The current node representing the position in the trajectory.
+ */
 template <typename NodeType, typename T>
-DEVICE_FUN void computeTrajectoryCost(const NodeType* node, T* p_cost_){
+DEVICE_FUN void computeNodeTrajectoryCost(const NodeType& node,
+                                        const NodeType& targetNode,
+                                        T* p_cost_){
     T h_fun;
-    computeHeuristicDistance(*node, &h_fun); 
-    *p_cost_ = node->sum_cost + h_fun;
+    computeHeuristicDistance(node, targetNode, &h_fun); 
+    *p_cost_ = node.sum_cost + h_fun;
 };
 
 /** 
- * @brief computes the best node sucessor based on path metric :f(n) = g(n) + h(n) 
- * from the k neiregst neighbbodes nodes, each thread will compute the trajecory cost 
- * and then get the node of the mimium cost, 
-*/
+ * @brief Computes the best successor node based on path metric f(n) = g(n) + h(n) 
+ *        from the k nearest neighbor nodes. Each thread will compute the trajectory cost 
+ *        and then determine the node with the minimum cost.
+ *        This function is designed to execute within a single block.
+ * 
+ * @param d_knnNodesArray Array of k-nearest neighbor nodes of the current node to be checked.
+ *                        The maximum size is 1024.
+ */
 template <typename NodeType, typename T>
-__global__ void computeSucessorNode(const NodeType* d_knnNodesArray, int k,
+__global__ void computeChunkSucessorNode(const NodeType* d_knnNodesArray, int k,
                                     const NodeType* endNode,
                                     NodeType* d_bestNode){
 
@@ -552,31 +559,45 @@ __global__ void computeSucessorNode(const NodeType* d_knnNodesArray, int k,
     if (idx < k) {
         sharedIndex[idx] = idx;
     }
-
     if ( idx < k  ){
         T cost;
-        TT* idx_cost = &cost;
-        computeTrajectoryCost<NodeType, T>(d_knnNodesArray[idx],idx_cost);
+        T* idx_cost = &cost;
+        computeNodeTrajectoryCost<NodeType,T>(d_knnNodesArray[idx],*endNode, idx_cost);
        sharedCost[idx] = cost;
     }
     __syncthreads();
 
-    int* d_minIndex;
-    for (unsigned int s  = blockDim.x/2; s > 0; s >>= 1 ){
+    if (idx == 0) {
+        T minCost = sharedCost[0];
+        int minIndex = 0;
 
-        if (idx < s ){
-            if (sharedCost[idx] > sharedCost[idx + s]) {
-                sharedCost[idx] = sharedCost[idx + s];
-                sharedIndex[idx] = sharedIndex[idx + s];
+        for (int i = 1; i < k; ++i) {
+            if (sharedCost[i] < minCost) {
+                minCost = sharedCost[i];
+                minIndex = i;
             }
         }
+
+    *d_bestNode = d_knnNodesArray[minIndex];
     }
-    if (idx == 0) {
-        *d_minIndex = sharedIndex[0];
-    }
-    *d_bestNode =   d_knnNodesArray[d_minIndex];
 };
 
+/**
+ * @brief Given a trajectory path represented by a device array of nodes,
+ * it computes the path cost: the Euclidean distance between the start and 
+ * destination nodes. The start node is the first node in the array, and the 
+ * destination node is the last node.
+ * @note Boundary checks are not performed; N is assumed to be within the 
+ * array size range.
+ */
+template <typename NodeType, typename T>
+DEVICE_FUN void computeTrajectoryCost(const NodeType* d_tarjNodesArray, int N, T* cost_){
+    T cost = static_cast<T>(0);
+    for (int i = 0; i < N - 1; i++) {
+        cost += d_tarjNodesArray[i].distanceTo(d_tarjNodesArray[i + 1]);
+    }
+    *cost_ = cost; 
+}
 
 /** 
  * @brief soothing the distcreate computed trajectory, using either spline 
@@ -591,18 +612,47 @@ __global__ void smoothTrajectory(const NodeType* d_trajNodesArray,int N,int k,
 
 };
 
+template <typename NodeType, typename T>
+__global__ void reduceChunks(){
+    
+}
+
+
 /**
- * @class AstarPlanner
+ * @class AstarPlanner base class 
+ * divide the datset into chunks of max 1024 node, maxium , compute the best node 
+ * into, each chunk on a single grid block, each block , writes the best node 
+ * (wich is the closed to target), to the global device memory,each chunk has a root node 
+ * and a sucessor the sucessor parent points to the root,and the cost function , the chunk 
+ * sum_cost of root is 0 and for the child is the distance btewwen the both , 
+ * start with the chunk wich have the mimum cost function, (p_sum + heursitic) 
+ * wich is assumed to be the final chunk that have the goal node, named the endChunk,
+ * now we sav the nodes into a new_array include the start and gaolnode
+ * and the chunks 2-nodes , we llok fro the trajectory that pass from all thes points ,
+ * with minium path cost, so, we allocte this array on the device global meomry, and 
+ * for a single block each thread compute, 
+ * 1 < chunk_size < 1024, each thred within the same only block will compute a possible 
+ * combinition, each thred will loop all the nodes in the array, starting from the 
+ * endnode, if this has a parent it go throug else , it computes the nereast 
+ * neighbood node , and if this also
  * 
+ * after computing the chunks and save each chunk nodes (2*NodeType), and the matric:
+ * cost to got from chunk root to child chunk + the heuristic % to-go node
+ * the number of chunks is : N/threadsPerBlock
+ * for routing 2 chunks 
+ *  (1) - (2) -- c1
+ *  (1.1) - (2.1) -- c2
+ * if link (2) with (1.1) or (2.1) with (1) : 
+ * if the chunk c1 has a cost min than (2) thus the routing is as follw:
+ *   (1.1) - (2.1)---  (1) - (2) ---- ...
  */
 template <typename NodeType, typename T>
 class AstarPlanner
 {
 public:
-
     /** 
-     * @brief  default constructor, allocate the fixed size momory on 
-     * gpu for the member variables  
+     * @brief  default constructor, allocate momory for class attributes on 
+     * host and device 
      */
     HOST_FUN  AstarPlanner();
 
@@ -614,13 +664,14 @@ public:
 
     /** 
      * @brief fill the host and device memory with the nodes from the a point
-     * cloud data file .PLY  
+     * cloud data file .ply 
      */
     HOST_FUN void initNodesArray(const std::string& plyFilePath);
 
     /** 
      * @brief set the start and the goal nodes either in 3d or 2d, check if the 
-     * nodes exsits in the h_nodesArray first 
+     * nodes exsits in the h_nodesArray first, if the start and to-go node are
+     * set, it defaulted to the first and last node in the nodes array. 
      */
     HOST_FUN void setStartAndGoalNodes(NodeType* startNode_, NodeType* goalNode_);
 
@@ -630,7 +681,7 @@ public:
      */
     HOST_FUN  void computeTrajectory();
 
-    /** @brief svaes a trajectory to pointcloud file .PLY using happly librray */
+    /** @brief svaes a trajectory to pointcloud file .ply using happly librray */
     HOST_FUN void saveTrajectory2csv(const std::string outputFilePath);
 
     /** 
@@ -639,7 +690,6 @@ public:
      */
    HOST_FUN void saveTrajectory2png(const std::string& outputFilePath);
 
- 
 private:
     size_t    numNodes;
     NodeType * d_nodesArray; 
@@ -651,7 +701,10 @@ private:
     NodeType*   h_pathArray;
     NodeType*   d_pathArray;
 
-    /** @brief Check wahat ever we get into the gail node or not   */
+    /** 
+     * @brief Check wahat ever we get into the goal node or not,
+     * using a threshold value esplion for proximity checking.
+     */
     template <typename NodeType, typename T>
     HOST_DEVICE_FUN bool isGoalReached(NodeType* n, const T eps);
 
@@ -663,7 +716,7 @@ protected:
     HOST_FUN ~AstarPlanner();
 };
 
-#ifdef USE_CUASTAR_TYPEDEF
+#ifdef CUASTAR_USE_TYPEDEF
     typedef AstarPlanner<Node2d<float>,  float>  AstarPlanner2dFloat;
     typedef AstarPlanner<Node2d<double>, double> AstarPlanner2dDouble;
     typedef AstarPlanner<Node3d<float>,  float>  AstarPlanner3dFloat;
@@ -679,7 +732,7 @@ protected:
         cudaMalloc((void**)&d_pathArray, numNodes * sizeof(NodeType));
         h_nodesArray = new NodeType[numNodes];  
         CUDA_CHECK_ERROR(err);
-    }
+    };
 
     template <typename NodeType, typename T>
     HOST_FUN void AstarPlanner<NodeType, T>::initRandomNodesArray(size_t numNodes_,unsigned int seed){
@@ -695,7 +748,7 @@ protected:
         CUDA_CHECK_ERROR(err);
         cudaMemcpy(d_nodesArray_, h_nodesArray,numNodes*sizeof(NodeType),cudaMemcpyHostToDevice);
         this->d_nodesArray = d_nodesArray_;
-    }
+    };
 
     template <typename NodeType, typename T>
     HOST_FUN void AstarPlanner<NodeType, T>::initNodesArray(const std::string& plyFilePath) {
@@ -704,44 +757,22 @@ protected:
         NodeType* h_nodesArray = new NodeType[numNodes];
         NodeType* d_nodesArray_ = nullptr;
         cudaError_t err = cudaMalloc((void**)&d_nodesArray_, numNodes * sizeof(NodeType));
-        #ifdef _DEBUG_
-            if (err != cudaSuccess) {
-                LOG_F(ERROR, "Failed to allocate device memory: %s", cudaGetErrorString(err));
-                delete[] h_nodesArray;   
-                exit(EXIT_FAILURE);
-            }
-        #endif
+        CUDA_CHECK_ERROR(err);
         for (size_t i = 0; i < numNodes; ++i) {
             try {
                 NodeType n = getPlyNode(plyFilePath, i);
                 h_nodesArray[i] = n;
             } catch (const std::exception& e) {
-                #ifdef _DEBUG_
-                    LOG_F(ERROR, "Exception while getting PLY node at index %zu: %s", i, e.what());
-                #endif
-                delete[] h_nodesArray;
                 cudaError_t err = cudaFree(d_nodesArray_);
+                CUDA_CHECK_ERROR(err);
             }
         }
         err = cudaMemcpy(d_nodesArray_,h_nodesArray,numNodes*sizeof(NodeType),cudaMemcpyHostToDevice);
-        #ifdef _DEBUG_
-            if (err != cudaSuccess) {
-                LOG_F(ERROR, "Failed to copy data from host to device: %s", cudaGetErrorString(err));
-                delete[] h_nodesArray; 
-                cudaFree(d_nodesArray_);
-                exit(EXIT_FAILURE);
-            }
-        #endif
+        CUDA_CHECK_ERROR(err);
         this->d_nodesArray = d_nodesArray_;
-    }
-
-    template <typename NodeType, typename T>
-    HOST_FUN AstarPlanner<NodeType, T>::~AstarPlanner(){
-
-        delete[] h_nodesArray;
-        h_nodesArray = nullptr;
-        cudaFree(d_nodesArray);
     };
+
+
 
     template <typename NodeType, typename T>
     HOST_FUN void AstarPlanner<NodeType, T>::setStartAndGoalNodes(NodeType* startNode_,
@@ -769,7 +800,7 @@ protected:
         startNode = startNode_;
         endNode = goalNode_;
         } else {
-            #ifdef _DEBUG_
+            #ifdef CUASTAR_DEBUG
                 if (!h_startNodeExists) {
                     LOG_F(ERROR, "Start node does not exist");
                 }
@@ -788,7 +819,7 @@ protected:
         h_pathArray[0] = startNode;
         cudaMemcpy(&h_pathArray,d_pathArray,sizeof(NodeType),cudaMemcpyHostToDevice);
 
-    }
+    };
     
     template <typename NodeType, typename T>
     HOST_FUN void AstarPlanner<NodeType, T>::saveTrajectory2png(const std::string& outputFilePath){
@@ -817,12 +848,28 @@ protected:
             return true;
         }
         return static_cast<T>(n->distanceTo(endNode)) < eps;
+    };
+
+    template <typename NodeType, typename T>
+    HOST_FUN void saveTrajectory2csv(const std::string outputFilePath){
+
     }
 
+    template <typename NodeType, typename T>
+    HOST_FUN AstarPlanner<NodeType, T>::~AstarPlanner(){
+
+        delete[] h_nodesArray;
+        h_nodesArray = nullptr;
+        cudaFree(d_nodesArray);
+    };
 #endif // CUASTAR_IMPLEMENTATION
 
 
-/** @brief Check if a given .ply file path exists or not */
+/** 
+ * @brief Check if a given point cloud data file .ply file path 
+ * exists or not
+ * @throw a user error to cmd in debug mode, else none. 
+ */
 HOST_FUN bool isPlyValid(const std::string plyFilePath){
 
     try {
@@ -830,36 +877,27 @@ HOST_FUN bool isPlyValid(const std::string plyFilePath){
       return true;
       } 
       catch (const std::runtime_error& e) {
-          #ifdef _DEBUG_
-            LOG_F(ERROR, "Error opening PLY file: %s", e.what());
-          #endif
+          LOG_MESSAGE(ERROR, "Error opening PLY file: %s", e.what());
           return false;
       };
-}
+};
 
 /** @brief Get a Node3d object from a .ply file using index idx */
 template <typename NodeType, typename T>
 HOST_FUN NodeType getPlyNode(const std::string& plyFilePath, const size_t idx) {
     
     if (!isPlyValid(plyFilePath)) {
-        #ifdef _DEBUG_
-            LOG_F(ERROR, "Invalid PLY file: '%s'", plyFilePath.c_str());
-        #endif
-        throw std::invalid_argument("Invalid PLY file.");
+        LOG_MESSAGE(ERROR,"Invalid PLY file: '%s'", plyFilePath.c_str());
     }
     happly::PLYData plyIn(plyFilePath);
     std::vector<std::array<double, 3>> vertices = plyIn.getVertexPositions();
     if (idx < vertices.size()) {
-        
         const auto& vertex = vertices[idx];
         return NodeType(static_cast<T>(vertex[0]), static_cast<T>(vertex[1]), 
             static_cast<int32_t>(vertex[2]));
-
     }else {
-        #ifdef _DEBUG_
-            LOG_F(ERROR, "Index out of range in PLY file '%s': requested idx = %zu, max idx = %zu",
-              plyFilePath.c_str(), idx, vertices.size() - 1);
-        #endif
+        LOG_MESSAGE(ERROR,"Index out of range in PLY file '%s': requested idx = %zu, max idx = %zu", 
+         plyFilePath.c_str(), idx, vertices.size() - 1);
     }
 }
 
@@ -965,7 +1003,7 @@ HOST_FUN void array2PointCloudImg(const NodeType* h_arrayNodes, size_t numNodes,
     delete[] colorsB;
 }
 
-#ifdef ENABLE_VTK
+#ifdef CUASTAR_USE_VTK
 
     /**
      * @brief Display a node as a sphere with a specified radius and color.
@@ -1099,5 +1137,5 @@ HOST_FUN void array2PointCloudImg(const NodeType* h_arrayNodes, size_t numNodes,
      
 
     };
-#endif // ENABLE_VTK
+#endif // CUASTAR_USE_VTK
 #endif // CUASTAR_HPP
