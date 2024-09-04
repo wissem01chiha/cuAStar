@@ -1,4 +1,4 @@
-#include "../cpp/cuAStar.hpp"
+#include "../include/cuAStar.hpp"
 #include <iostream>
 #include <cstdlib> 
 #include <cuda_runtime.h>

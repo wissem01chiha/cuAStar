@@ -1,11 +1,10 @@
 /**
+ * @file cuAstar.hpp
+ * @version 0.1.0
+ * @author wissem chiha
+ * @date 03-09-2024
  * 
- * dsign tip: public member class are hhost functions to allocate memory and 
- * other private are kernels 
- * Astar
- *   
- * cuAstar Librray
- * https://towardsdatascience.com/understanding-a-path-algorithms-and-implementation-with-python-4d8458d6ccc7
+ * @link https://towardsdatascience.com/understanding-a-path-algorithms-and-implementation-with-python-4d8458d6ccc7
  * 
  * If there are no blocked cells/obstacles then we can just find the exact 
  * value of h without any pre-computation using the distance formula/Euclidean Distance
@@ -16,10 +15,12 @@
  * N/k where k is the window size , for each subarea , inti a substarting node
  * explore (like running the normal A star on that subgroups nodes) 
  * with one setp the surouding and at each step , synchonize all subregions 
+ * 
  * https://pantelis.github.io/artificial-intelligence/aiml-common/lectures/planning/search/a-star/index.html
  * 
- * for the multithreding and concurrency support computations support the c++ 11 standard is required 
- * see https://en.cppreference.com/w/cpp/thread
+ * @note for the multithreding and concurrency support computations support 
+ * the c++ 11 standard is required More Info :  https://en.cppreference.com/w/cpp/thread
+ * 
  */
 #ifndef CUASTAR_HPP
 #define CUASTAR_HPP
@@ -612,9 +613,13 @@ __global__ void smoothTrajectory(const NodeType* d_trajNodesArray,int N,int k,
 
 };
 
+/**
+ * @brief given a nodes array with each 2 nodes has parent-child relation,
+ * and each chunk has a path cost function, f(n), 
+ */
 template <typename NodeType, typename T>
 __global__ void reduceChunks(){
-    
+
 }
 
 

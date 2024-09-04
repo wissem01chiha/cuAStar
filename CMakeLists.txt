@@ -1,51 +1,78 @@
 cmake_minimum_required(VERSION 3.10 FATAL_ERROR)
-project(cuRobotics VERSION 0.1.0)
+project(cuAstar VERSION 0.1.0)
 
-set(Torch FALSE)
-set(enable_test False)
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CUDA_STANDARD 17)
+set(CMAKE_CUDA_STANDARD_REQUIRED ON)
+set(CMAKE_VERBOSE_MAKEFILE ON)
 
-set(SRCDIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
+option(BUILD_TESTS "Building CXX or CUDA Tests" OFF)
+option(BUILD_EXEMPLES "Building CXX or CUDA Exemples " OFF)
+option(BUILD_DOCS "Build documentation or not" OFF)
+option(USE_CUDA "Building with CUDA Support " ON)
+option(USE_VTK "Building with VTK Support " OFF)
 
-set(BINDIR ${CMAKE_CURRENT_BINARY_DIR}/build)
+option(USE_CPM   "Whether to use CPM."  OFF)
+option(USE_CONAN "Whether to use Conan." ON)
+option(USE_VCPKG "Whether to use VCPKG." OFF)
 
-set(CMAKE_CXX_STANDARD 14)
+if(USE_CPM)
+    file(
+        DOWNLOAD
+        https://github.com/cpm-cmake/CPM.cmake/releases/download/v0.38.3/CPM.cmake
+        ${CMAKE_CURRENT_BINARY_DIR}/cmake/CPM.cmake
+        EXPECTED_HASH SHA256=cc155ce02e7945e7b8967ddfaff0b050e958a723ef7aad3766d368940cb15494
+    )
+    include(${CMAKE_CURRENT_BINARY_DIR}/cmake/CPM.cmake)
+    CPMAddPackage(...)
+endif()
 
-# Compiler flags
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -I${CMAKE_CURRENT_SOURCE_DIR}/extern/mujoco/include")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -I${CMAKE_CURRENT_SOURCE_DIR}/extern/glfw/include")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -I${CMAKE_CURRENT_SOURCE_DIR}/include")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -I${CMAKE_CURRENT_SOURCE_DIR}/extern/glm")
+if(NOT(USE_CPM) AND NOT(USE_CONAN) AND NOT(USE_VCPKG) )
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -I${CMAKE_CURRENT_SOURCE_DIR}/extern")
+endif()
 
-# Linker flags
-link_directories(${CMAKE_CURRENT_SOURCE_DIR}/extern/mujoco/bin ${CMAKE_CURRENT_SOURCE_DIR}/extern/glfw/lib)
-#set(LDFLAGS "-lmujoco -lglfw3")
+if(USE_CUDA)
+    find_package(CUDAToolkit REQUIRED)
+    target_link_libraries(${PROJECT_NAME} CUDA::cudart)
+else()
 
-# List all .cpp and .c source files
-file(GLOB SOURCES ${SRCDIR}/*.cpp ${SRCDIR}/*.c)
+endif()
 
+if(USE_VTK)
+    set(VTK_INCLUDE_DIR "C:/Program Files/VTK-9.3.1/src")
+    set(VTK_DIR "C:/Program Files/VTK-9.3.1/build")
+    set(VTK_LIB_DIR "C:/Program Files/VTK-9.3.1/build/lib")
+    link_directories("C:/Program Files/VTK-9.3.1")
+    include_directories(${VTK_INCLUDE_DIR})
 
-# Generate executables
-foreach(source_file ${SOURCES})
-    get_filename_component(executable_name ${source_file} NAME_WE)
-    set(executable_path ${BINDIR}/${executable_name})
-    add_executable(${executable_name} ${source_file})
-    #target_link_libraries(${executable_name} ${LDFLAGS})
-    set_target_properties(${executable_name} PROPERTIES
-                          RUNTIME_OUTPUT_DIRECTORY ${BINDIR})
-endforeach(source_file ${SOURCES})
+    find_package(VTK REQUIRED)
+    find_package(VTK COMPONENTS 
+    CommonColor
+    CommonCore
+    FiltersSources
+    IOImage
+    InteractionStyle
+    RenderingContextOpenGL2
+    RenderingCore
+    RenderingFreeType
+    RenderingGL2PSOpenGL2
+    RenderingOpenGL2
+    RenderingUI
+    IOPLY
+    CommonDataModel
+    )
 
-# Custom target for log message
-add_custom_target(log
-    COMMAND echo "building package mjUr5e..."
-)
+    if (NOT VTK_FOUND)
+        message(FATAL_ERROR "VTK build folder not found.")
+    endif()
 
+    set(CMAKE_NINJA_FORCE_RESPONSE_FILE "ON" CACHE BOOL "Force Ninja to use response files.")
+    vtk_module_autoinit(
+        TARGETS  
+        MODULES ${VTK_LIBRARIES}
+    )
+endif()
 
-
-    if (MSVC)
-        file(GLOB TORCH_DLLS "${TORCH_INSTALL_PREFIX}/lib/*.dll")
-        add_custom_command(TARGET example-app
-                       POST_BUILD
-                       COMMAND ${CMAKE_COMMAND} -E copy_if_different
-                       ${TORCH_DLLS}
-                       $<TARGET_FILE_DIR:example-app>)
-    endif (MSVC)
+if(BUILD_TESTS)
+    add_subdirectory(test)
+endif()
