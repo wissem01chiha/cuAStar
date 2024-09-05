@@ -1,6 +1,6 @@
 
 // nvcc -std=c++17 -o testNode2d test/testNode2d.cu
-#include "../cpp/cuAStar.hpp"
+#include "../include/cuAStar.hpp"
 
 // Kernel function to test Node2d methods on GPU
 __global__ void testNode2dKernel(Node2d<float>* d_nodes, bool* results) {

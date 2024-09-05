@@ -1,5 +1,5 @@
 // nvcc -std=c++17 -o build/testcheckNodeExsist test/testcheckNodeExsist.cu
-#include "../cpp/cuAStar.hpp"
+#include "../include/cuAStar.hpp"
 #include <iostream>
 
 int main() {

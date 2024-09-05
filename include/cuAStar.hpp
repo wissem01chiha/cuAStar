@@ -21,6 +21,7 @@
  * @note for the multithreding and concurrency support computations support 
  * the c++ 11 standard is required More Info :  https://en.cppreference.com/w/cpp/thread
  * 
+ * @todo : the only 3d visulization is VTK, 
  */
 #ifndef CUASTAR_HPP
 #define CUASTAR_HPP
@@ -614,12 +615,36 @@ __global__ void smoothTrajectory(const NodeType* d_trajNodesArray,int N,int k,
 };
 
 /**
- * @brief given a nodes array with each 2 nodes has parent-child relation,
- * and each chunk has a path cost function, f(n), 
+ * @brief Extracts nodes without a parent from an array of N nodes.
+ * Iterates over the input array, where each node has a p_node attribute (pointer to its parent).
+ * Constructs a new array containing only nodes where p_node == nullptr (i.e., no parent).
  */
 template <typename NodeType, typename T>
-__global__ void reduceChunks(){
+__global__ void getChunksRootNodes(const NodeType* d_chunkNodesArray, int numNodes,
+                                NodeType* d_chunksRootArray){
 
+    int idx = blockIdx.x * blockDim.x + threadIdx.x;
+     if (idx < numNodes){
+        if (d_chunkNodesArray[idx].p_node == nullptr) {
+            d_chunksRootArray[idx] = d_chunkNodesArray[idx];
+        }
+     }
+};
+
+/**
+ * @brief Given an array of nodes, checks if there are any nodes without a parent, 
+ * referred to as orphan nodes. Each thread in each block checks its assigned node.
+ * @param N The number of nodes.
+ * @param status A boolean flag to indicate if an orphan node is found.
+ */
+template <typename NodeType, typename T>
+__global__ void hasOrphanNodes(const NodeType* d_nodesArray, int N, bool* status) {
+    int idx = blockIdx.x * blockDim.x + threadIdx.x;
+    if (idx < N) {
+        if (d_nodesArray[idx].p_node == nullptr) {
+            *status = true;
+        }
+    }
 }
 
 
@@ -644,12 +669,7 @@ __global__ void reduceChunks(){
  * after computing the chunks and save each chunk nodes (2*NodeType), and the matric:
  * cost to got from chunk root to child chunk + the heuristic % to-go node
  * the number of chunks is : N/threadsPerBlock
- * for routing 2 chunks 
- *  (1) - (2) -- c1
- *  (1.1) - (2.1) -- c2
- * if link (2) with (1.1) or (2.1) with (1) : 
- * if the chunk c1 has a cost min than (2) thus the routing is as follw:
- *   (1.1) - (2.1)---  (1) - (2) ---- ...
+ * afther constructing the nodes grid 
  */
 template <typename NodeType, typename T>
 class AstarPlanner
@@ -657,15 +677,24 @@ class AstarPlanner
 public:
     /** 
      * @brief  default constructor, allocate momory for class attributes on 
-     * host and device 
+     * host and device, this function, sets the node number to thredsPerBlock
+     * var and allocate memeory   
      */
     HOST_FUN  AstarPlanner();
 
+    /**
+     * @brief construct from a user defined point clouds array 
+     * init number nodes allocate and fill member attributes , copy them to device
+     * and init memebr attributes deice vars 
+     */
+    HOST_FUN AstarPlanner(NodeType& h_nodesArray_);
+
     /** 
      * @brief init the host and device memory with random nodes, if the number of
-     * ndodes given os diffrent from class alraedy  vars old, ovveride them 
+     * ndodes given os diffrent from class alraedy  vars old, ovveride them
+     * @param seed : random seed initilization  
      */
-    HOST_FUN void initRandomNodesArray(size_t numNodes_, unsigned int seed);
+    HOST_FUN void initRandomNodesArray(int numNodes_, unsigned int seed);
 
     /** 
      * @brief fill the host and device memory with the nodes from the a point
@@ -682,23 +711,55 @@ public:
 
     /**
      * @brief compute the optimal trajectory, ie array of nodeType values, 
-     * this is the final function used to retive the optimal traj  
+     * given the nodes arrays wich each node , has a parent, the grid structure 
+     * may be not balnced or very  complex,starting from the endnode, we apply
+     * divide into chunks, each chunks have not commun elment with the other 
+     * the fist node of the chunk is the chunk root and compute the succesor , 
+     * update the child node -parent pointer , an so on , if all chunks are procceded, 
+     * get the chunks roots using the function getChunksRootNodes and repet the same process, 
+     * with Chnuk(i) instect chunk(j) = {} until the number of chunk roots is equal to the knn
+     * value     
      */
     HOST_FUN  void computeTrajectory();
 
-    /** @brief svaes a trajectory to pointcloud file .ply using happly librray */
+    /** @brief saves a trajectory to pointcloud file .ply using happly library */
     HOST_FUN void saveTrajectory2csv(const std::string outputFilePath);
 
     /** 
      * @brief read a point cloud data file (now only PLy supported) and fill the gridMap
-     * object memebr of the class with nodes consruted from the point cloud 
+     * object memebr of the class with nodes consruted from the point cloud
+     * @param outputFilePath 
      */
    HOST_FUN void saveTrajectory2png(const std::string& outputFilePath);
 
+   #ifdef CUASTAR_USE_VTK
+    /**
+    * @brief given an array of 3d points cloud in node3d type, wich each node
+    * has parent-child, viuslize the 3d map using lines, in VTK, displaying
+    * points as sphres is not supported, the array is  h_mapArray 
+    */
+    HOST_FUN void visualize3dTreeMap();
+
+    /**
+     * @brief render the computed trajectory i point cloud, with the path in 
+     * continus lines in specifc color 
+     */
+    HOST_FUN void visualize3dTrajectory();
+
+    /**
+     * @brief visulize the 3d grid map in only lines with the same color
+     * and the trajectory in lines with the same color, diffrent with 
+     * the color of the map. 
+     */
+    HOST_FUN void visualize3dTrajTreeMap();
+
+   #endif
+
 private:
-    size_t    numNodes;
+    int        numNodes;
     NodeType * d_nodesArray; 
     NodeType * h_nodesArray;
+    NodeType*  h_mapArray;
 
     NodeType*   startNode;
     NodeType*   endNode;
@@ -710,13 +771,12 @@ private:
      * @brief Check wahat ever we get into the goal node or not,
      * using a threshold value esplion for proximity checking.
      */
-    template <typename NodeType, typename T>
-    HOST_DEVICE_FUN bool isGoalReached(NodeType* n, const T eps);
+    HOST_DEVICE_FUN bool isGoalReached(const NodeType* n, const T eps);
 
 protected:
     /** 
-     * @brief free all memory on deice or on host , free all 
-     * class device or host varaible , qqsoit 
+     * @brief free all memory on deice or on host memory allocation
+     * in the constructor or over functions 
      */
     HOST_FUN ~AstarPlanner();
 };
@@ -733,6 +793,7 @@ protected:
     template <typename NodeType, typename T>
     HOST_FUN AstarPlanner<NodeType, T>::AstarPlanner(){
 
+        numNodes = thredsPerBlock; 
         cudaError_t err = cudaMalloc((void**)&d_nodesArray, numNodes*sizeof(NodeType));
         cudaMalloc((void**)&d_pathArray, numNodes * sizeof(NodeType));
         h_nodesArray = new NodeType[numNodes];  
@@ -776,7 +837,6 @@ protected:
         CUDA_CHECK_ERROR(err);
         this->d_nodesArray = d_nodesArray_;
     };
-
 
 
     template <typename NodeType, typename T>
@@ -848,7 +908,7 @@ protected:
     };
 
     template <typename NodeType, typename T>
-    HOST_DEVICE_FUN bool  AstarPlanner<NodeType, T>::isGoalReached(NodeType* n, const T eps){
+    HOST_DEVICE_FUN bool  AstarPlanner<NodeType,T>::isGoalReached(const NodeType* n, const T eps){
         if (*n == endNode) {
             return true;
         }
@@ -867,6 +927,16 @@ protected:
         h_nodesArray = nullptr;
         cudaFree(d_nodesArray);
     };
+
+
+    #ifdef CUASTAR_USE_VTK
+
+        HOST_FUN void visualize3dTreeMap(){
+
+
+        };
+
+   #endif
 #endif // CUASTAR_IMPLEMENTATION
 
 

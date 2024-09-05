@@ -1,6 +1,6 @@
 
 // nvcc -std=c++17 -o build/testknn test/testknn.cu
-#include "../cpp/cuAStar.hpp"
+#include "../include/cuAStar.hpp"
 #include <iostream>
 #include <vector>
 #include <cassert>

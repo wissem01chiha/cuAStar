@@ -1,5 +1,5 @@
 // nvcc -std=c++17 -o build/testNode3d test/testNode3d.cu
-#include "../cpp/cuAStar.hpp"
+#include "../include/cuAStar.hpp"
 #include <iostream>
 
 template <typename T>
