@@ -5,4 +5,3 @@ else()
 endif()
 
 add_executable(Tests ${TEST_SOURCES})
-target_link_libraries(Tests YourMainProjectLibrary)

@@ -7,5 +7,5 @@ int  main(){
     size_t n =  getPlyPointNum("Area_1_Site_1_24463.ply");
     std::cout << "the file valididty is " << x << std::endl;
     std::cout << "the number of nodes is " << n;
-        return 0;
+    return 0;
 }
