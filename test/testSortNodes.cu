@@ -1,7 +1,7 @@
 #define CUASTAR_DEBUG
 // nvcc -std=c++17 -o build/testSortNodes test/testSortNodes.cu
 #include <cuda_runtime.h>
-#include "../cpp/cuAStar.hpp"
+#include "../include/cuAStar.hpp"
 
 template <typename T>
 void printNodes(Node3d<T>* nodes, int N) {

@@ -6,6 +6,7 @@
  * 
  * @link https://towardsdatascience.com/understanding-a-path-algorithms-and-implementation-with-python-4d8458d6ccc7
  * 
+ * @mainpage
  * If there are no blocked cells/obstacles then we can just find the exact 
  * value of h without any pre-computation using the distance formula/Euclidean Distance
  * all memory errors checks foe cuda are in debug mode !
@@ -706,7 +707,7 @@ DEVICE_FUN void updateNearest(NodeType* nearestNodes, T* distances,
 
 /**
  * @brief Computes the K-nereast neighoods of a given node in a device 
- * array structure , by sorting x, y, z attributes, without building the K-D tree
+ * array structure , by sorting x, y, z attributes, without using the K-D tree
  * this kernel should excute on 1 block, so the maxium nodes number sorted arrays 
  * is 1024 
  * @param range: control the exploration range of the KNN, fixed , adjustee based 
@@ -715,7 +716,7 @@ DEVICE_FUN void updateNearest(NodeType* nearestNodes, T* distances,
  * @param k should be < threadsPerBlock
  */
 template <typename NodeType, typename T>
-__global__ void computeChunKnnNodes(NodeType* d_sortedX, 
+__global__ void computeKnnNodes(NodeType* d_sortedX, 
                                 NodeType* d_sortedY, 
                                 NodeType* d_sortedZ,
                                 NodeType targetNode, 
@@ -807,7 +808,7 @@ DEVICE_FUN void computeNodeTrajectoryCost(const NodeType& node,
  *                        The maximum size is 1024.
  */
 template <typename NodeType, typename T>
-__global__ void computeChunkSucessorNode(const NodeType* d_knnNodesArray, int k,
+__global__ void computeSucessorNode(const NodeType* d_knnNodesArray, int k,
                                     const NodeType* endNode,
                                     NodeType* d_bestNode){
 
@@ -877,13 +878,13 @@ __global__ void smoothTrajectory(const NodeType* d_trajNodesArray,int N,int k,
  * Constructs a new array containing only nodes where p_node == nullptr (i.e., no parent).
  */
 template <typename NodeType, typename T>
-__global__ void getChunksRootNodes(const NodeType* d_chunkNodesArray, int numNodes,
-                                NodeType* d_chunksRootArray){
+__global__ void getRootNodes(const NodeType* d_nodesArray, int numNodes,
+                                NodeType* d_rootsArray){
 
     int idx = blockIdx.x * blockDim.x + threadIdx.x;
      if (idx < numNodes){
-        if (d_chunkNodesArray[idx].p_node == nullptr) {
-            d_chunksRootArray[idx] = d_chunkNodesArray[idx];
+        if (d_nodesArray[idx].p_node == nullptr) {
+            d_rootsArray[idx] = d_nodesArray[idx];
         }
      }
 };
@@ -927,6 +928,7 @@ __global__ void hasOrphanNodes(const NodeType* d_nodesArray, int N, bool* status
  * cost to got from chunk root to child chunk + the heuristic % to-go node
  * the number of chunks is : N/threadsPerBlock
  * afther constructing the nodes grid 
+ 
  */
 template <typename NodeType, typename T>
 class AstarPlanner
@@ -967,17 +969,17 @@ public:
     HOST_FUN void initializeStartAndGoal(NodeType* startNode_, NodeType* goalNode_);
 
     /**
-     * @brief compute the optimal trajectory, ie array of nodeType values, 
-     * given the nodes arrays wich each node , has a parent, the grid structure 
-     * may be not balnced or very  complex,starting from the endnode, we apply
-     * divide into chunks, each chunks have not commun elment with the other 
-     * the fist node of the chunk is the chunk root and compute the succesor , 
-     * update the child node -parent pointer , an so on , if all chunks are procceded, 
-     * get the chunks roots using the function getChunksRootNodes and repet the same process, 
-     * with Chnuk(i) instect chunk(j) = {} until the number of chunk roots is equal to the knn
-     * value     
+     * @brief compute the K-D tree of the point cloud data, without a predifed motion 
+     * model it's curical to have a tree grap based, for the nodes , structure     
      */
-    HOST_FUN  void computeTrajectory();
+    HOST_FUN  void computeMapKDTree();
+
+    /**
+     * @brief given the the map tree construted, satart from the end node and,
+     * given that each node has unique parent, it saves the nodes and copy up to the 
+     * start node
+     */
+    HOST_FUN void computeTrajectory();
 
     /** @brief saves a trajectory to pointcloud file .ply using happly library */
     HOST_FUN void saveTrajectory2csv(const std::string outputFilePath);
@@ -996,6 +998,12 @@ public:
     * in r , g ,b arrtibutes in each node to update them use updateNodesColor()
     */
    HOST_FUN void visualize2dPointCloud(const std::string imageFilePath);
+
+   /**
+    * @brief this method take an array reprsent a map and debug it in 2d, nodes 
+    * are not displayed a unicolor lines between child-parent is ploted
+    */
+   HOST_FUN void visualize2dTreeMap();
 
    #ifdef CUASTAR_USE_VTK
     /**
@@ -1028,21 +1036,42 @@ public:
 
 private:
     int        numNodes;
+    int        chunkSize; ///< the chunks size controls the 
+    
     NodeType * h_nodesArray;
     NodeType * d_nodesArray; 
-    NodeType*  h_mapArray;
 
+    NodeType*  h_chunkOpenSetArray; ///< each chunk has it open set wich store nodes by the f from
+                                    /// min to max , thes nodes from the chunk knn array, use the computeNodesucessor
+                                    ///< to order them, wich compute the node with min f(n) with an array  
+    NodeType*  d_chunkOpenSetArray;
+
+    NodeType*  d_chunkClosedSetArray; ///< same for closed set thes are the chunkSize- knn nodes 
+
+    NodeType* h_openSetArray; ///< given the local opensets, of chunks, it gets the roots of each chunk, 
+                             ///< form a new arra and compute the gloabl openset, n pallel way 
+
+    NodeType* h_closedSetArray; ///< any node not in openset is in closed set,  
     NodeType*   startNode;
     NodeType*   endNode;
+   // there is N/chunkSize * size(chunkOpenSet=k)[c1,c2, c3, c4,...] we exclude the start and the to-go to node !
+    //                                              |       |
+     //                                           a1,a2,..   a1, a2,...
+     // N/chunkSize * k , to compute the trajectory path,start with c1 nodes , for a1,...ak, the root node of the chunks 
+     // will be the node with minium f(n) , , so take each a1 (for NumChunks ai) and 
+     // the fisrt node in trajectory is t1=  min_f_(a1_i i in chunks,)=a_s the second is t2 = min_f_n(a_2i i in chunks all),
+     // and at ech time verify if we reach the goal or not 
+    NodeType*   h_pathArray; ///< for storing the final computed traj on host , 
+    NodeType*   d_pathArray; ///< ..... on device;
 
-    NodeType*   h_pathArray;
-    NodeType*   d_pathArray;
 
     /** 
      * @brief Check wahat ever we get into the goal node or not,
      * using a threshold value esplion for proximity checking.
      */
     HOST_DEVICE_FUN bool isGoalReached(const NodeType* n, const T eps);
+
+    HOST_FUN void computeOpenSetArray();
 };
 
 #ifdef CUASTAR_USE_TYPEDEF
@@ -1167,18 +1196,63 @@ private:
     };
 
     template<typename NodeType, typename T>
-    HOST_FUN  void AstarPlanner<NodeType, T>::computeTrajectory(){
+    HOST_FUN  void AstarPlanner<NodeType, T>::computeMapKDTree(){
         
-        // allocate mmeory for map array and trajectory array
-        //  
-        //
-        // 
-        cuMalloc(&h_pathArray, sizeof(NodeType));
-        cuMalloc(&h_mapArray, sizeof(NodeType));
-        // compute the number of chunks each chunk size is as the number of threds
         int chunksNum = numNodes / threadsPerBlock ;
         int blocksNum =  (numNodes + threadsPerBlock - 1) / threadsPerBlock;
+        // this method fill the d_mapArray attribute and h_mapArray 
+        // with values from h_nodesArray and d_nodesArray , wich each node i 
+        // map array has a parent valid pointer node 
+        // allocate mmeory for map array and trajectory array
+        h_mapArray = new NodeType[numNodes];
+        cuMalloc(&d_mapArray, sizeof(NodeType));
+        int depth = 0; 
+         
+        while(){
 
+            int ax = depth % 3;
+            // compute 
+            enumerationSortNodes<NodeType,T><<<blocksNum,threadsPerBlock>>>(d_nodesArray,
+                                                            threadsPerBlock, ax ,d_sortedAx);
+
+        }
+
+
+
+        
+        
+        
+        // the first step to construct the map array 
+        // loop by chunk
+        for (int k = 0 ; k < chunksNum  ; k++){
+            // allocate memory for chunks nodes 
+            cuMalloc(&d_chunkNodesArray, sizeof(NodeType));
+            cuMalloc(&d_chunKnnNodes, sizeof(NodeType));
+            
+            // get the chunks nodes
+            d_chunkNodesArray = d_nodesArray[k * threadsPerBlock : (k+1) * threadsPerBlock ];
+            // call the enumeration sort 
+            
+            enumerationSortNodes<NodeType,T><<<blocksNum,threadsPerBlock>>>(d_chunkNodesArray,threadsPerBlock,2,d_chunkSortedY);
+            enumerationSortNodes<NodeType,T><<<blocksNum,threadsPerBlock>>>(d_chunkNodesArray,threadsPerBlock,3,d_chunkSortedZ);
+            // allocate memory for the KNN of the chunk 
+            cuMalloc(&d_chunKnnNodes, sizeof(NodeType));
+            // compute the chunk knn 
+            computeChunKnnNodes<NodeType,T><<<blocksNum,threadsPerBlock>>>(d_sortedX, d_sortedY, d_sortedZ,
+                                                                        targetNode, numNodes, k, range, d_chunKnnNodes);
+
+            cuMemcpy(h_chunKnnNodes, d_chunKnnNodes, cudaMemcpyDeviceToHost);
+          
+            // allocate memory for the best node
+            // 
+            cuMalloc(&d_bestNode, sizeof(TypeNode));                                                            
+            computeChunkSucessorNode<NodeType,T><<<blocksNum,threadsPerBlock>>>(d_knnNodesArray, k,
+                                                                    endNode, d_bestNode);
+            
+                if ( h_chunKnnNodes[0].p_node == nullptr ){
+                    h_chunKnnNodes[i].p_node = d_chunkNodesArray[0];
+                }                                                 
+            }
 
         h_pathArray[0] = startNode;
 
@@ -1186,6 +1260,14 @@ private:
         cudaMemcpy(&h_mapArray,d_mapArray,sizeof(NodeType),cudaMemcpyHostToDevice);
 
     };
+
+    template<typename NodeType, typename T>
+    HOST_FUN void AstarPlanner<NodeType, T>::computeTrajectory(){
+
+        h_pathArray = new NodeType[];
+        cuMalloc(&d_pathArray, sizeof(NodeType));
+    }
+
 
     template<typename NodeType, typename T>
     HOST_FUN void AstarPlanner<NodeType, T>::saveTrajectory2csv(const std::string outputFilePath){
@@ -1205,7 +1287,7 @@ private:
             if (fs::exists(outputPath)) {
                 fs::remove(outputPath);
             }
-            array2PointCloudImg(h_pathArray,numNodes,outputFilePath,width,height,radiusRatio);
+            array2PointCloudImg<NodeType>(h_nodesArray, numNodes, outputFilePath.c_str(),800, 0.001);
         } catch (const fs::filesystem_error& e) {
             std::cerr << "Filesystem error: " << e.what() << '\n';
         } catch (const std::exception& e) {
@@ -1237,6 +1319,7 @@ private:
     HOST_FUN AstarPlanner<NodeType, T>::~AstarPlanner(){
 
         delete[] h_nodesArray;
+        * numNodes = nullptr; 
         h_nodesArray = nullptr;
         cudaFree(d_nodesArray);
     };

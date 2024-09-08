@@ -61,7 +61,7 @@ int main() {
     cudaEventRecord(start);
 
     // Launch the kernel (1 block with N threads, assuming N <= 1024)
-    computeChunKnnNodes<NodeType, T><<<1, N>>>(d_nodesX, d_nodesY, d_nodesZ, targetNode, N, k, range, d_kNodes);
+    computeKnnNodes<NodeType, T><<<1, N>>>(d_nodesX, d_nodesY, d_nodesZ, targetNode, N, k, range, d_kNodes);
 
     // Stop recording
     cudaEventRecord(stop);
