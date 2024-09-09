@@ -22,7 +22,8 @@
  * @note for the multithreding and concurrency support computations support 
  * the c++ 11 standard is required More Info :  https://en.cppreference.com/w/cpp/thread
  * https://github.com/arvkr/ransac_cuda_eecse4750
- * @todo : the only 3d visulization is VTK, 
+ * @note : 3D visulisation and rending is enabled only throut VTK,wich should be installed ,
+ * we use VTK version 9.3.1, for more information refre to VTK installation guide   
  */
 #ifndef CUASTAR_HPP
 #define CUASTAR_HPP
@@ -237,11 +238,17 @@ public:
     }
 
     #ifdef CUASTAR_DEBUG
-        /** @brief Prints the information of this node */
+        /** @brief Prints the information of this node from a host member */
         HOST_FUN void printNodeInfo() const {
             std::cout << "Node: (x: " << x << ", y: " << y 
                     << ", sum_cost: " << sum_cost << ", color: (" << static_cast<int>(r) 
                     << ", " << static_cast<int>(g) << ", " << static_cast<int>(b) << "))\n";
+        }
+
+        /** @brief Prints the node information from device code  */
+        DEVICE_FUN void printDeviceNodeInfo() const {
+            printf("Node: (x: %.6f, y: %.6f, sum_cost: %.6f, color: (%d, %d, %d))\n",
+               x, y, sum_cost, static_cast<int>(r), static_cast<int>(g), static_cast<int>(b));
         }
     #endif
 };
@@ -327,6 +334,13 @@ public:
                     << ", sum_cost: " << sum_cost << ", color: (" << static_cast<int>(r) 
                     << ", " << static_cast<int>(g) << ", " << static_cast<int>(b) << "))\n";
         }
+
+        /** @brief Prints the node information from device code  */
+        DEVICE_FUN void printDeviceNodeInfo() const {
+            printf("Node: (x: %.6f, y: %.6f, z: %.6f, sum_cost: %.6f, color: (%d, %d, %d))\n",
+               x, y, z, sum_cost, static_cast<int>(r), static_cast<int>(g), static_cast<int>(b));
+        }
+        
     #endif
 };
 
@@ -336,7 +350,9 @@ public:
     typedef Node3d<double> Node3dDouble; 
     typedef Node3d<float>  Node3dFloat;  
 #endif
-
+/**
+ * @brief rgb color base struture 
+ */
 typedef struct {
     unsigned char r;
     unsigned char g;
@@ -654,7 +670,7 @@ __global__ void enumerationSort(T * a, int N,  T * b){
  */
 template <typename NodeType, typename T>
 __global__ void enumerationSortNodes(NodeType* d_nodesArray,int N,int ax,
-                            NodeType *d_nodesArraySorted){
+                                NodeType *d_nodesArraySorted){
 
     int cnt = 0;
     int tid = threadIdx.x;
@@ -716,11 +732,8 @@ DEVICE_FUN void updateNearest(NodeType* nearestNodes, T* distances,
  * @param k should be < threadsPerBlock
  */
 template <typename NodeType, typename T>
-__global__ void computeKnnNodes(NodeType* d_sortedX, 
-                                NodeType* d_sortedY, 
-                                NodeType* d_sortedZ,
-                                NodeType targetNode, 
-                                int N, int k, int range, 
+__global__ void computeKnnNodes(NodeType* d_sortedX, NodeType* d_sortedY, NodeType* d_sortedZ,
+                                NodeType targetNode, int N, int k, int range, 
                                 NodeType* d_kNodes) {
     int idx = threadIdx.x;
 
@@ -757,17 +770,24 @@ __global__ void computeKnnNodes(NodeType* d_sortedX,
 /**
  * @brief Checks if a given node exists in the device nodes array.
  * @note This method will be deprecated in future versions.
+ * @note we use atomic exchange to ensure thred safty writtin value to the 
+ * we reprsent by : 0 FALSE and any other int the TRUE value, 
+ * perform chek if only nly perform check if the index is within 
+ * bounds and status is still false (0)
  */
 template <typename NodeType, typename T>
-__global__ void checkNodeExsist(NodeType* d_nodesArray, const NodeType* nodeToCheck,
-                            bool* status,size_t numNodes){
-
+__global__ void checkNodeExsist(const NodeType* d_nodesArray, int numNodes,
+                                 const NodeType* nodeToCheck, int* status) {
     int idx = blockIdx.x * blockDim.x + threadIdx.x;
-    if (idx < numNodes){
-        if (d_nodesArray[idx].isEqual(*nodeToCheck)) {
-            *status = true;
-    }}
-};
+    
+    if (idx < numNodes) {
+        if (atomicExch(status, 0) == 0) {
+            if (d_nodesArray[idx].isEqual(*nodeToCheck)) {
+                atomicExch(status, 1);  
+            }
+       }
+    }
+}
 
 /** 
  * @brief heuristic function which computes the estimated cost to the goal 
@@ -775,8 +795,7 @@ __global__ void checkNodeExsist(NodeType* d_nodesArray, const NodeType* nodeToCh
  * or the manthetn distance could be used 
  */
 template <typename NodeType, typename T>
-DEVICE_FUN void computeHeuristicDistance(const NodeType& node, 
-                                    const NodeType& targetNode,
+DEVICE_FUN void computeHeuristicDistance(const NodeType& node, const NodeType& targetNode,
                                     T* hfun){
     *hfun = node.distanceTo(targetNode);
 };
@@ -790,8 +809,7 @@ DEVICE_FUN void computeHeuristicDistance(const NodeType& node,
  * @param node The current node representing the position in the trajectory.
  */
 template <typename NodeType, typename T>
-DEVICE_FUN void computeNodeTrajectoryCost(const NodeType& node,
-                                        const NodeType& targetNode,
+DEVICE_FUN void computeNodeTrajectoryCost(const NodeType& node, const NodeType& targetNode,
                                         T* p_cost_){
     T h_fun;
     computeHeuristicDistance(node, targetNode, &h_fun); 
@@ -950,7 +968,9 @@ public:
 
     /** 
      * @brief fill the host and device memory with the nodes from the a point
-     * cloud data file .ply 
+     * cloud data file .ply
+     * @note this method fill only host attributes class mmeber, no device 
+     * initlisation when need create a device var and copy from it  
      */
     HOST_FUN AstarPlanner(const std::string& plyFilePath);
 
@@ -962,17 +982,28 @@ public:
     HOST_FUN AstarPlanner(int numNodes_, unsigned int seed);
 
     /** 
-     * @brief set the start and the goal nodes either in 3d or 2d, check if the 
-     * nodes exsits in the h_nodesArray first, if the start and to-go node are
+     * @brief set the start  nodes either in 3d or 2d, check if the 
+     * node exsits in the h_nodesArray first, if the start are
      * set, it defaulted to the first and last node in the nodes array. 
+     * @param startNode_ a construted nodeType for the given node
+     the given node should exsit in the point cloud, 
      */
-    HOST_FUN void initializeStartAndGoal(NodeType* startNode_, NodeType* goalNode_);
+    HOST_FUN void setInitialNode(NodeType* startNode_);
 
     /**
-     * @brief compute the K-D tree of the point cloud data, without a predifed motion 
-     * model it's curical to have a tree grap based, for the nodes , structure     
+    @brief set the end node , it should exsit in the point cloud and 
+    it should be diffrent from 
      */
-    HOST_FUN  void computeMapKDTree();
+    HOST_FUN void setTargetNode(NodeType* endNode_);
+
+    /**
+     * @brief  computes he chunks open set array for all chunks in the
+     point cloud array , divide into chunks,  compute the knns , reoder 
+     by fmin values and append to the h_chunksOpenSetArray , the rest of nodes 
+     are divided inti chunks and and reorded, 
+     the default size of chunks is the bloc  size    
+     */
+    HOST_FUN  void computeChunkOpenSet(const int chunkSize_ = threadsPerBlock );
 
     /**
      * @brief given the the map tree construted, satart from the end node and,
@@ -981,8 +1012,10 @@ public:
      */
     HOST_FUN void computeTrajectory();
 
-    /** @brief saves a trajectory to pointcloud file .ply using happly library */
-    HOST_FUN void saveTrajectory2csv(const std::string outputFilePath);
+    /** 
+     * @brief saves a trajectory to pointcloud file .ply using happly library 
+     */
+    HOST_FUN void writeTrajectory2csv(const std::string outputFilePath);
 
     /** 
      * @brief read a point cloud data file (now only PLy supported) and fill the gridMap
@@ -1039,19 +1072,16 @@ private:
     int        chunkSize; ///< the chunks size controls the 
     
     NodeType * h_nodesArray;
-    NodeType * d_nodesArray; 
 
-    NodeType*  h_chunkOpenSetArray; ///< each chunk has it open set wich store nodes by the f from
+    NodeType*  h_chunksOpenSetArray; ///< each chunk has it open set wich store nodes by the f from
                                     /// min to max , thes nodes from the chunk knn array, use the computeNodesucessor
                                     ///< to order them, wich compute the node with min f(n) with an array  
-    NodeType*  d_chunkOpenSetArray;
-
-    NodeType*  d_chunkClosedSetArray; ///< same for closed set thes are the chunkSize- knn nodes 
 
     NodeType* h_openSetArray; ///< given the local opensets, of chunks, it gets the roots of each chunk, 
                              ///< form a new arra and compute the gloabl openset, n pallel way 
 
-    NodeType* h_closedSetArray; ///< any node not in openset is in closed set,  
+    NodeType* h_closedSetArray; ///< any node not in openset is in closed set,
+
     NodeType*   startNode;
     NodeType*   endNode;
    // there is N/chunkSize * size(chunkOpenSet=k)[c1,c2, c3, c4,...] we exclude the start and the to-go to node !
@@ -1126,9 +1156,6 @@ private:
 
         numNodes = static_cast<int>(getPlyPointNum(plyFilePath));
         h_nodesArray = new NodeType[numNodes];
-        NodeType* d_nodesArray_ = nullptr;
-        cudaError_t err = cudaMalloc((void**)&d_nodesArray_, numNodes * sizeof(NodeType));
-        CUDA_CHECK_ERROR(err);
 
         if (!isPlyValid(plyFilePath)) {
             LOG_MESSAGE(ERROR,"Invalid PLY file: '%s'", plyFilePath.c_str());
@@ -1149,128 +1176,178 @@ private:
 
                 h_nodesArray[i] = n;
             } catch (const std::exception& e) {
-                cudaError_t err = cudaFree(d_nodesArray_);
-                CUDA_CHECK_ERROR(err);
+                LOG_MESSAGE(ERROR,"An Error Occured: '%s", e);
             }
         }
-        cudaError_t err_ = cudaMemcpy(d_nodesArray_,h_nodesArray,numNodes*sizeof(NodeType),
-                                     cudaMemcpyHostToDevice);
-        CUDA_CHECK_ERROR(err_);
-        this->d_nodesArray = d_nodesArray_;
     }
 
     template <typename NodeType, typename T>
-    HOST_FUN void AstarPlanner<NodeType, T>::initializeStartAndGoal(NodeType* startNode_,
-                                                                 NodeType* goalNode_){
-        bool* d_startNodeExists;
-        bool* d_goalNodeExists;
-        cudaMalloc((void**)&d_startNodeExists, sizeof(bool));
-        cudaMalloc((void**)&d_goalNodeExists , sizeof(bool));
+    HOST_FUN void AstarPlanner<NodeType, T>::setInitialNode(NodeType* startNode_) {
+        cudaError_t err;
 
-        cudaMemset(d_startNodeExists,0, sizeof(bool));
-        cudaMemset(d_goalNodeExists, 0, sizeof(bool));
-
-        int blocksPerGrid = (numNodes + threadsPerBlock-1)/threadsPerBlock;
-        checkNodeExsist<<<blocksPerGrid, threadsPerBlock>>>(startNode_, d_startNodeExists);
-        checkNodeExsist<<<blocksPerGrid, threadsPerBlock>>>(goalNode_, d_goalNodeExists);
-
-        bool h_startNodeExists = false;
-        bool h_goalNodeExists = false;
-
-        cudaMemcpy(&h_startNodeExists,d_startNodeExists,sizeof(bool),cudaMemcpyDeviceToHost);
-        cudaMemcpy(&h_goalNodeExists,d_goalNodeExists,sizeof(bool),cudaMemcpyDeviceToHost);
-
-       if (h_startNodeExists && h_goalNodeExists) {
-        startNode = startNode_;
-        endNode = goalNode_;
-        } else {
-                if (!h_startNodeExists) {
-                    LOG_MESSAGE(ERROR,"Start node does not exist");
-                }
-                if (!h_goalNodeExists) {
-                    LOG_MESSAGE(ERROR,"Goal node does not exist");
-                }
+        // Allocate and initialize device memory for status
+        int* d_startNodeExists;
+        err = cudaMalloc((void**)&d_startNodeExists, sizeof(int));
+        if (err != cudaSuccess) {
+            std::cerr << "Error allocating memory for d_startNodeExists: " << cudaGetErrorString(err) << std::endl;
+            return;
         }
+        
+        err = cudaMemset(d_startNodeExists, 0, sizeof(int)); // Initialize status to 0 (false)
+        if (err != cudaSuccess) {
+            std::cerr << "Error setting memory for d_startNodeExists: " << cudaGetErrorString(err) << std::endl;
+            cudaFree(d_startNodeExists);
+            return;
+        }
+
+        // Allocate memory for the nodes array on the device
+        NodeType* d_nodesArray;
+        err = cudaMalloc((void**)&d_nodesArray, numNodes * sizeof(NodeType));
+        if (err != cudaSuccess) {
+            std::cerr << "Error allocating memory for d_nodesArray: " << cudaGetErrorString(err) << std::endl;
+            cudaFree(d_startNodeExists);
+            return;
+        }
+
+        // Copy host nodes array to device memory
+        err = cudaMemcpy(d_nodesArray, h_nodesArray, numNodes * sizeof(NodeType), cudaMemcpyHostToDevice);
+        if (err != cudaSuccess) {
+            std::cerr << "Error copying memory to d_nodesArray: " << cudaGetErrorString(err) << std::endl;
+            cudaFree(d_nodesArray);
+            cudaFree(d_startNodeExists);
+            return;
+        }
+
+        // Calculate grid and block size
+        int blocksPerGrid = (numNodes + threadsPerBlock - 1) / threadsPerBlock;
+
+        // Allocate memory for the start node on the device
+        NodeType* d_startNode;
+        err = cudaMalloc((void**)&d_startNode, sizeof(NodeType));
+        if (err != cudaSuccess) {
+            std::cerr << "Error allocating memory for d_startNode: " << cudaGetErrorString(err) << std::endl;
+            cudaFree(d_nodesArray);
+            cudaFree(d_startNodeExists);
+            return;
+        }
+
+        // Copy start node to device memory
+        err = cudaMemcpy(d_startNode, startNode_, sizeof(NodeType), cudaMemcpyHostToDevice);
+        if (err != cudaSuccess) {
+            std::cerr << "Error copying memory to d_startNode: " << cudaGetErrorString(err) << std::endl;
+            cudaFree(d_nodesArray);
+            cudaFree(d_startNodeExists);
+            cudaFree(d_startNode);
+            return;
+        }
+
+        // Launch the kernel
+        checkNodeExsist<NodeType, T><<<blocksPerGrid, threadsPerBlock>>>(d_nodesArray, numNodes, d_startNode, d_startNodeExists);
+        err = cudaGetLastError();
+        if (err != cudaSuccess) {
+            std::cerr << "Error launching kernel: " << cudaGetErrorString(err) << std::endl;
+            cudaFree(d_nodesArray);
+            cudaFree(d_startNodeExists);
+            cudaFree(d_startNode);
+            return;
+        }
+
+        // Synchronize the device
+        err = cudaDeviceSynchronize();
+        if (err != cudaSuccess) {
+            std::cerr << "Error synchronizing device: " << cudaGetErrorString(err) << std::endl;
+        }
+
+        // Copy the result from device to host
+        int h_startNodeExists = 0;
+        err = cudaMemcpy(&h_startNodeExists, d_startNodeExists, sizeof(int), cudaMemcpyDeviceToHost);
+        if (err != cudaSuccess) {
+            std::cerr << "Error copying memory from d_startNodeExists: " << cudaGetErrorString(err) << std::endl;
+            cudaFree(d_nodesArray);
+            cudaFree(d_startNodeExists);
+            cudaFree(d_startNode);
+            return;
+        }
+
+        // Print the result
+        std::cout << "Node existence status: " << (h_startNodeExists ? "True" : "False") << std::endl;
+
+        // Clean up
         cudaFree(d_startNodeExists);
-        cudaFree(d_goalNodeExists);
-    };
+        cudaFree(d_nodesArray);
+        cudaFree(d_startNode);
+    }
+
+    template <typename NodeType, typename T>
+    HOST_FUN void AstarPlanner<NodeType, T>::setTargetNode(NodeType* endNode_) {
+     
+        if (endNode_->isEqual(startNode)) {
+            throw std::runtime_error("Target node should not match start node");
+            return;
+        }
+        int* d_endNodeExists;
+        cudaMalloc((void**)&d_endNodeExists, sizeof(int));
+        cudaMemset(d_endNodeExists, 0, sizeof(int)); 
+
+        NodeType* d_nodesArray;
+        cudaMalloc((void**)&d_nodesArray, numNodes * sizeof(NodeType));
+        cudaMemcpy(d_nodesArray, h_nodesArray, numNodes * sizeof(NodeType), cudaMemcpyHostToDevice);
+
+        int blocksPerGrid = (numNodes + threadsPerBlock - 1) / threadsPerBlock;
+
+        NodeType* d_endNode;
+        cudaMalloc((void**)&d_endNode, sizeof(NodeType));
+        cudaMemcpy(d_endNode, endNode_, sizeof(NodeType), cudaMemcpyHostToDevice);
+        
+        checkNodeExsist<NodeType, T><<<blocksPerGrid, threadsPerBlock>>>(d_nodesArray, numNodes,
+                                                                 d_endNode, d_endNodeExists);
+
+        int h_endNodeExists = 0;
+        cudaMemcpy(&h_endNodeExists, d_endNodeExists, sizeof(int), cudaMemcpyDeviceToHost);
+        cudaFree(d_startNodeExists);
+        cudaFree(d_nodesArray);
+        cudaFree(d_startNode);
+    }
 
     template<typename NodeType, typename T>
-    HOST_FUN  void AstarPlanner<NodeType, T>::computeMapKDTree(){
-        
+    HOST_FUN  void AstarPlanner<NodeType, T>::computeChunkOpenSet(const int chunkSize_ = threadsPerBlock){
+
         int chunksNum = numNodes / threadsPerBlock ;
         int blocksNum =  (numNodes + threadsPerBlock - 1) / threadsPerBlock;
-        // this method fill the d_mapArray attribute and h_mapArray 
-        // with values from h_nodesArray and d_nodesArray , wich each node i 
-        // map array has a parent valid pointer node 
-        // allocate mmeory for map array and trajectory array
-        h_mapArray = new NodeType[numNodes];
-        cuMalloc(&d_mapArray, sizeof(NodeType));
-        int depth = 0; 
-         
-        while(){
 
-            int ax = depth % 3;
-            // compute 
-            enumerationSortNodes<NodeType,T><<<blocksNum,threadsPerBlock>>>(d_nodesArray,
-                                                            threadsPerBlock, ax ,d_sortedAx);
+        NodeType* d_chunksOpenSetArray;
+        cuMalloc(&d_chunksOpenSetArray,numNodes* sizeof(NodeType));
+
+        for (int i = 0; i < chunksNum; i++){
+
+            // get the chunk elemnts 
+            h_chunkNodes = 
+
+            enumerationSortNodes<NodeType,T><<<blocksNum,threadsPerBlock>>>(d_chunkNodesArray,threadsPerBlock,1,d_chunkSortedX);
+            enumerationSortNodes<NodeType,T><<<blocksNum,threadsPerBlock>>>(d_chunkNodesArray,threadsPerBlock,2,d_chunkSortedY);
+            enumerationSortNodes<NodeType,T><<<blocksNum,threadsPerBlock>>>(d_chunkNodesArray,threadsPerBlock,3,d_chunkSortedZ); 
+
+            computeKnnNodes<NodeType,T><<<blocksNum,threadsPerBlock>>>(d_chunkSortedX, d_chunkSortedY, d_chunkSortedZ,
+                                d_endNode, numNodes, int k, int range, 
+                                NodeType* d_kNodes);
 
         }
 
 
-
-        
-        
-        
-        // the first step to construct the map array 
-        // loop by chunk
-        for (int k = 0 ; k < chunksNum  ; k++){
-            // allocate memory for chunks nodes 
-            cuMalloc(&d_chunkNodesArray, sizeof(NodeType));
-            cuMalloc(&d_chunKnnNodes, sizeof(NodeType));
-            
-            // get the chunks nodes
-            d_chunkNodesArray = d_nodesArray[k * threadsPerBlock : (k+1) * threadsPerBlock ];
-            // call the enumeration sort 
-            
-            enumerationSortNodes<NodeType,T><<<blocksNum,threadsPerBlock>>>(d_chunkNodesArray,threadsPerBlock,2,d_chunkSortedY);
-            enumerationSortNodes<NodeType,T><<<blocksNum,threadsPerBlock>>>(d_chunkNodesArray,threadsPerBlock,3,d_chunkSortedZ);
-            // allocate memory for the KNN of the chunk 
-            cuMalloc(&d_chunKnnNodes, sizeof(NodeType));
-            // compute the chunk knn 
-            computeChunKnnNodes<NodeType,T><<<blocksNum,threadsPerBlock>>>(d_sortedX, d_sortedY, d_sortedZ,
-                                                                        targetNode, numNodes, k, range, d_chunKnnNodes);
-
-            cuMemcpy(h_chunKnnNodes, d_chunKnnNodes, cudaMemcpyDeviceToHost);
-          
-            // allocate memory for the best node
-            // 
-            cuMalloc(&d_bestNode, sizeof(TypeNode));                                                            
-            computeChunkSucessorNode<NodeType,T><<<blocksNum,threadsPerBlock>>>(d_knnNodesArray, k,
-                                                                    endNode, d_bestNode);
-            
-                if ( h_chunKnnNodes[0].p_node == nullptr ){
-                    h_chunKnnNodes[i].p_node = d_chunkNodesArray[0];
-                }                                                 
-            }
-
-        h_pathArray[0] = startNode;
-
-        cudaMemcpy(&h_pathArray,d_pathArray,sizeof(NodeType),cudaMemcpyHostToDevice);
-        cudaMemcpy(&h_mapArray,d_mapArray,sizeof(NodeType),cudaMemcpyHostToDevice);
-
+        cudaMemcpy(&d_chunksOpenSetArray,h_chunksOpenSetArray,numNodes*sizeof(NodeType),cudaMemcpyDeviceToHost);
+ 
     };
 
     template<typename NodeType, typename T>
     HOST_FUN void AstarPlanner<NodeType, T>::computeTrajectory(){
 
-        h_pathArray = new NodeType[];
+        h_pathArray = new NodeType[numNodes];
         cuMalloc(&d_pathArray, sizeof(NodeType));
     }
 
 
     template<typename NodeType, typename T>
-    HOST_FUN void AstarPlanner<NodeType, T>::saveTrajectory2csv(const std::string outputFilePath){
+    HOST_FUN void AstarPlanner<NodeType, T>::writeTrajectory2csv(const std::string outputFilePath){
 
     }
     
@@ -1319,9 +1396,8 @@ private:
     HOST_FUN AstarPlanner<NodeType, T>::~AstarPlanner(){
 
         delete[] h_nodesArray;
-        * numNodes = nullptr; 
+        numNodes  = 0 ; 
         h_nodesArray = nullptr;
-        cudaFree(d_nodesArray);
     };
 
 

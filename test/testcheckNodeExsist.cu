@@ -2,44 +2,45 @@
 #include "../include/cuAStar.hpp"
 #include <iostream>
 
+const size_t numNodes = 2043; // Increased number of nodes for testing
+
 int main() {
     using T = float;
     using NodeType = Node3d<T>;
 
-    const size_t numNodes = 5;
-
-    // Create an array of nodes on the host
-    NodeType h_nodesArray[numNodes] = {
-        NodeType(1.0f, 2.0f, 3.0f),
-        NodeType(4.0f, 5.0f, 6.0f),
-        NodeType(7.0f, 8.0f, 9.0f),
-        NodeType(10.0f, 11.0f, 12.0f),
-        NodeType(13.0f, 14.0f, 15.0f)
-    };
+    // Create an array of nodes on the host with more nodes
+    NodeType* h_nodesArray = new NodeType[numNodes];
+    for (size_t i = 0; i < numNodes; ++i) {
+        h_nodesArray[i] = NodeType(i * 1.0f, i * 2.0f, i * 3.0f);
+    }
 
     // The node to check
-    NodeType h_nodeToCheck(4.0f, 5.0f, 6.0f);
+    NodeType h_nodeToCheck(1.0f, 2.0f, 3.0f); // Modify as needed
 
     // Allocate memory on the device
     NodeType* d_nodesArray;
     NodeType* d_nodeToCheck;
-    bool* d_status;
-    bool h_status = false;
+    int* d_status;
+    int h_status = 0; // Using 0 for false and 1 for true
 
     cudaMalloc(&d_nodesArray, numNodes * sizeof(NodeType));
     cudaMalloc(&d_nodeToCheck, sizeof(NodeType));
-    cudaMalloc(&d_status, sizeof(bool));
+    cudaMalloc(&d_status, sizeof(int));
 
     // Copy data to device
     cudaMemcpy(d_nodesArray, h_nodesArray, numNodes * sizeof(NodeType), cudaMemcpyHostToDevice);
     cudaMemcpy(d_nodeToCheck, &h_nodeToCheck, sizeof(NodeType), cudaMemcpyHostToDevice);
-    cudaMemcpy(d_status, &h_status, sizeof(bool), cudaMemcpyHostToDevice);
+    cudaMemcpy(d_status, &h_status, sizeof(int), cudaMemcpyHostToDevice);
 
-    // Launch the kernel with 1 block and numNodes threads
-    checkNodeExsist<NodeType, T><<<1, numNodes>>>(d_nodesArray, d_nodeToCheck, d_status, numNodes);
+    // Define block and grid sizes
+    //int threadsPerBlock = 256; // Adjust as needed
+    int blocksPerGrid = (numNodes + threadsPerBlock - 1) / threadsPerBlock;
+
+    // Launch the kernel
+    checkNodeExsist<NodeType, T><<<blocksPerGrid, threadsPerBlock>>>(d_nodesArray, numNodes, d_nodeToCheck, d_status );
 
     // Copy the result back to host
-    cudaMemcpy(&h_status, d_status, sizeof(bool), cudaMemcpyDeviceToHost);
+    cudaMemcpy(&h_status, d_status, sizeof(int), cudaMemcpyDeviceToHost);
 
     // Print the result
     std::cout << "Node exists in the array: " << (h_status ? "True" : "False") << std::endl;
@@ -48,6 +49,7 @@ int main() {
     cudaFree(d_nodesArray);
     cudaFree(d_nodeToCheck);
     cudaFree(d_status);
+    delete[] h_nodesArray; // Free host memory
 
     return 0;
 }
