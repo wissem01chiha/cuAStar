@@ -704,32 +704,36 @@ __global__ void enumerationSort(T * a, int N,  T * b){
  * not throw any error
  */
 template <typename NodeType, typename T>
-__global__ void enumerationSortNodes(NodeType* d_nodesArray,int N,int ax,
-                                NodeType *d_nodesArraySorted){
+__global__ void enumerationSortNodes(NodeType* d_nodesArray, int N, int ax, NodeType *d_nodesArraySorted) {
+
+    int tid = threadIdx.x;
+    int ttid = blockIdx.x * blockDim.x + tid;
+    if (ttid >= N) return;  
+
+    NodeType val = d_nodesArray[ttid];
+    __shared__ NodeType cache[1024];  
 
     int cnt = 0;
-    int tid = threadIdx.x;
-    int ttid = blockIdx.x * threadsPerBlock + tid; 
-    NodeType val = d_nodesArray[ttid];
-    __shared__ NodeType cache[threadsPerBlock];
-    for ( int i = tid; i < N; i += threadsPerBlock ){ 
-        cache[tid] = d_nodesArray[i]; 
-        __syncthreads();   
-        for ( int j = 0; j < threadsPerBlock; ++j ){ 
-            if ( ax == 1 ){
-                if ( val.x > cache[j].x )             
-                cnt++;
-            }else if ( ax == 2){
-                if ( val.y > cache[j].y )             
-                cnt++;
-            }else if ( ax == 3 ){
-                if ( val.z > cache[j].z )             
-                cnt++;
-            }
-        }            
-        __syncthreads(); 
-    } 
-    atomicExchNode<NodeType>(&d_nodesArraySorted[cnt], val);
+
+    if (ttid < N) {
+        cache[tid] = d_nodesArray[ttid];
+    }
+    __syncthreads();
+
+    for (int i = 0; i < blockDim.x; ++i) {  
+        if (ax == 1) {
+            if (val.x > cache[i].x) cnt++;
+        } else if (ax == 2) {
+            if (val.y > cache[i].y) cnt++;
+        } else if (ax == 3) {
+            if (val.z > cache[i].z) cnt++;
+        }
+    }
+    __syncthreads();
+
+    if (ttid < N) {
+        atomicExchNode<NodeType>(&d_nodesArraySorted[cnt], val);
+    }
 }
 
 /** @brief Update nearest neighbors list if the new node is closer  */  
@@ -738,7 +742,7 @@ DEVICE_FUN void updateNearest(NodeType* nearestNodes, T* distances,
                 const NodeType& node, const NodeType& otherNode, int k) {
 
     for (int i = 0; i < k; ++i) {
-        if (nearestNodes[i].isEqual(otherNode,static_cast<T>(1e-8))) {
+        if (nearestNodes[i].isEqual(otherNode,static_cast<T>(1e-5))) {
             return;  
         }
     }
@@ -771,10 +775,10 @@ __global__ void computeKnnNodes(NodeType* d_sortedX, NodeType* d_sortedY, NodeTy
                                 NodeType targetNode, int N, int k, int range, 
                                 NodeType* d_kNodes) {
     int idx = threadIdx.x;
+    __shared__ NodeType nearestNodes[1024];
+    __shared__ T distances[1024];
 
     if (idx < N) {
-       extern __shared__ NodeType nearestNodes[];
-       extern __shared__ T distances[];
 
         T maxDist = 1e30f;   
         if (idx == 0) {
@@ -867,8 +871,8 @@ __global__ void computeSortedNodes(const NodeType* d_knnNodesArray, int k,
                                    NodeType* d_sortedNodesArray) {
 
     int idx = threadIdx.x;
-    extern __shared__ T sharedCost[];
-    extern __shared__ int sharedIndex[];
+    __shared__ T sharedCost[1024];
+    __shared__ int sharedIndex[1024];
 
     if (idx < k) {
         sharedIndex[idx] = idx;   
@@ -1438,9 +1442,9 @@ private:
     template<typename NodeType, typename T>
     HOST_FUN void AstarPlanner<NodeType, T>::computeChunkOpenSet() {
 
-        chunkSize = 100;
+        //chunkSize = 100;
         int range = numNodes;
-        int k = 5;
+        int k = chunkSize/10;
         int chunksNum = numNodes / chunkSize;
         int blocksNum = (numNodes + threadsPerBlock - 1) / threadsPerBlock;
 
@@ -1461,12 +1465,12 @@ private:
             
             getChunk<NodeType>(h_nodesArray, numNodes, chunkSize, i, h_chunkNodesArray);
 
- 
+ /*
             std::cout << "The chunk nodes are:\n";
     for (int r = 0; r < chunkSize; ++r) {
         std::cout << "Node " << r + 1 << ": (" << h_chunkNodesArray[r].x << ", " << h_chunkNodesArray[r].y << ", " << h_chunkNodesArray[r].z << ")\n";
     }
-       /*    
+          */
           
             NodeType* d_chunkSortedX;
             NodeType* d_chunkSortedY;
@@ -1475,12 +1479,13 @@ private:
             cudaMalloc(&d_chunkSortedX, chunkSize * sizeof(NodeType));
             cudaMalloc(&d_chunkSortedY, chunkSize * sizeof(NodeType));
             cudaMalloc(&d_chunkSortedZ, chunkSize * sizeof(NodeType));
-            std::cout << "break1";
 
             NodeType h_chunkNodesArray_[1024];
             for (int p = 0; p < chunkSize; ++p) {
                 h_chunkNodesArray_[p] = NodeType(h_chunkNodesArray[p].x, h_chunkNodesArray[p].y, h_chunkNodesArray[p].z);
             }
+
+             
             NodeType* d_chunkNodesArray;
             cudaMalloc(&d_chunkNodesArray, chunkSize * sizeof(NodeType));
             cudaError_t err = cudaMemcpy(d_chunkNodesArray, h_chunkNodesArray_, sizeof(NodeType)* chunkSize, 
@@ -1512,8 +1517,8 @@ private:
             cudaMalloc(&d_kNodes, k * sizeof(NodeType));
 
             NodeType endNode_(endNode->x, endNode->y, endNode->z);
-            size_t sharedMemSize = (k * sizeof(NodeType)) + (k * sizeof(T));
-            computeKnnNodes<NodeType,T><<<blocksNum, threadsPerBlock, sharedMemSize>>>(d_chunkSortedX, d_chunkSortedY, d_chunkSortedZ,
+             
+            computeKnnNodes<NodeType,T><<<blocksNum, threadsPerBlock>>>(d_chunkSortedX, d_chunkSortedY, d_chunkSortedZ,
                                                                        endNode_, chunkSize, k, range, d_kNodes);
             
             err = cudaDeviceSynchronize();
@@ -1544,9 +1549,6 @@ private:
             }
 
             NodeType* h_chunkSortedNodes = (NodeType*)malloc(k * sizeof(NodeType));
-            if (!h_chunkSortedNodes) {
-                printf("Error allocating memory on host for h_chunkSortedNodes.\n");
-            }
 
             err = cudaMemcpy(h_chunkSortedNodes, d_chunkSortedNodes, k * sizeof(NodeType), cudaMemcpyDeviceToHost);
             if (err != cudaSuccess) {
@@ -1555,7 +1557,7 @@ private:
 
             for (int s = 0; s < k; s++) {
                 h_chunksOpenSetArray[i * chunkSize + s] = h_chunkSortedNodes[s];
-                if (s + 1 < k) { // Ensure the next element exists
+                if (s + 1 < k) { 
                     h_chunksOpenSetArray[i * chunkSize + s + 1].p_node = &h_chunksOpenSetArray[i * chunkSize + s];
                 }
             }
@@ -1570,8 +1572,13 @@ private:
         }
 
         cudaFree(d_chunksOpenSetArray);
-        */ 
-    }}
+        std::cout << "open set array \n";
+        for (int t = 0; t < numNodes; ++t) {
+        std::cout << "Node " << t + 1 << ": (" << h_chunksOpenSetArray[t].x << ", " 
+        << h_chunksOpenSetArray[t].y << ", " << h_chunksOpenSetArray[t].z << ")\n";
+    }
+         
+    }
 
     template<typename NodeType, typename T>
     HOST_FUN void AstarPlanner<NodeType, T>::computeTrajectory() {
