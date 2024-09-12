@@ -2,18 +2,14 @@
 // nvcc -std=c++17 -o build/testknn test/testknn.cu
 #define CUASTAR_DEBUG
 #include "../include/cuAStar.hpp"
-#include <iostream>
-#include <vector>
-#include <cassert>
-#include <cuda_runtime.h>
 
 int main() {
     using T = float;
     using NodeType = Node3d<T>;
 
     // Number of nodes and the number of nearest neighbors to find
-    int N = 1024;
-    int k = 7;
+    int N = 1025;
+    int k = 10;
     int range = 20;
 
     // Allocate host memory for nodes
@@ -38,7 +34,9 @@ int main() {
     }
 
     // Define a target node
-    NodeType targetNode(static_cast<T>(0.5), static_cast<T>(0.5), static_cast<T>(0.5));
+    //NodeType* targetNode ;
+    NodeType targetNode(0.5, 0.5, 0.5);
+
 
     // Allocate device memory
     NodeType *d_nodesX, *d_nodesY, *d_nodesZ, *d_kNodes;
@@ -59,9 +57,9 @@ int main() {
 
     // Start recording
     cudaEventRecord(start);
-
+    int blocksNum = (N + threadsPerBlock - 1) / threadsPerBlock;
     // Launch the kernel (1 block with N threads, assuming N <= 1024)
-    computeKnnNodes<NodeType, T><<<1, N>>>(d_nodesX, d_nodesY, d_nodesZ, targetNode, N, k, range, d_kNodes);
+    computeKnnNodes<NodeType, T><<<blocksNum , N>>>(d_nodesX, d_nodesY, d_nodesZ, targetNode, N, k, range, d_kNodes);
 
     // Stop recording
     cudaEventRecord(stop);

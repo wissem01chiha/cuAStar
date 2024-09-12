@@ -1,6 +1,6 @@
 
 // nvcc -std=c++17 -o build/testAstarPlanner test/testAstarPlanner.cu
-// nvcc -std=c++17 --coverage -o build/testAstarPlanner test/testAstarPlanner.cu
+
 #define CUASTAR_IMPLEMENTATION 
 #define CUASTAR_DEBUG
 #include "../include/cuAStar.hpp"
