@@ -230,9 +230,9 @@ public:
     T sum_cost;   
     Node2d* p_node; 
 
-    int r = 125;
-    int g = 100;
-    int b = 120;      
+    int r = 210;
+    int g = 109;
+    int b = 109;       
 
     /** @brief default constructor for the Node2d class */
     HOST_DEVICE_FUN Node2d(){
@@ -307,9 +307,9 @@ public:
     T sum_cost;   
     Node3d* p_node;
 
-    int r = 125;
-    int g = 100;
-    int b = 120;   
+    int r = 210;
+    int g = 109;
+    int b = 109;   
 
     /** @brief Default constructor for the Node3d class */
     HOST_DEVICE_FUN Node3d(){
@@ -644,6 +644,80 @@ HOST_FUN void array2PointCloudImg(const NodeType* h_arrayNodes, int numNodes,
         colorsB[i] = static_cast<unsigned char>(h_arrayNodes[i].b);
     }
     
+    savePointCloudImage(pngFilePath, width+1, height+1, centersX, 
+    centersY, colorsR, colorsG, colorsB, static_cast<int>(numNodes), 
+    radiusRatio);
+    
+    delete[] centersX;
+    delete[] centersY;
+    delete[] colorsR;
+    delete[] colorsG;
+    delete[] colorsB;
+}
+
+template <typename NodeType>
+HOST_FUN void array2PointCloudImgBound(const NodeType* h_arrayNodes, int numNodes,
+                        const char* pngFilePath, NodeType* startNode, NodeType* endNode,int  scaleFactor=100,
+                        double radiusRatio = 0.01) {
+    
+    float h_minX = FLT_MAX, h_maxX = -FLT_MAX, h_minY = FLT_MAX, h_maxY = -FLT_MAX;
+
+    float *d_minX, *d_maxX, *d_minY, *d_maxY;
+    cudaMalloc(&d_minX, sizeof(float));
+    cudaMalloc(&d_maxX, sizeof(float));
+    cudaMalloc(&d_minY, sizeof(float));
+    cudaMalloc(&d_maxY, sizeof(float));
+
+    cudaMemcpy(d_minX, &h_minX, sizeof(float), cudaMemcpyHostToDevice);
+    cudaMemcpy(d_maxX, &h_maxX, sizeof(float), cudaMemcpyHostToDevice);
+    cudaMemcpy(d_minY, &h_minY, sizeof(float), cudaMemcpyHostToDevice);
+    cudaMemcpy(d_maxY, &h_maxY, sizeof(float), cudaMemcpyHostToDevice);
+
+    NodeType* d_arrayNodes;
+    cudaMalloc(&d_arrayNodes, numNodes * sizeof(NodeType));
+    cudaMemcpy(d_arrayNodes, h_arrayNodes, numNodes * sizeof(NodeType), cudaMemcpyHostToDevice);
+
+    int blocksNum =  (numNodes + threadsPerBlock - 1) / threadsPerBlock;
+    computePointCloudBoundBox<NodeType><<<blocksNum, threadsPerBlock>>>(
+        d_arrayNodes, numNodes, d_minX, d_maxX, d_minY, d_maxY);
+
+    cudaMemcpy(&h_minX, d_minX, sizeof(float), cudaMemcpyDeviceToHost);
+    cudaMemcpy(&h_maxX, d_maxX, sizeof(float), cudaMemcpyDeviceToHost);
+    cudaMemcpy(&h_minY, d_minY, sizeof(float), cudaMemcpyDeviceToHost);
+    cudaMemcpy(&h_maxY, d_maxY, sizeof(float), cudaMemcpyDeviceToHost);
+
+    cudaFree(d_minX);
+    cudaFree(d_maxX);
+    cudaFree(d_minY);
+    cudaFree(d_maxY);
+    cudaFree(d_arrayNodes);
+
+    int* centersX = new int[numNodes];
+    int* centersY = new int[numNodes];
+    unsigned char* colorsR = new unsigned char[numNodes];
+    unsigned char* colorsG = new unsigned char[numNodes];
+    unsigned char* colorsB = new unsigned char[numNodes];
+    
+    double r = (h_maxY - h_minY)/(h_maxX - h_minX);
+    int width = static_cast<int>(scaleFactor * (h_maxX - h_minX));
+    int height = static_cast<int>( r * width);
+
+    for (int i = 0; i < numNodes; ++i) {
+        centersX[i] = static_cast<int>((h_arrayNodes[i].x - h_minX)/(h_maxX - h_minX) * width );
+        centersY[i] = static_cast<int>((h_arrayNodes[i].y - h_minY)/(h_maxY - h_minY) * height );
+
+        if(h_arrayNodes[i].isEqual(*startNode,1e-2) || h_arrayNodes[i].isEqual(*endNode,1e-2)){
+
+            colorsR[i] = static_cast<unsigned char>(0);
+            colorsG[i] = static_cast<unsigned char>(0);
+            colorsB[i] = static_cast<unsigned char>(0);
+        }else{
+        colorsR[i] = static_cast<unsigned char>(h_arrayNodes[i].r );
+        colorsG[i] = static_cast<unsigned char>(h_arrayNodes[i].g );
+        colorsB[i] = static_cast<unsigned char>(h_arrayNodes[i].b );
+        }
+    }
+    
     savePointCloudImage(pngFilePath, width, height, centersX, 
     centersY, colorsR, colorsG, colorsB, static_cast<int>(numNodes), 
     radiusRatio);
@@ -780,7 +854,8 @@ __global__ void computeKnnNodes(NodeType* d_sortedX, NodeType* d_sortedY, NodeTy
 
     if (idx < N) {
 
-        T maxDist = 1e30f;   
+        T maxDist = 1e30f;
+
         if (idx == 0) {
             for (int i = 0; i < k; ++i) {
                 distances[i] = maxDist;
@@ -821,7 +896,7 @@ __global__ void checkNodeExsist(const NodeType* d_nodesArray, int numNodes,
     
     if (idx < numNodes) {
         if (atomicExch(status, 0) == 0) {
-            if (d_nodesArray[idx].isEqual(*nodeToCheck)) {
+            if (d_nodesArray[idx].isEqual(*nodeToCheck, 1e-3)) {
                 atomicExch(status, 1);  
             }
        }
@@ -994,7 +1069,6 @@ __global__ void getChunkArray(const NodeType* d_nodesArray, int N, int chunkSize
         d_chunkArray[idx] = d_nodesArray[startIdx + idx];
     }
 }
-
  
 template<typename NodeType>
 void getChunk(const NodeType* nodesArray, int N, int chunkSize, int index, NodeType* chunkArray) {
@@ -1006,7 +1080,6 @@ void getChunk(const NodeType* nodesArray, int N, int chunkSize, int index, NodeT
         chunkArray[i] = nodesArray[startIdx + i];
     }
 }
-
 
 /** 
  * @brief Computes the best successor node based on path metric f(n) = g(n) + h(n) 
@@ -1050,7 +1123,6 @@ __global__ void computeOptimalNode(const NodeType* d_nodesArray, int k, const No
     *d_bestNode = d_nodesArray[minIndex];
     }
 }
-
 
 /**
  * @class AstarPlanner base class 
@@ -1313,96 +1385,38 @@ private:
 
     template <typename NodeType, typename T>
     HOST_FUN void AstarPlanner<NodeType, T>::setInitialNode(NodeType* startNode_) {
-        cudaError_t err;
-
-        // Allocate and initialize device memory for status
-        int* d_startNodeExists;
-        err = cudaMalloc((void**)&d_startNodeExists, sizeof(int));
-        if (err != cudaSuccess) {
-            std::cerr << "Error allocating memory for d_startNodeExists: " << cudaGetErrorString(err) << std::endl;
-            return;
-        }
         
-        err = cudaMemset(d_startNodeExists, 0, sizeof(int)); // Initialize status to 0 (false)
-        if (err != cudaSuccess) {
-            std::cerr << "Error setting memory for d_startNodeExists: " << cudaGetErrorString(err) << std::endl;
-            cudaFree(d_startNodeExists);
-            return;
-        }
-
-        // Allocate memory for the nodes array on the device
+        int* d_startNodeExists;
+        cudaMalloc((void**)&d_startNodeExists, sizeof(int));
+       
+        cudaMemset(d_startNodeExists, 0, sizeof(int)); 
         NodeType* d_nodesArray;
-        err = cudaMalloc((void**)&d_nodesArray, numNodes * sizeof(NodeType));
-        if (err != cudaSuccess) {
-            std::cerr << "Error allocating memory for d_nodesArray: " << cudaGetErrorString(err) << std::endl;
-            cudaFree(d_startNodeExists);
-            return;
-        }
+        cudaMalloc((void**)&d_nodesArray, numNodes * sizeof(NodeType));
 
-        // Copy host nodes array to device memory
-        err = cudaMemcpy(d_nodesArray, h_nodesArray, numNodes * sizeof(NodeType), cudaMemcpyHostToDevice);
-        if (err != cudaSuccess) {
-            std::cerr << "Error copying memory to d_nodesArray: " << cudaGetErrorString(err) << std::endl;
-            cudaFree(d_nodesArray);
-            cudaFree(d_startNodeExists);
-            return;
-        }
+        cudaMemcpy(d_nodesArray, h_nodesArray, numNodes * sizeof(NodeType), cudaMemcpyHostToDevice);
 
-        // Calculate grid and block size
         int blocksPerGrid = (numNodes + threadsPerBlock - 1) / threadsPerBlock;
 
-        // Allocate memory for the start node on the device
         NodeType* d_startNode;
-        err = cudaMalloc((void**)&d_startNode, sizeof(NodeType));
-        if (err != cudaSuccess) {
-            std::cerr << "Error allocating memory for d_startNode: " << cudaGetErrorString(err) << std::endl;
-            cudaFree(d_nodesArray);
-            cudaFree(d_startNodeExists);
-            return;
-        }
+        cudaMalloc((void**)&d_startNode, sizeof(NodeType));
+    
+        cudaMemcpy(d_startNode, startNode_, sizeof(NodeType), cudaMemcpyHostToDevice);
 
-        // Copy start node to device memory
-        err = cudaMemcpy(d_startNode, startNode_, sizeof(NodeType), cudaMemcpyHostToDevice);
-        if (err != cudaSuccess) {
-            std::cerr << "Error copying memory to d_startNode: " << cudaGetErrorString(err) << std::endl;
-            cudaFree(d_nodesArray);
-            cudaFree(d_startNodeExists);
-            cudaFree(d_startNode);
-            return;
-        }
+        checkNodeExsist<NodeType, T><<<blocksPerGrid, threadsPerBlock>>>(d_nodesArray, numNodes,
+                                                                d_startNode, d_startNodeExists);
 
-        // Launch the kernel
-        checkNodeExsist<NodeType, T><<<blocksPerGrid, threadsPerBlock>>>(d_nodesArray, numNodes, d_startNode, d_startNodeExists);
-        err = cudaGetLastError();
-        if (err != cudaSuccess) {
-            std::cerr << "Error launching kernel: " << cudaGetErrorString(err) << std::endl;
-            cudaFree(d_nodesArray);
-            cudaFree(d_startNodeExists);
-            cudaFree(d_startNode);
-            return;
-        }
-
-        // Synchronize the device
-        err = cudaDeviceSynchronize();
-        if (err != cudaSuccess) {
-            std::cerr << "Error synchronizing device: " << cudaGetErrorString(err) << std::endl;
-        }
-
-        // Copy the result from device to host
         int h_startNodeExists = 0;
-        err = cudaMemcpy(&h_startNodeExists, d_startNodeExists, sizeof(int), cudaMemcpyDeviceToHost);
-        if (err != cudaSuccess) {
-            std::cerr << "Error copying memory from d_startNodeExists: " << cudaGetErrorString(err) << std::endl;
-            cudaFree(d_nodesArray);
-            cudaFree(d_startNodeExists);
-            cudaFree(d_startNode);
-            return;
+        cudaMemcpy(&h_startNodeExists, d_startNodeExists, sizeof(int), cudaMemcpyDeviceToHost);
+
+        if(h_startNodeExists){
+            startNode = startNode_;
+        }else{
+            #if defined(CUASTAR_DEBUG) 
+                LOG_F(INFO, "Start Node do not exsit in Point Cloud Data") ;
+            #endif
+            startNode = startNode_;
         }
-
-        // Print the result
-        std::cout << "Node existence status: " << (h_startNodeExists ? "True" : "False") << std::endl;
-
-        // Clean up
+        
         cudaFree(d_startNodeExists);
         cudaFree(d_nodesArray);
         cudaFree(d_startNode);
@@ -1411,7 +1425,7 @@ private:
     template <typename NodeType, typename T>
     HOST_FUN void AstarPlanner<NodeType, T>::setTargetNode(NodeType* endNode_) {
      
-        if (endNode_->isEqual(startNode)) {
+        if (endNode_->isEqual(*startNode)) {
             throw std::runtime_error("Target node should not match start node");
             return;
         }
@@ -1433,18 +1447,28 @@ private:
                                                                  d_endNode, d_endNodeExists);
 
         int h_endNodeExists = 0;
+
         cudaMemcpy(&h_endNodeExists, d_endNodeExists, sizeof(int), cudaMemcpyDeviceToHost);
-        cudaFree(d_startNodeExists);
+
+        if(h_endNodeExists){
+            endNode = endNode_;
+        }else{
+            #if defined(CUASTAR_DEBUG) 
+                LOG_F(INFO, "Target Node do not exsit in Point Cloud Data") ;
+            #endif
+            endNode = endNode_;
+        }
+        cudaFree(d_endNodeExists);
         cudaFree(d_nodesArray);
-        cudaFree(d_startNode);
+        cudaFree(d_endNode);
     }
 
     template<typename NodeType, typename T>
     HOST_FUN void AstarPlanner<NodeType, T>::computeChunkOpenSet() {
 
-        //chunkSize = 100;
+        chunkSize = 128;
         int range = numNodes;
-        int k = chunkSize/10;
+        int k = chunkSize-30;
         int chunksNum = numNodes / chunkSize;
         int blocksNum = (numNodes + threadsPerBlock - 1) / threadsPerBlock;
 
@@ -1453,25 +1477,16 @@ private:
        
         cudaMemcpy(d_nodesArray, h_nodesArray, sizeof(NodeType) * numNodes, cudaMemcpyHostToDevice);
 
-        NodeType* d_chunksOpenSetArray;
-        cudaMalloc(&d_chunksOpenSetArray, numNodes * sizeof(NodeType));
+        h_chunksOpenSetArray = new NodeType[numNodes]();
 
-        NodeType* h_chunksOpenSetArray = (NodeType*)malloc(numNodes * sizeof(NodeType));
-        
         for (int i = 0; i < chunksNum; i++) {
+
             std::cout << "process step " << i << "/" << chunksNum << std::endl;
 
             NodeType* h_chunkNodesArray = (NodeType*)malloc(chunkSize * sizeof(NodeType));
             
             getChunk<NodeType>(h_nodesArray, numNodes, chunkSize, i, h_chunkNodesArray);
-
- /*
-            std::cout << "The chunk nodes are:\n";
-    for (int r = 0; r < chunkSize; ++r) {
-        std::cout << "Node " << r + 1 << ": (" << h_chunkNodesArray[r].x << ", " << h_chunkNodesArray[r].y << ", " << h_chunkNodesArray[r].z << ")\n";
-    }
-          */
-          
+ 
             NodeType* d_chunkSortedX;
             NodeType* d_chunkSortedY;
             NodeType* d_chunkSortedZ;
@@ -1485,30 +1500,18 @@ private:
                 h_chunkNodesArray_[p] = NodeType(h_chunkNodesArray[p].x, h_chunkNodesArray[p].y, h_chunkNodesArray[p].z);
             }
 
-             
             NodeType* d_chunkNodesArray;
             cudaMalloc(&d_chunkNodesArray, chunkSize * sizeof(NodeType));
-            cudaError_t err = cudaMemcpy(d_chunkNodesArray, h_chunkNodesArray_, sizeof(NodeType)* chunkSize, 
+            cudaMemcpy(d_chunkNodesArray, h_chunkNodesArray_, sizeof(NodeType)* chunkSize, 
             cudaMemcpyHostToDevice);
-            if (err != cudaSuccess) {
-                printf("Error in cudaMemcpy chunk:  %s\n",cudaGetErrorString(err));
-                exit(EXIT_FAILURE);
-            }
-
 
             enumerationSortNodes<NodeType, T><<<blocksNum, threadsPerBlock>>>(d_chunkNodesArray, chunkSize, 1, d_chunkSortedX);
-            err = cudaDeviceSynchronize();
-            if (err != cudaSuccess) {
-                printf("Error in enumerationSortNodes x:  %s\n",cudaGetErrorString(err));
-                exit(EXIT_FAILURE);
-            }
-
-
+            cudaDeviceSynchronize();
             enumerationSortNodes<NodeType, T><<<blocksNum, threadsPerBlock>>>(d_chunkNodesArray, chunkSize, 2, d_chunkSortedY);
             cudaDeviceSynchronize();
             enumerationSortNodes<NodeType, T><<<blocksNum, threadsPerBlock>>>(d_chunkNodesArray, chunkSize, 3, d_chunkSortedZ);
             cudaDeviceSynchronize();
-           
+            
             NodeType* d_endNode;
             cudaMalloc(&d_endNode, sizeof(NodeType));
             cudaMemcpy(d_endNode, endNode, sizeof(NodeType), cudaMemcpyHostToDevice);
@@ -1520,49 +1523,26 @@ private:
              
             computeKnnNodes<NodeType,T><<<blocksNum, threadsPerBlock>>>(d_chunkSortedX, d_chunkSortedY, d_chunkSortedZ,
                                                                        endNode_, chunkSize, k, range, d_kNodes);
-            
-            err = cudaDeviceSynchronize();
-            if (err != cudaSuccess) {
-                printf("Error in kernel computeKnnNodes:  %s\n",cudaGetErrorString(err));
-                exit(EXIT_FAILURE);
-            }else{
-                std::cout << "sucess knns";
-            }
-
+            cudaDeviceSynchronize();
             NodeType* h_kNodes = (NodeType*)malloc(k * sizeof(NodeType));
             cudaMemcpy(h_kNodes, d_kNodes, k * sizeof(NodeType), cudaMemcpyDeviceToHost);
-            
-            std::cout << "The k nearest nodes are:\n";
-    for (int t = 0; t < k; ++t) {
-        std::cout << "Node " << t + 1 << ": (" << h_kNodes[t].x << ", " << h_kNodes[t].y << ", " << h_kNodes[t].z << ")\n";
-    }
-
-
-
+    
             NodeType* d_chunkSortedNodes;
             cudaMalloc(&d_chunkSortedNodes, k * sizeof(NodeType));
 
             computeSortedNodes<NodeType, T><<<blocksNum, threadsPerBlock>>>(d_kNodes, k, d_endNode, d_chunkSortedNodes);
-            err = cudaDeviceSynchronize();
-            if (err != cudaSuccess) {
-                printf("Error in kernel computeSortedNodes: %s\n", cudaGetErrorString(err));
-            }
+            cudaDeviceSynchronize();
 
             NodeType* h_chunkSortedNodes = (NodeType*)malloc(k * sizeof(NodeType));
 
-            err = cudaMemcpy(h_chunkSortedNodes, d_chunkSortedNodes, k * sizeof(NodeType), cudaMemcpyDeviceToHost);
-            if (err != cudaSuccess) {
-                printf("Error in cudaMemcpy for h_chunkSortedNodes: %s\n", cudaGetErrorString(err));
-            }
+            cudaMemcpy(h_chunkSortedNodes, d_chunkSortedNodes, k * sizeof(NodeType), cudaMemcpyDeviceToHost);
 
             for (int s = 0; s < k; s++) {
-                h_chunksOpenSetArray[i * chunkSize + s] = h_chunkSortedNodes[s];
+                h_chunksOpenSetArray[i * k + s] = h_chunkSortedNodes[s]; // it size is k * (chunksNum + 1)
                 if (s + 1 < k) { 
-                    h_chunksOpenSetArray[i * chunkSize + s + 1].p_node = &h_chunksOpenSetArray[i * chunkSize + s];
+                    h_chunksOpenSetArray[i * k + s + 1].p_node = &h_chunksOpenSetArray[i * k + s];
                 }
             }
-
-
             free(h_chunkSortedNodes);
             cudaFree(d_chunkNodesArray);
             cudaFree(d_chunkSortedX);
@@ -1570,58 +1550,113 @@ private:
             cudaFree(d_chunkSortedZ);
             cudaFree(d_kNodes);
         }
+        NodeType* h_plot = new NodeType[numNodes];
+        for (int p = 0; p < numNodes; ++p) { 
+            h_plot[p] = NodeType(h_chunksOpenSetArray[p].x, h_chunksOpenSetArray[p].y, h_chunksOpenSetArray[p].z);
+        }
+            int validCount = 0;
+            for (int p = 0; p < numNodes; ++p) {
+                if ((h_chunksOpenSetArray[p].x != 0 || h_chunksOpenSetArray[p].y != 0 || h_chunksOpenSetArray[p].z != 0) &&
+                    (abs(h_chunksOpenSetArray[p].x) <= 1000 && abs(h_chunksOpenSetArray[p].y) <= 1000 && abs(h_chunksOpenSetArray[p].z) <= 1000)) {
+                    validCount++;
+                }
+            }
+            NodeType* valid_h_plot = new NodeType[validCount];
 
-        cudaFree(d_chunksOpenSetArray);
-        std::cout << "open set array \n";
-        for (int t = 0; t < numNodes; ++t) {
-        std::cout << "Node " << t + 1 << ": (" << h_chunksOpenSetArray[t].x << ", " 
-        << h_chunksOpenSetArray[t].y << ", " << h_chunksOpenSetArray[t].z << ")\n";
-    }
-         
+            int index = 0;
+            for (int p = 0; p < numNodes; ++p) {
+                if ((h_chunksOpenSetArray[p].x != 0 || h_chunksOpenSetArray[p].y != 0 || 
+                    h_chunksOpenSetArray[p].z != 0) &&
+                    (abs(h_chunksOpenSetArray[p].x) <= 1e3 && abs(h_chunksOpenSetArray[p].y) <= 1e3 
+                            && abs(h_chunksOpenSetArray[p].z) <= 1e3)) {
+                    valid_h_plot[index++] = NodeType(h_chunksOpenSetArray[p].x, 
+                            h_chunksOpenSetArray[p].y, h_chunksOpenSetArray[p].z);
+                }
+            }
+            NodeType* newArray = new NodeType[validCount + 1];
+            for (int i = 0; i < validCount; ++i) {
+                newArray[i] = valid_h_plot[i];
+            }
+            newArray[validCount] = NodeType(startNode->x, startNode->y, startNode->z);
+             
+            valid_h_plot = newArray;
+            validCount++;
+            array2PointCloudImgBound<NodeType>(newArray, validCount, "chunks.png", startNode, endNode, 800, 0.002);
+             
     }
 
     template<typename NodeType, typename T>
     HOST_FUN void AstarPlanner<NodeType, T>::computeTrajectory() {
-    
+
+        chunkSize = 128;
+        int k = chunkSize-30;
         int chunksNum = numNodes / chunkSize;
+   
         int blocksNum = (numNodes + threadsPerBlock - 1) / threadsPerBlock;
 
         NodeType* h_pathArray = new NodeType[numNodes];
         NodeType* d_pathArray;
         cudaMalloc(&d_pathArray, numNodes * sizeof(NodeType));
 
-        NodeType* h_guessArray = new NodeType[chunkSize];
-        
-        NodeType* d_guessArray;
-        cudaMalloc(&d_guessArray, chunkSize * sizeof(NodeType));
+        NodeType* d_endNode;
+        cudaMalloc((void**)&d_endNode, sizeof(NodeType));
+        cudaMemcpy(d_endNode, endNode, sizeof(NodeType), cudaMemcpyHostToDevice);
 
         NodeType* h_optNode = new NodeType;
         NodeType* d_optNode;
         cudaMalloc(&d_optNode, sizeof(NodeType));
 
-        for (int i = 0; i < chunkSize; i++) {
-            
-            for (int k = 0; k < chunksNum; k++) {
-                h_guessArray[k] = h_chunksOpenSetArray[i + k * chunkSize];
+        for (int i = 0; i < k; i++) {
+            std::cout << "step" << i << std::endl;
+
+            NodeType* h_guessArray = new NodeType[chunksNum];
+            NodeType* d_guessArray;
+            cudaMalloc(&d_guessArray, chunksNum * sizeof(NodeType));
+           std::cout << "guess number " << i << std::endl;
+            for (int s = 0; s < chunksNum; s++) {
+                if (i + s * k < numNodes) {
+                    h_guessArray[s] = h_chunksOpenSetArray[i + s * k];
+                    
+                }
+            }
+        
+            cudaError_t err = cudaMemcpy(d_guessArray, h_guessArray, chunksNum * sizeof(NodeType), cudaMemcpyHostToDevice);
+            if (err != cudaSuccess) {
+                std::cout << "CUDA error: " << cudaGetErrorString(err) << std::endl;
+                break;  
             }
 
-            cudaMemcpy(d_guessArray, h_guessArray, chunkSize * sizeof(NodeType), cudaMemcpyHostToDevice);
+            computeOptimalNode<NodeType,T><<<blocksNum, threadsPerBlock>>>(d_guessArray, chunksNum, d_endNode, d_optNode);
 
-            computeOptimalNode<NodeType, T><<<blocksNum, threadsPerBlock>>>(d_guessArray, chunksNum, d_endNode, d_optNode);
-            cudaDeviceSynchronize();
-
+            err = cudaDeviceSynchronize();
+            if (err != cudaSuccess) {
+                std::cout << "CUDA error: " << cudaGetErrorString(err) << std::endl;
+                break;  
+            }
+/*
             cudaMemcpy(h_optNode, d_optNode, sizeof(NodeType), cudaMemcpyDeviceToHost);
             h_pathArray[i] = *h_optNode;
+
+            cudaFree(d_guessArray);
+            delete[] h_guessArray;
         }
+
         cudaMemcpy(d_pathArray, h_pathArray, numNodes * sizeof(NodeType), cudaMemcpyHostToDevice);
 
+        for (int i = 0; i < chunksNum; i++ ) {
+            std::cout << "Node" << i << "(" << h_pathArray[i].x << "," << h_pathArray[i].y << "," << 
+            h_pathArray[i].z << ")" << std::endl;
+        }
+
+        array2PointCloudImgBound<NodeType>(h_pathArray, chunksNum, "traj.png", startNode, endNode, 800, 0.002);
+
         cudaFree(d_pathArray);
-        cudaFree(d_guessArray);
         cudaFree(d_optNode);
-        
-        delete[] h_guessArray;
-        delete  h_optNode;
-    }
+        cudaFree(d_endNode);
+        delete[] h_pathArray;
+        delete h_optNode;
+         */
+    }}
 
     template<typename NodeType, typename T>
     HOST_FUN void AstarPlanner<NodeType, T>::writeTrajectory2csv(const std::string outputFilePath) {

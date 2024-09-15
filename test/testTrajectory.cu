@@ -1,4 +1,4 @@
-// // nvcc -std=c++17 -o build/testChunkOpenSet test/testChunkOpenSet.cu
+// // nvcc -std=c++17 -o build/testTrajectory test/testTrajectory.cu
 #define CUASTAR_IMPLEMENTATION 
 #define CUASTAR_DEBUG
 
@@ -14,6 +14,7 @@ int main(){
     planner.setTargetNode(&end);
     planner.setInitialNode(&start);
     planner.computeChunkOpenSet();
+    planner.computeTrajectory();
 
     return 0;
 }

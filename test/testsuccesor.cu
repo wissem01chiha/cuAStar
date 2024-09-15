@@ -39,7 +39,7 @@ int main() {
 
     // Launch kernel (using one block with k threads and shared memory)
     int threadsPerBlock = k; // Set the number of threads per block
-    computeSucessorNode<Node3d<float>, float><<<1, threadsPerBlock>>>(d_knnNodesArray, k, d_endNode, d_bestNode);
+    computeOptimalNode<Node3d<float>, float><<<1, threadsPerBlock>>>(d_knnNodesArray, k, d_endNode, d_bestNode);
 
     // Copy result back to host
     cudaMemcpy(&h_bestNode, d_bestNode, sizeof(Node3d<T>), cudaMemcpyDeviceToHost);
