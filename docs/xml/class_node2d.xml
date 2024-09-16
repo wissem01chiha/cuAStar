@@ -1,0 +1,368 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.10.0" xml:lang="en-US">
+  <compounddef id="class_node2d" kind="class" language="C++" prot="public">
+    <compoundname>Node2d</compoundname>
+    <includes refid="cu_a_star_8hpp" local="no">cuAStar.hpp</includes>
+    <templateparamlist>
+      <param>
+        <type><ref refid="cu_a_star_8hpp_1a00de2d0d0ab9f396c3e3748eb63cab29" kindref="member">typename</ref> <ref refid="cu_a_star_8hpp_1a00de2d0d0ab9f396c3e3748eb63cab29" kindref="member">T</ref></type>
+      </param>
+    </templateparamlist>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="class_node2d_1a7f0a33591d0f5a4e39e58cba57ad3f9e" prot="public" static="no" mutable="no">
+        <type><ref refid="cu_a_star_8hpp_1a00de2d0d0ab9f396c3e3748eb63cab29" kindref="member">T</ref></type>
+        <definition>T Node2d&lt; T &gt;::x</definition>
+        <argsstring></argsstring>
+        <name>x</name>
+        <qualifiedname>Node2d::x</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/cuAStar.hpp" line="225" column="7" bodyfile="include/cuAStar.hpp" bodystart="225" bodyend="-1"/>
+        <referencedby refid="class_node2d_1a4e13e20edf03428abb09ee0a6872dd46" compoundref="cu_a_star_8hpp" startline="269" endline="272">Node2d&lt; T &gt;::distanceTo</referencedby>
+        <referencedby refid="class_node2d_1a1a33a4b7484c03502669e48d656508b9" compoundref="cu_a_star_8hpp" startline="263" endline="266">Node2d&lt; T &gt;::isEqual</referencedby>
+        <referencedby refid="class_node2d_1a1e14fcc5340d9f8011e5cc6ffd3abb9f" compoundref="cu_a_star_8hpp" startline="236" endline="241">Node2d&lt; T &gt;::Node2d</referencedby>
+        <referencedby refid="class_node2d_1a31af4fda372a965ba15bacd22012294a" compoundref="cu_a_star_8hpp" startline="244" endline="249">Node2d&lt; T &gt;::Node2d</referencedby>
+        <referencedby refid="class_node2d_1a517fa7d79fe533add98dc8b3c6bece3b" compoundref="cu_a_star_8hpp" startline="255" endline="260">Node2d&lt; T &gt;::Node2d</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="class_node2d_1a25ac692d4b55f05b438944aa454ce47e" prot="public" static="no" mutable="no">
+        <type><ref refid="cu_a_star_8hpp_1a00de2d0d0ab9f396c3e3748eb63cab29" kindref="member">T</ref></type>
+        <definition>T Node2d&lt; T &gt;::y</definition>
+        <argsstring></argsstring>
+        <name>y</name>
+        <qualifiedname>Node2d::y</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/cuAStar.hpp" line="226" column="7" bodyfile="include/cuAStar.hpp" bodystart="226" bodyend="-1"/>
+        <referencedby refid="class_node2d_1a4e13e20edf03428abb09ee0a6872dd46" compoundref="cu_a_star_8hpp" startline="269" endline="272">Node2d&lt; T &gt;::distanceTo</referencedby>
+        <referencedby refid="class_node2d_1a1a33a4b7484c03502669e48d656508b9" compoundref="cu_a_star_8hpp" startline="263" endline="266">Node2d&lt; T &gt;::isEqual</referencedby>
+        <referencedby refid="class_node2d_1a1e14fcc5340d9f8011e5cc6ffd3abb9f" compoundref="cu_a_star_8hpp" startline="236" endline="241">Node2d&lt; T &gt;::Node2d</referencedby>
+        <referencedby refid="class_node2d_1a31af4fda372a965ba15bacd22012294a" compoundref="cu_a_star_8hpp" startline="244" endline="249">Node2d&lt; T &gt;::Node2d</referencedby>
+        <referencedby refid="class_node2d_1a517fa7d79fe533add98dc8b3c6bece3b" compoundref="cu_a_star_8hpp" startline="255" endline="260">Node2d&lt; T &gt;::Node2d</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="class_node2d_1a387f967ea488e06539aa7948a0405632" prot="public" static="no" mutable="no">
+        <type><ref refid="cu_a_star_8hpp_1a00de2d0d0ab9f396c3e3748eb63cab29" kindref="member">T</ref></type>
+        <definition>T Node2d&lt; T &gt;::z</definition>
+        <argsstring></argsstring>
+        <name>z</name>
+        <qualifiedname>Node2d::z</qualifiedname>
+        <initializer>= <ref refid="cu_a_star_8hpp_1a00de2d0d0ab9f396c3e3748eb63cab29" kindref="member">static_cast</ref>&lt;<ref refid="cu_a_star_8hpp_1a00de2d0d0ab9f396c3e3748eb63cab29" kindref="member">T</ref>&gt;(0)</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/cuAStar.hpp" line="227" column="7" bodyfile="include/cuAStar.hpp" bodystart="227" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_node2d_1adc956e5291ef12d5df35f976dbcc360f" prot="public" static="no" mutable="no">
+        <type><ref refid="cu_a_star_8hpp_1a00de2d0d0ab9f396c3e3748eb63cab29" kindref="member">T</ref></type>
+        <definition>T Node2d&lt; T &gt;::sum_cost</definition>
+        <argsstring></argsstring>
+        <name>sum_cost</name>
+        <qualifiedname>Node2d::sum_cost</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/cuAStar.hpp" line="228" column="7" bodyfile="include/cuAStar.hpp" bodystart="228" bodyend="-1"/>
+        <referencedby refid="class_node2d_1a1e14fcc5340d9f8011e5cc6ffd3abb9f" compoundref="cu_a_star_8hpp" startline="236" endline="241">Node2d&lt; T &gt;::Node2d</referencedby>
+        <referencedby refid="class_node2d_1a31af4fda372a965ba15bacd22012294a" compoundref="cu_a_star_8hpp" startline="244" endline="249">Node2d&lt; T &gt;::Node2d</referencedby>
+        <referencedby refid="class_node2d_1a517fa7d79fe533add98dc8b3c6bece3b" compoundref="cu_a_star_8hpp" startline="255" endline="260">Node2d&lt; T &gt;::Node2d</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="class_node2d_1a5640841633b719a8c76ee90c130db49b" prot="public" static="no" mutable="no">
+        <type><ref refid="class_node2d" kindref="compound">Node2d</ref> *</type>
+        <definition>Node2d* Node2d&lt; T &gt;::p_node</definition>
+        <argsstring></argsstring>
+        <name>p_node</name>
+        <qualifiedname>Node2d::p_node</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/cuAStar.hpp" line="229" column="12" bodyfile="include/cuAStar.hpp" bodystart="229" bodyend="-1"/>
+        <referencedby refid="class_node2d_1a1e14fcc5340d9f8011e5cc6ffd3abb9f" compoundref="cu_a_star_8hpp" startline="236" endline="241">Node2d&lt; T &gt;::Node2d</referencedby>
+        <referencedby refid="class_node2d_1a31af4fda372a965ba15bacd22012294a" compoundref="cu_a_star_8hpp" startline="244" endline="249">Node2d&lt; T &gt;::Node2d</referencedby>
+        <referencedby refid="class_node2d_1a517fa7d79fe533add98dc8b3c6bece3b" compoundref="cu_a_star_8hpp" startline="255" endline="260">Node2d&lt; T &gt;::Node2d</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="class_node2d_1a93fa9074e91b43e3b35175d02b2009e1" prot="public" static="no" mutable="no">
+        <type><ref refid="cu_a_star_8hpp_1a00de2d0d0ab9f396c3e3748eb63cab29" kindref="member">int</ref></type>
+        <definition>int Node2d&lt; T &gt;::r</definition>
+        <argsstring></argsstring>
+        <name>r</name>
+        <qualifiedname>Node2d::r</qualifiedname>
+        <initializer>= 210</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/cuAStar.hpp" line="231" column="9" bodyfile="include/cuAStar.hpp" bodystart="231" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_node2d_1aa1c504e34e096c348347d0d5ac5d6e9e" prot="public" static="no" mutable="no">
+        <type><ref refid="cu_a_star_8hpp_1a00de2d0d0ab9f396c3e3748eb63cab29" kindref="member">int</ref></type>
+        <definition>int Node2d&lt; T &gt;::g</definition>
+        <argsstring></argsstring>
+        <name>g</name>
+        <qualifiedname>Node2d::g</qualifiedname>
+        <initializer>= 109</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/cuAStar.hpp" line="232" column="9" bodyfile="include/cuAStar.hpp" bodystart="232" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_node2d_1a54b104bf3bc639906eecdd2aa75422f8" prot="public" static="no" mutable="no">
+        <type><ref refid="cu_a_star_8hpp_1a00de2d0d0ab9f396c3e3748eb63cab29" kindref="member">int</ref></type>
+        <definition>int Node2d&lt; T &gt;::b</definition>
+        <argsstring></argsstring>
+        <name>b</name>
+        <qualifiedname>Node2d::b</qualifiedname>
+        <initializer>= 109</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/cuAStar.hpp" line="233" column="9" bodyfile="include/cuAStar.hpp" bodystart="233" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="class_node2d_1a1e14fcc5340d9f8011e5cc6ffd3abb9f" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>Node2d&lt; T &gt;::Node2d</definition>
+        <argsstring>()</argsstring>
+        <name>Node2d</name>
+        <qualifiedname>Node2d::Node2d</qualifiedname>
+        <briefdescription>
+<para>default constructor for the <ref refid="class_node2d" kindref="compound">Node2d</ref> class </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/cuAStar.hpp" line="236" column="8" bodyfile="include/cuAStar.hpp" bodystart="236" bodyend="241"/>
+        <references refid="class_node2d_1a5640841633b719a8c76ee90c130db49b" compoundref="cu_a_star_8hpp" startline="229">Node2d&lt; T &gt;::p_node</references>
+        <references refid="class_node2d_1adc956e5291ef12d5df35f976dbcc360f" compoundref="cu_a_star_8hpp" startline="228">Node2d&lt; T &gt;::sum_cost</references>
+        <references refid="class_node2d_1a7f0a33591d0f5a4e39e58cba57ad3f9e" compoundref="cu_a_star_8hpp" startline="225">Node2d&lt; T &gt;::x</references>
+        <references refid="class_node2d_1a25ac692d4b55f05b438944aa454ce47e" compoundref="cu_a_star_8hpp" startline="226">Node2d&lt; T &gt;::y</references>
+      </memberdef>
+      <memberdef kind="function" id="class_node2d_1a31af4fda372a965ba15bacd22012294a" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>Node2d&lt; T &gt;::Node2d</definition>
+        <argsstring>(T x_, T y_, T sum_cost_, Node2d *p_node_)</argsstring>
+        <name>Node2d</name>
+        <qualifiedname>Node2d::Node2d</qualifiedname>
+        <param>
+          <type><ref refid="cu_a_star_8hpp_1a00de2d0d0ab9f396c3e3748eb63cab29" kindref="member">T</ref></type>
+          <declname>x_</declname>
+        </param>
+        <param>
+          <type><ref refid="cu_a_star_8hpp_1a00de2d0d0ab9f396c3e3748eb63cab29" kindref="member">T</ref></type>
+          <declname>y_</declname>
+        </param>
+        <param>
+          <type><ref refid="cu_a_star_8hpp_1a00de2d0d0ab9f396c3e3748eb63cab29" kindref="member">T</ref></type>
+          <declname>sum_cost_</declname>
+        </param>
+        <param>
+          <type><ref refid="class_node2d" kindref="compound">Node2d</ref> *</type>
+          <declname>p_node_</declname>
+        </param>
+        <briefdescription>
+<para>Constructor for the <ref refid="class_node2d" kindref="compound">Node2d</ref> class. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/cuAStar.hpp" line="244" column="8" bodyfile="include/cuAStar.hpp" bodystart="244" bodyend="249"/>
+        <references refid="class_node2d_1a5640841633b719a8c76ee90c130db49b" compoundref="cu_a_star_8hpp" startline="229">Node2d&lt; T &gt;::p_node</references>
+        <references refid="class_node2d_1adc956e5291ef12d5df35f976dbcc360f" compoundref="cu_a_star_8hpp" startline="228">Node2d&lt; T &gt;::sum_cost</references>
+        <references refid="class_node2d_1a7f0a33591d0f5a4e39e58cba57ad3f9e" compoundref="cu_a_star_8hpp" startline="225">Node2d&lt; T &gt;::x</references>
+        <references refid="class_node2d_1a25ac692d4b55f05b438944aa454ce47e" compoundref="cu_a_star_8hpp" startline="226">Node2d&lt; T &gt;::y</references>
+      </memberdef>
+      <memberdef kind="function" id="class_node2d_1a517fa7d79fe533add98dc8b3c6bece3b" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>Node2d&lt; T &gt;::Node2d</definition>
+        <argsstring>(T x_, T y_, T z_)</argsstring>
+        <name>Node2d</name>
+        <qualifiedname>Node2d::Node2d</qualifiedname>
+        <param>
+          <type><ref refid="cu_a_star_8hpp_1a00de2d0d0ab9f396c3e3748eb63cab29" kindref="member">T</ref></type>
+          <declname>x_</declname>
+        </param>
+        <param>
+          <type><ref refid="cu_a_star_8hpp_1a00de2d0d0ab9f396c3e3748eb63cab29" kindref="member">T</ref></type>
+          <declname>y_</declname>
+        </param>
+        <param>
+          <type><ref refid="cu_a_star_8hpp_1a00de2d0d0ab9f396c3e3748eb63cab29" kindref="member">T</ref></type>
+          <declname>z_</declname>
+        </param>
+        <briefdescription>
+<para>Overlaoding Constructor for the general puropse template calls. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/cuAStar.hpp" line="255" column="8" bodyfile="include/cuAStar.hpp" bodystart="255" bodyend="260"/>
+        <references refid="class_node2d_1a5640841633b719a8c76ee90c130db49b" compoundref="cu_a_star_8hpp" startline="229">Node2d&lt; T &gt;::p_node</references>
+        <references refid="class_node2d_1adc956e5291ef12d5df35f976dbcc360f" compoundref="cu_a_star_8hpp" startline="228">Node2d&lt; T &gt;::sum_cost</references>
+        <references refid="class_node2d_1a7f0a33591d0f5a4e39e58cba57ad3f9e" compoundref="cu_a_star_8hpp" startline="225">Node2d&lt; T &gt;::x</references>
+        <references refid="class_node2d_1a25ac692d4b55f05b438944aa454ce47e" compoundref="cu_a_star_8hpp" startline="226">Node2d&lt; T &gt;::y</references>
+      </memberdef>
+      <memberdef kind="function" id="class_node2d_1a1a33a4b7484c03502669e48d656508b9" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="cu_a_star_8hpp_1a00de2d0d0ab9f396c3e3748eb63cab29" kindref="member">bool</ref></type>
+        <definition>bool Node2d&lt; T &gt;::isEqual</definition>
+        <argsstring>(const Node2d &amp;other, T eps=static_cast&lt; T &gt;(1e-6)) const</argsstring>
+        <name>isEqual</name>
+        <qualifiedname>Node2d::isEqual</qualifiedname>
+        <param>
+          <type><ref refid="cu_a_star_8hpp_1a00de2d0d0ab9f396c3e3748eb63cab29" kindref="member">const</ref> <ref refid="class_node2d" kindref="compound">Node2d</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <param>
+          <type><ref refid="cu_a_star_8hpp_1a00de2d0d0ab9f396c3e3748eb63cab29" kindref="member">T</ref></type>
+          <declname>eps</declname>
+          <defval><ref refid="cu_a_star_8hpp_1a00de2d0d0ab9f396c3e3748eb63cab29" kindref="member">static_cast</ref>&lt; <ref refid="cu_a_star_8hpp_1a00de2d0d0ab9f396c3e3748eb63cab29" kindref="member">T</ref> &gt;(1<ref refid="cu_a_star_8hpp_1a00de2d0d0ab9f396c3e3748eb63cab29" kindref="member">e</ref>-6)</defval>
+        </param>
+        <briefdescription>
+<para>Checks if two nodes are equal based on their positions. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/cuAStar.hpp" line="263" column="13" bodyfile="include/cuAStar.hpp" bodystart="263" bodyend="266"/>
+        <references refid="class_node2d_1a7f0a33591d0f5a4e39e58cba57ad3f9e" compoundref="cu_a_star_8hpp" startline="225">Node2d&lt; T &gt;::x</references>
+        <references refid="class_node2d_1a25ac692d4b55f05b438944aa454ce47e" compoundref="cu_a_star_8hpp" startline="226">Node2d&lt; T &gt;::y</references>
+      </memberdef>
+      <memberdef kind="function" id="class_node2d_1a4e13e20edf03428abb09ee0a6872dd46" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="cu_a_star_8hpp_1a00de2d0d0ab9f396c3e3748eb63cab29" kindref="member">T</ref></type>
+        <definition>T Node2d&lt; T &gt;::distanceTo</definition>
+        <argsstring>(const Node2d &amp;other) const</argsstring>
+        <name>distanceTo</name>
+        <qualifiedname>Node2d::distanceTo</qualifiedname>
+        <param>
+          <type><ref refid="cu_a_star_8hpp_1a00de2d0d0ab9f396c3e3748eb63cab29" kindref="member">const</ref> <ref refid="class_node2d" kindref="compound">Node2d</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+<para>Computes the Euclidean distance to another node. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/cuAStar.hpp" line="269" column="10" bodyfile="include/cuAStar.hpp" bodystart="269" bodyend="272"/>
+        <references refid="class_node2d_1a7f0a33591d0f5a4e39e58cba57ad3f9e" compoundref="cu_a_star_8hpp" startline="225">Node2d&lt; T &gt;::x</references>
+        <references refid="class_node2d_1a25ac692d4b55f05b438944aa454ce47e" compoundref="cu_a_star_8hpp" startline="226">Node2d&lt; T &gt;::y</references>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Base class for 2D nodes representation. </para>
+    </briefdescription>
+    <detaileddescription>
+<para><parameterlist kind="templateparam"><parameteritem>
+<parameternamelist>
+<parametername>T</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Numeric type for the sum_cost (e.g., T, float) </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>x</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>: x-coordinate in the grid </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>y</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>: y-coordinate in the grid </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>z</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>= 0 : this coordinate is used only to ensure generic function call that do not throw an error in using 3d nodes specific operations to 2d nodes based template methods. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>sum_cost</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>: cumulative cost from the start node to the current node </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>p_node</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>: pointer to the parent node </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="2">
+        <label>Node2d&lt; T &gt;</label>
+        <link refid="class_node2d"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>p_node</edgelabel>
+        </childnode>
+      </node>
+      <node id="1">
+        <label>Node2d&lt; T &gt;</label>
+        <link refid="class_node2d"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>p_node</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="include/cuAStar.hpp" line="223" column="1" bodyfile="include/cuAStar.hpp" bodystart="223" bodyend="288"/>
+    <listofallmembers>
+      <member refid="class_node2d_1a54b104bf3bc639906eecdd2aa75422f8" prot="public" virt="non-virtual"><scope>Node2d</scope><name>b</name></member>
+      <member refid="class_node2d_1a4e13e20edf03428abb09ee0a6872dd46" prot="public" virt="non-virtual"><scope>Node2d</scope><name>distanceTo</name></member>
+      <member refid="class_node2d_1aa1c504e34e096c348347d0d5ac5d6e9e" prot="public" virt="non-virtual"><scope>Node2d</scope><name>g</name></member>
+      <member refid="class_node2d_1a1a33a4b7484c03502669e48d656508b9" prot="public" virt="non-virtual"><scope>Node2d</scope><name>isEqual</name></member>
+      <member refid="class_node2d_1a1e14fcc5340d9f8011e5cc6ffd3abb9f" prot="public" virt="non-virtual"><scope>Node2d</scope><name>Node2d</name></member>
+      <member refid="class_node2d_1a31af4fda372a965ba15bacd22012294a" prot="public" virt="non-virtual"><scope>Node2d</scope><name>Node2d</name></member>
+      <member refid="class_node2d_1a517fa7d79fe533add98dc8b3c6bece3b" prot="public" virt="non-virtual"><scope>Node2d</scope><name>Node2d</name></member>
+      <member refid="class_node2d_1a5640841633b719a8c76ee90c130db49b" prot="public" virt="non-virtual"><scope>Node2d</scope><name>p_node</name></member>
+      <member refid="class_node2d_1a93fa9074e91b43e3b35175d02b2009e1" prot="public" virt="non-virtual"><scope>Node2d</scope><name>r</name></member>
+      <member refid="class_node2d_1adc956e5291ef12d5df35f976dbcc360f" prot="public" virt="non-virtual"><scope>Node2d</scope><name>sum_cost</name></member>
+      <member refid="class_node2d_1a7f0a33591d0f5a4e39e58cba57ad3f9e" prot="public" virt="non-virtual"><scope>Node2d</scope><name>x</name></member>
+      <member refid="class_node2d_1a25ac692d4b55f05b438944aa454ce47e" prot="public" virt="non-virtual"><scope>Node2d</scope><name>y</name></member>
+      <member refid="class_node2d_1a387f967ea488e06539aa7948a0405632" prot="public" virt="non-virtual"><scope>Node2d</scope><name>z</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

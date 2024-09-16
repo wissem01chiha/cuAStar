@@ -1,0 +1,497 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.10.0" xml:lang="en-US">
+  <compounddef id="class_astar_planner" kind="class" language="C++" prot="public">
+    <compoundname>AstarPlanner</compoundname>
+    <includes refid="cu_a_star_8hpp" local="no">cuAStar.hpp</includes>
+    <templateparamlist>
+      <param>
+        <type><ref refid="cu_a_star_8hpp_1a00de2d0d0ab9f396c3e3748eb63cab29" kindref="member">typename</ref> <ref refid="cu_a_star_8hpp_1a00de2d0d0ab9f396c3e3748eb63cab29" kindref="member">NodeType</ref></type>
+      </param>
+      <param>
+        <type><ref refid="cu_a_star_8hpp_1a00de2d0d0ab9f396c3e3748eb63cab29" kindref="member">typename</ref> <ref refid="cu_a_star_8hpp_1a00de2d0d0ab9f396c3e3748eb63cab29" kindref="member">T</ref></type>
+      </param>
+    </templateparamlist>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="class_astar_planner_1a3a2934934690ae00af8bfe7b30ac5f5e" prot="private" static="no" mutable="no">
+        <type><ref refid="cu_a_star_8hpp_1a00de2d0d0ab9f396c3e3748eb63cab29" kindref="member">int</ref></type>
+        <definition>int AstarPlanner&lt; NodeType, T &gt;::numNodes</definition>
+        <argsstring></argsstring>
+        <name>numNodes</name>
+        <qualifiedname>AstarPlanner::numNodes</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/cuAStar.hpp" line="1269" column="16" bodyfile="include/cuAStar.hpp" bodystart="1269" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_astar_planner_1a846df03cb9adcaf67f0d8d49a826771e" prot="private" static="no" mutable="no">
+        <type><ref refid="cu_a_star_8hpp_1a00de2d0d0ab9f396c3e3748eb63cab29" kindref="member">int</ref></type>
+        <definition>int AstarPlanner&lt; NodeType, T &gt;::chunkSize</definition>
+        <argsstring></argsstring>
+        <name>chunkSize</name>
+        <qualifiedname>AstarPlanner::chunkSize</qualifiedname>
+        <initializer>= <ref refid="cu_a_star_8hpp_1a05ee3af5827954aa76446ebc72dcb5a5" kindref="member">threadsPerBlock</ref></initializer>
+        <briefdescription>
+<para>the chunks size controls the </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/cuAStar.hpp" line="1270" column="16" bodyfile="include/cuAStar.hpp" bodystart="1270" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_astar_planner_1a6a9fd29b001d028423a47914ee90b2b3" prot="private" static="no" mutable="no">
+        <type><ref refid="cu_a_star_8hpp_1a00de2d0d0ab9f396c3e3748eb63cab29" kindref="member">NodeType</ref> *</type>
+        <definition>NodeType* AstarPlanner&lt; NodeType, T &gt;::h_nodesArray</definition>
+        <argsstring></argsstring>
+        <name>h_nodesArray</name>
+        <qualifiedname>AstarPlanner::h_nodesArray</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/cuAStar.hpp" line="1272" column="15" bodyfile="include/cuAStar.hpp" bodystart="1272" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_astar_planner_1ab455773e03f86215934c5df2d7c70a76" prot="private" static="no" mutable="no">
+        <type><ref refid="cu_a_star_8hpp_1a00de2d0d0ab9f396c3e3748eb63cab29" kindref="member">NodeType</ref> *</type>
+        <definition>NodeType* AstarPlanner&lt; NodeType, T &gt;::h_chunksOpenSetArray</definition>
+        <argsstring></argsstring>
+        <name>h_chunksOpenSetArray</name>
+        <qualifiedname>AstarPlanner::h_chunksOpenSetArray</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Pointer to an array of <computeroutput>NodeType</computeroutput> objects, where each element represents the open set of nodes for a specific chunk. The open set is used to store nodes ordered by their <computeroutput>f</computeroutput> value, ranging from minimum to maximum. These nodes are derived from the chunk&apos;s k-nearest neighbor (kNN) array. The <computeroutput>computeNodesSuccessor</computeroutput> function is used to sort these nodes, which computes nodes with the minimum <computeroutput>f(n)</computeroutput> values and organizes them in the array. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/cuAStar.hpp" line="1274" column="14" bodyfile="include/cuAStar.hpp" bodystart="1274" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_astar_planner_1a283d781da06d2bbf0504ae6dfcbb1e7f" prot="private" static="no" mutable="no">
+        <type><ref refid="cu_a_star_8hpp_1a00de2d0d0ab9f396c3e3748eb63cab29" kindref="member">NodeType</ref> *</type>
+        <definition>NodeType* AstarPlanner&lt; NodeType, T &gt;::h_openSetArray</definition>
+        <argsstring></argsstring>
+        <name>h_openSetArray</name>
+        <qualifiedname>AstarPlanner::h_openSetArray</qualifiedname>
+        <briefdescription>
+<para>form a new arra and compute the gloabl openset, n pallel way </para>
+        </briefdescription>
+        <detaileddescription>
+<para>given the local opensets, of chunks, it gets the roots of each chunk, <linebreak/>
+ </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/cuAStar.hpp" line="1280" column="14" bodyfile="include/cuAStar.hpp" bodystart="1280" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_astar_planner_1a9ae9917803b7486fad90addba1db5c4f" prot="private" static="no" mutable="no">
+        <type><ref refid="cu_a_star_8hpp_1a00de2d0d0ab9f396c3e3748eb63cab29" kindref="member">NodeType</ref> *</type>
+        <definition>NodeType* AstarPlanner&lt; NodeType, T &gt;::h_closedSetArray</definition>
+        <argsstring></argsstring>
+        <name>h_closedSetArray</name>
+        <qualifiedname>AstarPlanner::h_closedSetArray</qualifiedname>
+        <briefdescription>
+<para>any node not in openset is in closed set, </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/cuAStar.hpp" line="1283" column="14" bodyfile="include/cuAStar.hpp" bodystart="1283" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_astar_planner_1a668e114e6061ff8fe86afd2b2bcb5d7a" prot="private" static="no" mutable="no">
+        <type><ref refid="cu_a_star_8hpp_1a00de2d0d0ab9f396c3e3748eb63cab29" kindref="member">NodeType</ref> *</type>
+        <definition>NodeType* AstarPlanner&lt; NodeType, T &gt;::startNode</definition>
+        <argsstring></argsstring>
+        <name>startNode</name>
+        <qualifiedname>AstarPlanner::startNode</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/cuAStar.hpp" line="1285" column="16" bodyfile="include/cuAStar.hpp" bodystart="1285" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_astar_planner_1a160591b95c51825e7a1f56cfc970c9c3" prot="private" static="no" mutable="no">
+        <type><ref refid="cu_a_star_8hpp_1a00de2d0d0ab9f396c3e3748eb63cab29" kindref="member">NodeType</ref> *</type>
+        <definition>NodeType* AstarPlanner&lt; NodeType, T &gt;::endNode</definition>
+        <argsstring></argsstring>
+        <name>endNode</name>
+        <qualifiedname>AstarPlanner::endNode</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/cuAStar.hpp" line="1286" column="16" bodyfile="include/cuAStar.hpp" bodystart="1286" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_astar_planner_1a3a1ec67dac7f7be5b79cdb4f5944d10d" prot="private" static="no" mutable="no">
+        <type><ref refid="cu_a_star_8hpp_1a00de2d0d0ab9f396c3e3748eb63cab29" kindref="member">NodeType</ref> *</type>
+        <definition>NodeType* AstarPlanner&lt; NodeType, T &gt;::h_pathArray</definition>
+        <argsstring></argsstring>
+        <name>h_pathArray</name>
+        <qualifiedname>AstarPlanner::h_pathArray</qualifiedname>
+        <briefdescription>
+<para>for storing the final computed traj on host , </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/cuAStar.hpp" line="1294" column="16" bodyfile="include/cuAStar.hpp" bodystart="1294" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_astar_planner_1acc95fb229d706135d526301313a09d6e" prot="private" static="no" mutable="no">
+        <type><ref refid="cu_a_star_8hpp_1a00de2d0d0ab9f396c3e3748eb63cab29" kindref="member">NodeType</ref> *</type>
+        <definition>NodeType* AstarPlanner&lt; NodeType, T &gt;::d_pathArray</definition>
+        <argsstring></argsstring>
+        <name>d_pathArray</name>
+        <qualifiedname>AstarPlanner::d_pathArray</qualifiedname>
+        <briefdescription>
+<para>..... on device; </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/cuAStar.hpp" line="1295" column="16" bodyfile="include/cuAStar.hpp" bodystart="1295" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="class_astar_planner_1a7572fa53d40fbcee001b3be86598c069" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>AstarPlanner&lt; NodeType, T &gt;::AstarPlanner</definition>
+        <argsstring>()</argsstring>
+        <name>AstarPlanner</name>
+        <qualifiedname>AstarPlanner::AstarPlanner</qualifiedname>
+        <briefdescription>
+<para>default constructor, allocate momory for class attributes on host and device, this function, sets the node number to thredsPerBlock var and allocate memeory <linebreak/>
+ </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/cuAStar.hpp" line="1154" column="9"/>
+      </memberdef>
+      <memberdef kind="function" id="class_astar_planner_1aad3480b3923834d9e5fb9ed52531f6b1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>AstarPlanner&lt; NodeType, T &gt;::AstarPlanner</definition>
+        <argsstring>(NodeType &amp;h_nodesArray_, int numNodes_)</argsstring>
+        <name>AstarPlanner</name>
+        <qualifiedname>AstarPlanner::AstarPlanner</qualifiedname>
+        <param>
+          <type><ref refid="cu_a_star_8hpp_1a00de2d0d0ab9f396c3e3748eb63cab29" kindref="member">NodeType</ref> &amp;</type>
+          <declname>h_nodesArray_</declname>
+        </param>
+        <param>
+          <type><ref refid="cu_a_star_8hpp_1a00de2d0d0ab9f396c3e3748eb63cab29" kindref="member">int</ref></type>
+          <declname>numNodes_</declname>
+        </param>
+        <briefdescription>
+<para>construct from a user defined point clouds array init number nodes allocate and fill member attributes , copy them to device and init memebr attributes device vars </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/cuAStar.hpp" line="1161" column="8"/>
+      </memberdef>
+      <memberdef kind="function" id="class_astar_planner_1af74bae5418000d635d97f91d84846f2f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>AstarPlanner&lt; NodeType, T &gt;::AstarPlanner</definition>
+        <argsstring>(const std::string &amp;plyFilePath)</argsstring>
+        <name>AstarPlanner</name>
+        <qualifiedname>AstarPlanner::AstarPlanner</qualifiedname>
+        <param>
+          <type><ref refid="cu_a_star_8hpp_1a00de2d0d0ab9f396c3e3748eb63cab29" kindref="member">const</ref> std::string &amp;</type>
+          <declname>plyFilePath</declname>
+        </param>
+        <briefdescription>
+<para>fill the host and device memory with the nodes from the a point cloud data file .ply </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="note"><para>this method fill only host attributes class mmeber, no device initlisation when need create a device var and copy from it <linebreak/>
+ </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/cuAStar.hpp" line="1169" column="8"/>
+      </memberdef>
+      <memberdef kind="function" id="class_astar_planner_1ab344ed0178b64f88dda3d5b1124464bf" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>AstarPlanner&lt; NodeType, T &gt;::AstarPlanner</definition>
+        <argsstring>(int numNodes_, unsigned int seed)</argsstring>
+        <name>AstarPlanner</name>
+        <qualifiedname>AstarPlanner::AstarPlanner</qualifiedname>
+        <param>
+          <type><ref refid="cu_a_star_8hpp_1a00de2d0d0ab9f396c3e3748eb63cab29" kindref="member">int</ref></type>
+          <declname>numNodes_</declname>
+        </param>
+        <param>
+          <type><ref refid="cu_a_star_8hpp_1a00de2d0d0ab9f396c3e3748eb63cab29" kindref="member">unsigned</ref> <ref refid="cu_a_star_8hpp_1a00de2d0d0ab9f396c3e3748eb63cab29" kindref="member">int</ref></type>
+          <declname>seed</declname>
+        </param>
+        <briefdescription>
+<para>init the host and device memory with random nodes, if the number of ndodes given os diffrent from class alraedy vars old, ovveride them </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>seed</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>: random seed initilization <linebreak/>
+ </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/cuAStar.hpp" line="1176" column="8"/>
+      </memberdef>
+      <memberdef kind="function" id="class_astar_planner_1ada592b22f903df88596e6011b10a9cbc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="cu_a_star_8hpp_1a00de2d0d0ab9f396c3e3748eb63cab29" kindref="member">void</ref></type>
+        <definition>void AstarPlanner&lt; NodeType, T &gt;::setInitialNode</definition>
+        <argsstring>(NodeType *startNode_)</argsstring>
+        <name>setInitialNode</name>
+        <qualifiedname>AstarPlanner::setInitialNode</qualifiedname>
+        <param>
+          <type><ref refid="cu_a_star_8hpp_1a00de2d0d0ab9f396c3e3748eb63cab29" kindref="member">NodeType</ref> *</type>
+          <declname>startNode_</declname>
+        </param>
+        <briefdescription>
+<para>set the start nodes either in 3d or 2d, check if the node exsits in the h_nodesArray first, if the start are set, it defaulted to the first and last node in the nodes array. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>startNode_</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>a construted nodeType for the given node the given node should exsit in the point cloud, </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/cuAStar.hpp" line="1185" column="13"/>
+      </memberdef>
+      <memberdef kind="function" id="class_astar_planner_1a5202f6fd1f8e7abc691be171f1707de8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="cu_a_star_8hpp_1a00de2d0d0ab9f396c3e3748eb63cab29" kindref="member">void</ref></type>
+        <definition>void AstarPlanner&lt; NodeType, T &gt;::setTargetNode</definition>
+        <argsstring>(NodeType *endNode_)</argsstring>
+        <name>setTargetNode</name>
+        <qualifiedname>AstarPlanner::setTargetNode</qualifiedname>
+        <param>
+          <type><ref refid="cu_a_star_8hpp_1a00de2d0d0ab9f396c3e3748eb63cab29" kindref="member">NodeType</ref> *</type>
+          <declname>endNode_</declname>
+        </param>
+        <briefdescription>
+<para>set the end node , it should exsit in the point cloud and it should be diffrent from </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/cuAStar.hpp" line="1191" column="13"/>
+      </memberdef>
+      <memberdef kind="function" id="class_astar_planner_1a41593614b392639d4d18771d59f6e4b9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="cu_a_star_8hpp_1a00de2d0d0ab9f396c3e3748eb63cab29" kindref="member">void</ref></type>
+        <definition>void AstarPlanner&lt; NodeType, T &gt;::computeChunkOpenSet</definition>
+        <argsstring>()</argsstring>
+        <name>computeChunkOpenSet</name>
+        <qualifiedname>AstarPlanner::computeChunkOpenSet</qualifiedname>
+        <briefdescription>
+<para>computes he chunks open set array for all chunks in the point cloud array , divide into chunks, compute the knns , reoder by fmin values and append to the h_chunksOpenSetArray , the rest of nodes are divided inti chunks and and reorded, the default size of chunks is the bloc size <linebreak/>
+ </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/cuAStar.hpp" line="1200" column="14"/>
+      </memberdef>
+      <memberdef kind="function" id="class_astar_planner_1a6680617fa915b63bc3f04c0daa226798" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="cu_a_star_8hpp_1a00de2d0d0ab9f396c3e3748eb63cab29" kindref="member">void</ref></type>
+        <definition>void AstarPlanner&lt; NodeType, T &gt;::computeTrajectory</definition>
+        <argsstring>()</argsstring>
+        <name>computeTrajectory</name>
+        <qualifiedname>AstarPlanner::computeTrajectory</qualifiedname>
+        <briefdescription>
+<para>given the the map tree construted, satart from the end node and, given that each node has unique parent, it saves the nodes and copy up to the start node </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/cuAStar.hpp" line="1207" column="13"/>
+      </memberdef>
+      <memberdef kind="function" id="class_astar_planner_1aeea62c3ef001d04c0111cc964c827170" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="cu_a_star_8hpp_1a00de2d0d0ab9f396c3e3748eb63cab29" kindref="member">void</ref></type>
+        <definition>void AstarPlanner&lt; NodeType, T &gt;::writeTrajectory2csv</definition>
+        <argsstring>(const std::string &amp;outputFilePath)</argsstring>
+        <name>writeTrajectory2csv</name>
+        <qualifiedname>AstarPlanner::writeTrajectory2csv</qualifiedname>
+        <param>
+          <type><ref refid="cu_a_star_8hpp_1a00de2d0d0ab9f396c3e3748eb63cab29" kindref="member">const</ref> std::string &amp;</type>
+          <declname>outputFilePath</declname>
+        </param>
+        <briefdescription>
+<para>saves a trajectory to pointcloud file .ply using happly library </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/cuAStar.hpp" line="1212" column="13"/>
+      </memberdef>
+      <memberdef kind="function" id="class_astar_planner_1afc1b128499c568331c9430c85391f7b6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="cu_a_star_8hpp_1a00de2d0d0ab9f396c3e3748eb63cab29" kindref="member">void</ref></type>
+        <definition>void AstarPlanner&lt; NodeType, T &gt;::visualize2dTrajectory</definition>
+        <argsstring>(const std::string &amp;outputFilePath)</argsstring>
+        <name>visualize2dTrajectory</name>
+        <qualifiedname>AstarPlanner::visualize2dTrajectory</qualifiedname>
+        <param>
+          <type><ref refid="cu_a_star_8hpp_1a00de2d0d0ab9f396c3e3748eb63cab29" kindref="member">const</ref> std::string &amp;</type>
+          <declname>outputFilePath</declname>
+        </param>
+        <briefdescription>
+<para>read a point cloud data file (now only PLy supported) and fill the gridMap object memebr of the class with nodes consruted from the point cloud </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>outputFilePath</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>image fil path to save to </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/cuAStar.hpp" line="1219" column="12"/>
+      </memberdef>
+      <memberdef kind="function" id="class_astar_planner_1abeac1ccac7dfd32be8701297f476a5cf" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="cu_a_star_8hpp_1a00de2d0d0ab9f396c3e3748eb63cab29" kindref="member">void</ref></type>
+        <definition>void AstarPlanner&lt; NodeType, T &gt;::visualize2dPointCloud</definition>
+        <argsstring>(const std::string imageFilePath)</argsstring>
+        <name>visualize2dPointCloud</name>
+        <qualifiedname>AstarPlanner::visualize2dPointCloud</qualifiedname>
+        <param>
+          <type><ref refid="cu_a_star_8hpp_1a00de2d0d0ab9f396c3e3748eb63cab29" kindref="member">const</ref> std::string</type>
+          <declname>imageFilePath</declname>
+        </param>
+        <briefdescription>
+<para>saves the point cloud data array into a 2d, view along z-axis, to a png file, the setting for this function are taken to default, this function require the host array or nodes filled, the color used for each node is the default in r , g ,b arrtibutes in each node to update them use <ref refid="cu_a_star_8hpp_1a00de2d0d0ab9f396c3e3748eb63cab29" kindref="member">updateNodesColor()</ref> </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/cuAStar.hpp" line="1227" column="12"/>
+      </memberdef>
+      <memberdef kind="function" id="class_astar_planner_1a4da6d20ce7c7ab434ed446718183e22f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>AstarPlanner&lt; NodeType, T &gt;::~AstarPlanner</definition>
+        <argsstring>()</argsstring>
+        <name>~AstarPlanner</name>
+        <qualifiedname>AstarPlanner::~AstarPlanner</qualifiedname>
+        <briefdescription>
+<para>free all memory on deice or on host memory allocation in the constructor or over functions </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/cuAStar.hpp" line="1266" column="8"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="class_astar_planner_1aeef4955c0397847a5c56a34cc5fb8a42" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="cu_a_star_8hpp_1a00de2d0d0ab9f396c3e3748eb63cab29" kindref="member">bool</ref></type>
+        <definition>bool AstarPlanner&lt; NodeType, T &gt;::isTargetReached</definition>
+        <argsstring>(const NodeType *n, const T eps)</argsstring>
+        <name>isTargetReached</name>
+        <qualifiedname>AstarPlanner::isTargetReached</qualifiedname>
+        <param>
+          <type><ref refid="cu_a_star_8hpp_1a00de2d0d0ab9f396c3e3748eb63cab29" kindref="member">const</ref> <ref refid="cu_a_star_8hpp_1a00de2d0d0ab9f396c3e3748eb63cab29" kindref="member">NodeType</ref> *</type>
+          <declname>n</declname>
+        </param>
+        <param>
+          <type><ref refid="cu_a_star_8hpp_1a00de2d0d0ab9f396c3e3748eb63cab29" kindref="member">const</ref> <ref refid="cu_a_star_8hpp_1a00de2d0d0ab9f396c3e3748eb63cab29" kindref="member">T</ref></type>
+          <declname>eps</declname>
+        </param>
+        <briefdescription>
+<para>Check wahat ever we get into the goal node or not, using a threshold value esplion for proximity checking. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/cuAStar.hpp" line="1302" column="13"/>
+      </memberdef>
+      <memberdef kind="function" id="class_astar_planner_1a7717c75f8108f7f2ec6d995f8a31c432" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="cu_a_star_8hpp_1a00de2d0d0ab9f396c3e3748eb63cab29" kindref="member">void</ref></type>
+        <definition>void AstarPlanner&lt; NodeType, T &gt;::computeOpenSetArray</definition>
+        <argsstring>()</argsstring>
+        <name>computeOpenSetArray</name>
+        <qualifiedname>AstarPlanner::computeOpenSetArray</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/cuAStar.hpp" line="1304" column="13"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para>divide the datset into chunks of max 1024 node, maxium , compute the best node into, each chunk on a single grid block, each block , writes the best node (wich is the closed to target), to the global device memory,each chunk has a root node and a sucessor the sucessor parent points to the root,and the cost function , the chunk sum_cost of root is 0 and for the child is the distance btewwen the both , start with the chunk wich have the mimum cost function, (p_sum + heursitic) wich is assumed to be the final chunk that have the goal node, named the endChunk, now we sav the nodes into a new_array include the start and gaolnode and the chunks 2-nodes , we llok fro the trajectory that pass from all thes points , with minium path cost, so, we allocte this array on the device global meomry, and for a single block each thread compute, 1 &lt; chunk_size &lt; 1024, each thred within the same only block will compute a possible combinition, each thred will loop all the nodes in the array, starting from the endnode, if this has a parent it go throug else , it computes the nereast neighbood node , and if this also</para>
+<para>after computing the chunks and save each chunk nodes (2*NodeType), and the matric: cost to got from chunk root to child chunk + the heuristic % to-go node the number of chunks is : N/threadsPerBlock afther constructing the nodes grid </para>
+    </detaileddescription>
+    <location file="include/cuAStar.hpp" line="1146" column="1" bodyfile="include/cuAStar.hpp" bodystart="1147" bodyend="1305"/>
+    <listofallmembers>
+      <member refid="class_astar_planner_1a7572fa53d40fbcee001b3be86598c069" prot="public" virt="non-virtual"><scope>AstarPlanner</scope><name>AstarPlanner</name></member>
+      <member refid="class_astar_planner_1aad3480b3923834d9e5fb9ed52531f6b1" prot="public" virt="non-virtual"><scope>AstarPlanner</scope><name>AstarPlanner</name></member>
+      <member refid="class_astar_planner_1af74bae5418000d635d97f91d84846f2f" prot="public" virt="non-virtual"><scope>AstarPlanner</scope><name>AstarPlanner</name></member>
+      <member refid="class_astar_planner_1ab344ed0178b64f88dda3d5b1124464bf" prot="public" virt="non-virtual"><scope>AstarPlanner</scope><name>AstarPlanner</name></member>
+      <member refid="class_astar_planner_1a846df03cb9adcaf67f0d8d49a826771e" prot="private" virt="non-virtual"><scope>AstarPlanner</scope><name>chunkSize</name></member>
+      <member refid="class_astar_planner_1a41593614b392639d4d18771d59f6e4b9" prot="public" virt="non-virtual"><scope>AstarPlanner</scope><name>computeChunkOpenSet</name></member>
+      <member refid="class_astar_planner_1a7717c75f8108f7f2ec6d995f8a31c432" prot="private" virt="non-virtual"><scope>AstarPlanner</scope><name>computeOpenSetArray</name></member>
+      <member refid="class_astar_planner_1a6680617fa915b63bc3f04c0daa226798" prot="public" virt="non-virtual"><scope>AstarPlanner</scope><name>computeTrajectory</name></member>
+      <member refid="class_astar_planner_1acc95fb229d706135d526301313a09d6e" prot="private" virt="non-virtual"><scope>AstarPlanner</scope><name>d_pathArray</name></member>
+      <member refid="class_astar_planner_1a160591b95c51825e7a1f56cfc970c9c3" prot="private" virt="non-virtual"><scope>AstarPlanner</scope><name>endNode</name></member>
+      <member refid="class_astar_planner_1ab455773e03f86215934c5df2d7c70a76" prot="private" virt="non-virtual"><scope>AstarPlanner</scope><name>h_chunksOpenSetArray</name></member>
+      <member refid="class_astar_planner_1a9ae9917803b7486fad90addba1db5c4f" prot="private" virt="non-virtual"><scope>AstarPlanner</scope><name>h_closedSetArray</name></member>
+      <member refid="class_astar_planner_1a6a9fd29b001d028423a47914ee90b2b3" prot="private" virt="non-virtual"><scope>AstarPlanner</scope><name>h_nodesArray</name></member>
+      <member refid="class_astar_planner_1a283d781da06d2bbf0504ae6dfcbb1e7f" prot="private" virt="non-virtual"><scope>AstarPlanner</scope><name>h_openSetArray</name></member>
+      <member refid="class_astar_planner_1a3a1ec67dac7f7be5b79cdb4f5944d10d" prot="private" virt="non-virtual"><scope>AstarPlanner</scope><name>h_pathArray</name></member>
+      <member refid="class_astar_planner_1aeef4955c0397847a5c56a34cc5fb8a42" prot="private" virt="non-virtual"><scope>AstarPlanner</scope><name>isTargetReached</name></member>
+      <member refid="class_astar_planner_1a3a2934934690ae00af8bfe7b30ac5f5e" prot="private" virt="non-virtual"><scope>AstarPlanner</scope><name>numNodes</name></member>
+      <member refid="class_astar_planner_1ada592b22f903df88596e6011b10a9cbc" prot="public" virt="non-virtual"><scope>AstarPlanner</scope><name>setInitialNode</name></member>
+      <member refid="class_astar_planner_1a5202f6fd1f8e7abc691be171f1707de8" prot="public" virt="non-virtual"><scope>AstarPlanner</scope><name>setTargetNode</name></member>
+      <member refid="class_astar_planner_1a668e114e6061ff8fe86afd2b2bcb5d7a" prot="private" virt="non-virtual"><scope>AstarPlanner</scope><name>startNode</name></member>
+      <member refid="class_astar_planner_1abeac1ccac7dfd32be8701297f476a5cf" prot="public" virt="non-virtual"><scope>AstarPlanner</scope><name>visualize2dPointCloud</name></member>
+      <member refid="class_astar_planner_1afc1b128499c568331c9430c85391f7b6" prot="public" virt="non-virtual"><scope>AstarPlanner</scope><name>visualize2dTrajectory</name></member>
+      <member refid="class_astar_planner_1aeea62c3ef001d04c0111cc964c827170" prot="public" virt="non-virtual"><scope>AstarPlanner</scope><name>writeTrajectory2csv</name></member>
+      <member refid="class_astar_planner_1a4da6d20ce7c7ab434ed446718183e22f" prot="public" virt="non-virtual"><scope>AstarPlanner</scope><name>~AstarPlanner</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,22 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.10.0" xml:lang="en-US">
+  <compounddef id="indexpage" kind="page">
+    <compoundname>index</compoundname>
+    <title>cuAStar</title>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para>If there are no blocked cells/obstacles then we can just find the exact value of h without any pre-computation using the distance formula/Euclidean Distance all memory errors checks foe cuda are in debug mode ! $ g++ -std=c++0x main.cpp -pthread nvcc -o random_gen_example random_gen_example.cu -lcurand divide the point cloud data into small region called bubles a N pt cloud is divided into N/k where k is the window size , for each subarea , inti a substarting node explore (like running the normal A star on that subgroups nodes) with one setp the surouding and at each step , synchonize all subregions</para>
+<para><ulink url="https://pantelis.github.io/artificial-intelligence/aiml-common/lectures/planning/search/a-star/index.html">https://pantelis.github.io/artificial-intelligence/aiml-common/lectures/planning/search/a-star/index.html</ulink></para>
+<para><simplesect kind="note"><para>for the multithreding and concurrency support computations support the c++ 11 standard is required More Info : <ulink url="https://en.cppreference.com/w/cpp/thread">https://en.cppreference.com/w/cpp/thread</ulink> <ulink url="https://github.com/arvkr/ransac_cuda_eecse4750">https://github.com/arvkr/ransac_cuda_eecse4750</ulink> </para>
+</simplesect>
+<simplesect kind="note"><para>: 3D visulisation and rending is enabled only throut VTK,wich should be installed , we use VTK version 9.3.1, for more information refre to VTK installation guide <linebreak/>
+ </para>
+</simplesect>
+<simplesect kind="warning"><para>hhh </para>
+</simplesect>
+</para>
+    </detaileddescription>
+    <location file="include/cuAStar.hpp"/>
+  </compounddef>
+</doxygen>

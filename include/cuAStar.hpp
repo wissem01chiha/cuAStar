@@ -25,34 +25,6 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  */
-
-/**
- * @file cuAstar.hpp
- * @version 0.1.0
- * @date 03-09-2024
- * 
- * @link https://towardsdatascience.com/understanding-a-path-algorithms-and-implementation-with-python-4d8458d6ccc7
- * 
- * @mainpage
- * If there are no blocked cells/obstacles then we can just find the exact 
- * value of h without any pre-computation using the distance formula/Euclidean Distance
- * all memory errors checks foe cuda are in debug mode !
- * $ g++ -std=c++0x main.cpp -pthread
- * nvcc -o random_gen_example random_gen_example.cu -lcurand
- * divide the point cloud data into small region called bubles a N pt cloud is divided into 
- * N/k where k is the window size , for each subarea , inti a substarting node
- * explore (like running the normal A star on that subgroups nodes) 
- * with one setp the surouding and at each step , synchonize all subregions 
- * 
- * https://pantelis.github.io/artificial-intelligence/aiml-common/lectures/planning/search/a-star/index.html
- * 
- * @note for the multithreding and concurrency support computations support 
- * the c++ 11 standard is required More Info :  https://en.cppreference.com/w/cpp/thread
- * https://github.com/arvkr/ransac_cuda_eecse4750
- * @note : 3D visulisation and rending is enabled only throut VTK,wich should be installed ,
- * we use VTK version 9.3.1, for more information refre to VTK installation guide  
- @warning hhh 
- */
 #ifndef CUASTAR_HPP
 #define CUASTAR_HPP
 

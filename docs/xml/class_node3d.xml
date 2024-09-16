@@ -1,0 +1,379 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.10.0" xml:lang="en-US">
+  <compounddef id="class_node3d" kind="class" language="C++" prot="public">
+    <compoundname>Node3d</compoundname>
+    <includes refid="cu_a_star_8hpp" local="no">cuAStar.hpp</includes>
+    <templateparamlist>
+      <param>
+        <type><ref refid="cu_a_star_8hpp_1a00de2d0d0ab9f396c3e3748eb63cab29" kindref="member">typename</ref> <ref refid="cu_a_star_8hpp_1a00de2d0d0ab9f396c3e3748eb63cab29" kindref="member">T</ref></type>
+      </param>
+    </templateparamlist>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="class_node3d_1a880ff1c6b515074aba76d3bc9bb57986" prot="public" static="no" mutable="no">
+        <type><ref refid="cu_a_star_8hpp_1a00de2d0d0ab9f396c3e3748eb63cab29" kindref="member">T</ref></type>
+        <definition>T Node3d&lt; T &gt;::x</definition>
+        <argsstring></argsstring>
+        <name>x</name>
+        <qualifiedname>Node3d::x</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/cuAStar.hpp" line="302" column="7" bodyfile="include/cuAStar.hpp" bodystart="302" bodyend="-1"/>
+        <referencedby refid="class_node3d_1a1975adadd6d078946c2994e4b1bb3bc4" compoundref="cu_a_star_8hpp" startline="351" endline="355">Node3d&lt; T &gt;::distanceTo</referencedby>
+        <referencedby refid="class_node3d_1a5f10c454d1cf4dbb01f356f957e5230d" compoundref="cu_a_star_8hpp" startline="358" endline="362">Node3d&lt; T &gt;::isEqual</referencedby>
+        <referencedby refid="class_node3d_1aafbd4c0fe3ea50106ab11ac2c3e77e2f" compoundref="cu_a_star_8hpp" startline="313" endline="319">Node3d&lt; T &gt;::Node3d</referencedby>
+        <referencedby refid="class_node3d_1a4d02136dd2179bc7e9e386a21223bdc6" compoundref="cu_a_star_8hpp" startline="342" endline="348">Node3d&lt; T &gt;::Node3d</referencedby>
+        <referencedby refid="class_node3d_1ad5c7d953e67fedd2d56f74304685f533" compoundref="cu_a_star_8hpp" startline="321" endline="339">Node3d&lt; T &gt;::Node3d</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="class_node3d_1a0f83bfe660734ce20618c2d719eb3753" prot="public" static="no" mutable="no">
+        <type><ref refid="cu_a_star_8hpp_1a00de2d0d0ab9f396c3e3748eb63cab29" kindref="member">T</ref></type>
+        <definition>T Node3d&lt; T &gt;::y</definition>
+        <argsstring></argsstring>
+        <name>y</name>
+        <qualifiedname>Node3d::y</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/cuAStar.hpp" line="303" column="7" bodyfile="include/cuAStar.hpp" bodystart="303" bodyend="-1"/>
+        <referencedby refid="class_node3d_1a1975adadd6d078946c2994e4b1bb3bc4" compoundref="cu_a_star_8hpp" startline="351" endline="355">Node3d&lt; T &gt;::distanceTo</referencedby>
+        <referencedby refid="class_node3d_1a5f10c454d1cf4dbb01f356f957e5230d" compoundref="cu_a_star_8hpp" startline="358" endline="362">Node3d&lt; T &gt;::isEqual</referencedby>
+        <referencedby refid="class_node3d_1aafbd4c0fe3ea50106ab11ac2c3e77e2f" compoundref="cu_a_star_8hpp" startline="313" endline="319">Node3d&lt; T &gt;::Node3d</referencedby>
+        <referencedby refid="class_node3d_1a4d02136dd2179bc7e9e386a21223bdc6" compoundref="cu_a_star_8hpp" startline="342" endline="348">Node3d&lt; T &gt;::Node3d</referencedby>
+        <referencedby refid="class_node3d_1ad5c7d953e67fedd2d56f74304685f533" compoundref="cu_a_star_8hpp" startline="321" endline="339">Node3d&lt; T &gt;::Node3d</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="class_node3d_1aaccb19aa47451a8ff7afaeb7015dd183" prot="public" static="no" mutable="no">
+        <type><ref refid="cu_a_star_8hpp_1a00de2d0d0ab9f396c3e3748eb63cab29" kindref="member">T</ref></type>
+        <definition>T Node3d&lt; T &gt;::z</definition>
+        <argsstring></argsstring>
+        <name>z</name>
+        <qualifiedname>Node3d::z</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/cuAStar.hpp" line="304" column="7" bodyfile="include/cuAStar.hpp" bodystart="304" bodyend="-1"/>
+        <referencedby refid="class_node3d_1a1975adadd6d078946c2994e4b1bb3bc4" compoundref="cu_a_star_8hpp" startline="351" endline="355">Node3d&lt; T &gt;::distanceTo</referencedby>
+        <referencedby refid="class_node3d_1a5f10c454d1cf4dbb01f356f957e5230d" compoundref="cu_a_star_8hpp" startline="358" endline="362">Node3d&lt; T &gt;::isEqual</referencedby>
+        <referencedby refid="class_node3d_1aafbd4c0fe3ea50106ab11ac2c3e77e2f" compoundref="cu_a_star_8hpp" startline="313" endline="319">Node3d&lt; T &gt;::Node3d</referencedby>
+        <referencedby refid="class_node3d_1a4d02136dd2179bc7e9e386a21223bdc6" compoundref="cu_a_star_8hpp" startline="342" endline="348">Node3d&lt; T &gt;::Node3d</referencedby>
+        <referencedby refid="class_node3d_1ad5c7d953e67fedd2d56f74304685f533" compoundref="cu_a_star_8hpp" startline="321" endline="339">Node3d&lt; T &gt;::Node3d</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="class_node3d_1a8245c6abc8c81e087af1c1212075a5ba" prot="public" static="no" mutable="no">
+        <type><ref refid="cu_a_star_8hpp_1a00de2d0d0ab9f396c3e3748eb63cab29" kindref="member">T</ref></type>
+        <definition>T Node3d&lt; T &gt;::sum_cost</definition>
+        <argsstring></argsstring>
+        <name>sum_cost</name>
+        <qualifiedname>Node3d::sum_cost</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/cuAStar.hpp" line="305" column="7" bodyfile="include/cuAStar.hpp" bodystart="305" bodyend="-1"/>
+        <referencedby refid="class_node3d_1aafbd4c0fe3ea50106ab11ac2c3e77e2f" compoundref="cu_a_star_8hpp" startline="313" endline="319">Node3d&lt; T &gt;::Node3d</referencedby>
+        <referencedby refid="class_node3d_1a4d02136dd2179bc7e9e386a21223bdc6" compoundref="cu_a_star_8hpp" startline="342" endline="348">Node3d&lt; T &gt;::Node3d</referencedby>
+        <referencedby refid="class_node3d_1ad5c7d953e67fedd2d56f74304685f533" compoundref="cu_a_star_8hpp" startline="321" endline="339">Node3d&lt; T &gt;::Node3d</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="class_node3d_1a00d107f9c9a72082fdb069cc35e2b234" prot="public" static="no" mutable="no">
+        <type><ref refid="class_node3d" kindref="compound">Node3d</ref> *</type>
+        <definition>Node3d* Node3d&lt; T &gt;::p_node</definition>
+        <argsstring></argsstring>
+        <name>p_node</name>
+        <qualifiedname>Node3d::p_node</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/cuAStar.hpp" line="306" column="12" bodyfile="include/cuAStar.hpp" bodystart="306" bodyend="-1"/>
+        <referencedby refid="class_node3d_1aafbd4c0fe3ea50106ab11ac2c3e77e2f" compoundref="cu_a_star_8hpp" startline="313" endline="319">Node3d&lt; T &gt;::Node3d</referencedby>
+        <referencedby refid="class_node3d_1a4d02136dd2179bc7e9e386a21223bdc6" compoundref="cu_a_star_8hpp" startline="342" endline="348">Node3d&lt; T &gt;::Node3d</referencedby>
+        <referencedby refid="class_node3d_1ad5c7d953e67fedd2d56f74304685f533" compoundref="cu_a_star_8hpp" startline="321" endline="339">Node3d&lt; T &gt;::Node3d</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="class_node3d_1a87519fd11d106242674ce915df035f33" prot="public" static="no" mutable="no">
+        <type><ref refid="cu_a_star_8hpp_1a00de2d0d0ab9f396c3e3748eb63cab29" kindref="member">int</ref></type>
+        <definition>int Node3d&lt; T &gt;::r</definition>
+        <argsstring></argsstring>
+        <name>r</name>
+        <qualifiedname>Node3d::r</qualifiedname>
+        <initializer>= 210</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/cuAStar.hpp" line="308" column="9" bodyfile="include/cuAStar.hpp" bodystart="308" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_node3d_1a11458c52d4a55911346225f624c09eab" prot="public" static="no" mutable="no">
+        <type><ref refid="cu_a_star_8hpp_1a00de2d0d0ab9f396c3e3748eb63cab29" kindref="member">int</ref></type>
+        <definition>int Node3d&lt; T &gt;::g</definition>
+        <argsstring></argsstring>
+        <name>g</name>
+        <qualifiedname>Node3d::g</qualifiedname>
+        <initializer>= 109</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/cuAStar.hpp" line="309" column="9" bodyfile="include/cuAStar.hpp" bodystart="309" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_node3d_1a00c0fd5df6f0d9b46c24c6c28fa9dc91" prot="public" static="no" mutable="no">
+        <type><ref refid="cu_a_star_8hpp_1a00de2d0d0ab9f396c3e3748eb63cab29" kindref="member">int</ref></type>
+        <definition>int Node3d&lt; T &gt;::b</definition>
+        <argsstring></argsstring>
+        <name>b</name>
+        <qualifiedname>Node3d::b</qualifiedname>
+        <initializer>= 109</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/cuAStar.hpp" line="310" column="9" bodyfile="include/cuAStar.hpp" bodystart="310" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="class_node3d_1aafbd4c0fe3ea50106ab11ac2c3e77e2f" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>Node3d&lt; T &gt;::Node3d</definition>
+        <argsstring>()</argsstring>
+        <name>Node3d</name>
+        <qualifiedname>Node3d::Node3d</qualifiedname>
+        <briefdescription>
+<para>Default constructor for the <ref refid="class_node3d" kindref="compound">Node3d</ref> class. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/cuAStar.hpp" line="313" column="8" bodyfile="include/cuAStar.hpp" bodystart="313" bodyend="319"/>
+        <references refid="class_node3d_1a00d107f9c9a72082fdb069cc35e2b234" compoundref="cu_a_star_8hpp" startline="306">Node3d&lt; T &gt;::p_node</references>
+        <references refid="class_node3d_1a8245c6abc8c81e087af1c1212075a5ba" compoundref="cu_a_star_8hpp" startline="305">Node3d&lt; T &gt;::sum_cost</references>
+        <references refid="class_node3d_1a880ff1c6b515074aba76d3bc9bb57986" compoundref="cu_a_star_8hpp" startline="302">Node3d&lt; T &gt;::x</references>
+        <references refid="class_node3d_1a0f83bfe660734ce20618c2d719eb3753" compoundref="cu_a_star_8hpp" startline="303">Node3d&lt; T &gt;::y</references>
+        <references refid="class_node3d_1aaccb19aa47451a8ff7afaeb7015dd183" compoundref="cu_a_star_8hpp" startline="304">Node3d&lt; T &gt;::z</references>
+      </memberdef>
+      <memberdef kind="function" id="class_node3d_1ad5c7d953e67fedd2d56f74304685f533" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>Node3d&lt; T &gt;::Node3d</definition>
+        <argsstring>(unsigned int seed)</argsstring>
+        <name>Node3d</name>
+        <qualifiedname>Node3d::Node3d</qualifiedname>
+        <param>
+          <type><ref refid="cu_a_star_8hpp_1a00de2d0d0ab9f396c3e3748eb63cab29" kindref="member">unsigned</ref> <ref refid="cu_a_star_8hpp_1a00de2d0d0ab9f396c3e3748eb63cab29" kindref="member">int</ref></type>
+          <declname>seed</declname>
+        </param>
+        <briefdescription>
+<para>init a random node, position bounds is in [0,1] </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/cuAStar.hpp" line="321" column="8" bodyfile="include/cuAStar.hpp" bodystart="321" bodyend="339"/>
+        <references refid="cu_a_star_8hpp_1a00de2d0d0ab9f396c3e3748eb63cab29" compoundref="cu_a_star_8hpp" startline="169" endline="175">curandx</references>
+        <references refid="class_node3d_1a00d107f9c9a72082fdb069cc35e2b234" compoundref="cu_a_star_8hpp" startline="306">Node3d&lt; T &gt;::p_node</references>
+        <references refid="class_node3d_1a8245c6abc8c81e087af1c1212075a5ba" compoundref="cu_a_star_8hpp" startline="305">Node3d&lt; T &gt;::sum_cost</references>
+        <references refid="class_node3d_1a880ff1c6b515074aba76d3bc9bb57986" compoundref="cu_a_star_8hpp" startline="302">Node3d&lt; T &gt;::x</references>
+        <references refid="class_node3d_1a0f83bfe660734ce20618c2d719eb3753" compoundref="cu_a_star_8hpp" startline="303">Node3d&lt; T &gt;::y</references>
+        <references refid="class_node3d_1aaccb19aa47451a8ff7afaeb7015dd183" compoundref="cu_a_star_8hpp" startline="304">Node3d&lt; T &gt;::z</references>
+      </memberdef>
+      <memberdef kind="function" id="class_node3d_1a4d02136dd2179bc7e9e386a21223bdc6" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>Node3d&lt; T &gt;::Node3d</definition>
+        <argsstring>(T x_, T y_, T z_, T sum_cost_=0, Node3d *p_node_=nullptr)</argsstring>
+        <name>Node3d</name>
+        <qualifiedname>Node3d::Node3d</qualifiedname>
+        <param>
+          <type><ref refid="cu_a_star_8hpp_1a00de2d0d0ab9f396c3e3748eb63cab29" kindref="member">T</ref></type>
+          <declname>x_</declname>
+        </param>
+        <param>
+          <type><ref refid="cu_a_star_8hpp_1a00de2d0d0ab9f396c3e3748eb63cab29" kindref="member">T</ref></type>
+          <declname>y_</declname>
+        </param>
+        <param>
+          <type><ref refid="cu_a_star_8hpp_1a00de2d0d0ab9f396c3e3748eb63cab29" kindref="member">T</ref></type>
+          <declname>z_</declname>
+        </param>
+        <param>
+          <type><ref refid="cu_a_star_8hpp_1a00de2d0d0ab9f396c3e3748eb63cab29" kindref="member">T</ref></type>
+          <declname>sum_cost_</declname>
+          <defval>0</defval>
+        </param>
+        <param>
+          <type><ref refid="class_node3d" kindref="compound">Node3d</ref> *</type>
+          <declname>p_node_</declname>
+          <defval><ref refid="cu_a_star_8hpp_1a00de2d0d0ab9f396c3e3748eb63cab29" kindref="member">nullptr</ref></defval>
+        </param>
+        <briefdescription>
+<para>Constructor for the <ref refid="class_node3d" kindref="compound">Node3d</ref> class. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/cuAStar.hpp" line="342" column="8" bodyfile="include/cuAStar.hpp" bodystart="342" bodyend="348"/>
+        <references refid="cu_a_star_8hpp_1a00de2d0d0ab9f396c3e3748eb63cab29" compoundref="cu_a_star_8hpp" startline="169" endline="175">curandx</references>
+        <references refid="class_node3d_1a00d107f9c9a72082fdb069cc35e2b234" compoundref="cu_a_star_8hpp" startline="306">Node3d&lt; T &gt;::p_node</references>
+        <references refid="class_node3d_1a8245c6abc8c81e087af1c1212075a5ba" compoundref="cu_a_star_8hpp" startline="305">Node3d&lt; T &gt;::sum_cost</references>
+        <references refid="class_node3d_1a880ff1c6b515074aba76d3bc9bb57986" compoundref="cu_a_star_8hpp" startline="302">Node3d&lt; T &gt;::x</references>
+        <references refid="class_node3d_1a0f83bfe660734ce20618c2d719eb3753" compoundref="cu_a_star_8hpp" startline="303">Node3d&lt; T &gt;::y</references>
+        <references refid="class_node3d_1aaccb19aa47451a8ff7afaeb7015dd183" compoundref="cu_a_star_8hpp" startline="304">Node3d&lt; T &gt;::z</references>
+      </memberdef>
+      <memberdef kind="function" id="class_node3d_1a1975adadd6d078946c2994e4b1bb3bc4" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="cu_a_star_8hpp_1a00de2d0d0ab9f396c3e3748eb63cab29" kindref="member">T</ref></type>
+        <definition>T Node3d&lt; T &gt;::distanceTo</definition>
+        <argsstring>(const Node3d &amp;other) const</argsstring>
+        <name>distanceTo</name>
+        <qualifiedname>Node3d::distanceTo</qualifiedname>
+        <param>
+          <type><ref refid="cu_a_star_8hpp_1a00de2d0d0ab9f396c3e3748eb63cab29" kindref="member">const</ref> <ref refid="class_node3d" kindref="compound">Node3d</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+<para>Computes the Euclidean distance to another node. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/cuAStar.hpp" line="351" column="10" bodyfile="include/cuAStar.hpp" bodystart="351" bodyend="355"/>
+        <references refid="cu_a_star_8hpp_1a00de2d0d0ab9f396c3e3748eb63cab29" compoundref="cu_a_star_8hpp" startline="169" endline="175">curandx</references>
+        <references refid="class_node3d_1a880ff1c6b515074aba76d3bc9bb57986" compoundref="cu_a_star_8hpp" startline="302">Node3d&lt; T &gt;::x</references>
+        <references refid="class_node3d_1a0f83bfe660734ce20618c2d719eb3753" compoundref="cu_a_star_8hpp" startline="303">Node3d&lt; T &gt;::y</references>
+        <references refid="class_node3d_1aaccb19aa47451a8ff7afaeb7015dd183" compoundref="cu_a_star_8hpp" startline="304">Node3d&lt; T &gt;::z</references>
+      </memberdef>
+      <memberdef kind="function" id="class_node3d_1a5f10c454d1cf4dbb01f356f957e5230d" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="cu_a_star_8hpp_1a00de2d0d0ab9f396c3e3748eb63cab29" kindref="member">bool</ref></type>
+        <definition>bool Node3d&lt; T &gt;::isEqual</definition>
+        <argsstring>(const Node3d &amp;other, T eps=static_cast&lt; T &gt;(1e-6)) const</argsstring>
+        <name>isEqual</name>
+        <qualifiedname>Node3d::isEqual</qualifiedname>
+        <param>
+          <type><ref refid="cu_a_star_8hpp_1a00de2d0d0ab9f396c3e3748eb63cab29" kindref="member">const</ref> <ref refid="class_node3d" kindref="compound">Node3d</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <param>
+          <type><ref refid="cu_a_star_8hpp_1a00de2d0d0ab9f396c3e3748eb63cab29" kindref="member">T</ref></type>
+          <declname>eps</declname>
+          <defval><ref refid="cu_a_star_8hpp_1a00de2d0d0ab9f396c3e3748eb63cab29" kindref="member">static_cast</ref>&lt; <ref refid="cu_a_star_8hpp_1a00de2d0d0ab9f396c3e3748eb63cab29" kindref="member">T</ref> &gt;(1<ref refid="cu_a_star_8hpp_1a00de2d0d0ab9f396c3e3748eb63cab29" kindref="member">e</ref>-6)</defval>
+        </param>
+        <briefdescription>
+<para>Checks if two nodes are equal based on their positions. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/cuAStar.hpp" line="358" column="13" bodyfile="include/cuAStar.hpp" bodystart="358" bodyend="362"/>
+        <references refid="cu_a_star_8hpp_1a00de2d0d0ab9f396c3e3748eb63cab29" compoundref="cu_a_star_8hpp" startline="169" endline="175">curandx</references>
+        <references refid="class_node3d_1a880ff1c6b515074aba76d3bc9bb57986" compoundref="cu_a_star_8hpp" startline="302">Node3d&lt; T &gt;::x</references>
+        <references refid="class_node3d_1a0f83bfe660734ce20618c2d719eb3753" compoundref="cu_a_star_8hpp" startline="303">Node3d&lt; T &gt;::y</references>
+        <references refid="class_node3d_1aaccb19aa47451a8ff7afaeb7015dd183" compoundref="cu_a_star_8hpp" startline="304">Node3d&lt; T &gt;::z</references>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Base class for 3D nodes representation. </para>
+    </briefdescription>
+    <detaileddescription>
+<para><parameterlist kind="templateparam"><parameteritem>
+<parameternamelist>
+<parametername>T</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Numeric type for the sum_cost (e.g., T, float) </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>x</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>: x-coordinate in the grid </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>y</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>: y-coordinate in the grid </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>z</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>: z-coordinate in the grid </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>sum_cost</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>: cumulative cost from the start node to the current node </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>p_node</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>: pointer to the parent node </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="2">
+        <label>Node3d&lt; T &gt;</label>
+        <link refid="class_node3d"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>p_node</edgelabel>
+        </childnode>
+      </node>
+      <node id="1">
+        <label>Node3d&lt; T &gt;</label>
+        <link refid="class_node3d"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>p_node</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="include/cuAStar.hpp" line="300" column="1" bodyfile="include/cuAStar.hpp" bodystart="300" bodyend="379"/>
+    <listofallmembers>
+      <member refid="class_node3d_1a00c0fd5df6f0d9b46c24c6c28fa9dc91" prot="public" virt="non-virtual"><scope>Node3d</scope><name>b</name></member>
+      <member refid="class_node3d_1a1975adadd6d078946c2994e4b1bb3bc4" prot="public" virt="non-virtual"><scope>Node3d</scope><name>distanceTo</name></member>
+      <member refid="class_node3d_1a11458c52d4a55911346225f624c09eab" prot="public" virt="non-virtual"><scope>Node3d</scope><name>g</name></member>
+      <member refid="class_node3d_1a5f10c454d1cf4dbb01f356f957e5230d" prot="public" virt="non-virtual"><scope>Node3d</scope><name>isEqual</name></member>
+      <member refid="class_node3d_1aafbd4c0fe3ea50106ab11ac2c3e77e2f" prot="public" virt="non-virtual"><scope>Node3d</scope><name>Node3d</name></member>
+      <member refid="class_node3d_1ad5c7d953e67fedd2d56f74304685f533" prot="public" virt="non-virtual"><scope>Node3d</scope><name>Node3d</name></member>
+      <member refid="class_node3d_1a4d02136dd2179bc7e9e386a21223bdc6" prot="public" virt="non-virtual"><scope>Node3d</scope><name>Node3d</name></member>
+      <member refid="class_node3d_1a00d107f9c9a72082fdb069cc35e2b234" prot="public" virt="non-virtual"><scope>Node3d</scope><name>p_node</name></member>
+      <member refid="class_node3d_1a87519fd11d106242674ce915df035f33" prot="public" virt="non-virtual"><scope>Node3d</scope><name>r</name></member>
+      <member refid="class_node3d_1a8245c6abc8c81e087af1c1212075a5ba" prot="public" virt="non-virtual"><scope>Node3d</scope><name>sum_cost</name></member>
+      <member refid="class_node3d_1a880ff1c6b515074aba76d3bc9bb57986" prot="public" virt="non-virtual"><scope>Node3d</scope><name>x</name></member>
+      <member refid="class_node3d_1a0f83bfe660734ce20618c2d719eb3753" prot="public" virt="non-virtual"><scope>Node3d</scope><name>y</name></member>
+      <member refid="class_node3d_1aaccb19aa47451a8ff7afaeb7015dd183" prot="public" virt="non-virtual"><scope>Node3d</scope><name>z</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

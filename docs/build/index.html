@@ -1,0 +1,996 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="cpp" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Welcome to cuAstar&#39;s documentation! &mdash; cuAstar 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=0a926961"></script>
+        <script src="_static/doctools.js?v=9a2dae69"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="#" class="icon icon-home">
+            cuAstar
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">Welcome to cuAstar's documentation!</a></li>
+<li><a class="reference internal" href="#indices-and-tables">Indices and tables</a><ul>
+<li><a class="reference internal" href="#_CPPv4I00E12AstarPlanner"><code class="docutils literal notranslate"><span class="pre">AstarPlanner</span></code></a><ul>
+<li><a class="reference internal" href="#_CPPv4N12AstarPlanner12AstarPlannerEv"><code class="docutils literal notranslate"><span class="pre">AstarPlanner::AstarPlanner()</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv4N12AstarPlanner12AstarPlannerER8NodeTypei"><code class="docutils literal notranslate"><span class="pre">AstarPlanner::AstarPlanner()</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv4N12AstarPlanner12AstarPlannerERKNSt6stringE"><code class="docutils literal notranslate"><span class="pre">AstarPlanner::AstarPlanner()</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv4N12AstarPlanner12AstarPlannerEij"><code class="docutils literal notranslate"><span class="pre">AstarPlanner::AstarPlanner()</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv4N12AstarPlanner14setInitialNodeEP8NodeType"><code class="docutils literal notranslate"><span class="pre">AstarPlanner::setInitialNode()</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv4N12AstarPlanner13setTargetNodeEP8NodeType"><code class="docutils literal notranslate"><span class="pre">AstarPlanner::setTargetNode()</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv4N12AstarPlanner19computeChunkOpenSetEKi"><code class="docutils literal notranslate"><span class="pre">AstarPlanner::computeChunkOpenSet()</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv4N12AstarPlanner17computeTrajectoryEv"><code class="docutils literal notranslate"><span class="pre">AstarPlanner::computeTrajectory()</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv4N12AstarPlanner19writeTrajectory2csvEKNSt6stringE"><code class="docutils literal notranslate"><span class="pre">AstarPlanner::writeTrajectory2csv()</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv4N12AstarPlanner18saveTrajectory2pngERKNSt6stringE"><code class="docutils literal notranslate"><span class="pre">AstarPlanner::saveTrajectory2png()</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv4N12AstarPlanner21visualize2dPointCloudEKNSt6stringE"><code class="docutils literal notranslate"><span class="pre">AstarPlanner::visualize2dPointCloud()</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv4N12AstarPlanner18visualize2dTreeMapEv"><code class="docutils literal notranslate"><span class="pre">AstarPlanner::visualize2dTreeMap()</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv4N12AstarPlannerD0Ev"><code class="docutils literal notranslate"><span class="pre">AstarPlanner::~AstarPlanner()</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv4N12AstarPlanner15isTargetReachedEPK8NodeTypeK1T"><code class="docutils literal notranslate"><span class="pre">AstarPlanner::isTargetReached()</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv4N12AstarPlanner19computeOpenSetArrayEv"><code class="docutils literal notranslate"><span class="pre">AstarPlanner::computeOpenSetArray()</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv4N12AstarPlanner8numNodesE"><code class="docutils literal notranslate"><span class="pre">AstarPlanner::numNodes</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv4N12AstarPlanner9chunkSizeE"><code class="docutils literal notranslate"><span class="pre">AstarPlanner::chunkSize</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv4N12AstarPlanner12h_nodesArrayE"><code class="docutils literal notranslate"><span class="pre">AstarPlanner::h_nodesArray</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv4N12AstarPlanner20h_chunksOpenSetArrayE"><code class="docutils literal notranslate"><span class="pre">AstarPlanner::h_chunksOpenSetArray</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv4N12AstarPlanner14h_openSetArrayE"><code class="docutils literal notranslate"><span class="pre">AstarPlanner::h_openSetArray</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv4N12AstarPlanner16h_closedSetArrayE"><code class="docutils literal notranslate"><span class="pre">AstarPlanner::h_closedSetArray</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv4N12AstarPlanner9startNodeE"><code class="docutils literal notranslate"><span class="pre">AstarPlanner::startNode</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv4N12AstarPlanner7endNodeE"><code class="docutils literal notranslate"><span class="pre">AstarPlanner::endNode</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv4N12AstarPlanner11h_pathArrayE"><code class="docutils literal notranslate"><span class="pre">AstarPlanner::h_pathArray</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv4N12AstarPlanner11d_pathArrayE"><code class="docutils literal notranslate"><span class="pre">AstarPlanner::d_pathArray</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#_CPPv46Circle"><code class="docutils literal notranslate"><span class="pre">Circle</span></code></a><ul>
+<li><a class="reference internal" href="#_CPPv4N6Circle1xE"><code class="docutils literal notranslate"><span class="pre">Circle::x</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv4N6Circle1yE"><code class="docutils literal notranslate"><span class="pre">Circle::y</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv4N6Circle6radiusE"><code class="docutils literal notranslate"><span class="pre">Circle::radius</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#_CPPv45Color"><code class="docutils literal notranslate"><span class="pre">Color</span></code></a><ul>
+<li><a class="reference internal" href="#_CPPv4N5Color1rE"><code class="docutils literal notranslate"><span class="pre">Color::r</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv4N5Color1gE"><code class="docutils literal notranslate"><span class="pre">Color::g</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv4N5Color1bE"><code class="docutils literal notranslate"><span class="pre">Color::b</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#_CPPv4I0E6Node2d"><code class="docutils literal notranslate"><span class="pre">Node2d</span></code></a><ul>
+<li><a class="reference internal" href="#_CPPv4N6Node2d6Node2dEv"><code class="docutils literal notranslate"><span class="pre">Node2d::Node2d()</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv4N6Node2d6Node2dE1T1T1TP6Node2d"><code class="docutils literal notranslate"><span class="pre">Node2d::Node2d()</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv4N6Node2d6Node2dE1T1T1T"><code class="docutils literal notranslate"><span class="pre">Node2d::Node2d()</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv4NK6Node2d7isEqualERK6Node2d1T"><code class="docutils literal notranslate"><span class="pre">Node2d::isEqual()</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv4NK6Node2d10distanceToERK6Node2d"><code class="docutils literal notranslate"><span class="pre">Node2d::distanceTo()</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv4N6Node2d1xE"><code class="docutils literal notranslate"><span class="pre">Node2d::x</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv4N6Node2d1yE"><code class="docutils literal notranslate"><span class="pre">Node2d::y</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv4N6Node2d1zE"><code class="docutils literal notranslate"><span class="pre">Node2d::z</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv4N6Node2d8sum_costE"><code class="docutils literal notranslate"><span class="pre">Node2d::sum_cost</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv4N6Node2d6p_nodeE"><code class="docutils literal notranslate"><span class="pre">Node2d::p_node</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv4N6Node2d1rE"><code class="docutils literal notranslate"><span class="pre">Node2d::r</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv4N6Node2d1gE"><code class="docutils literal notranslate"><span class="pre">Node2d::g</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv4N6Node2d1bE"><code class="docutils literal notranslate"><span class="pre">Node2d::b</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#_CPPv4I0E6Node3d"><code class="docutils literal notranslate"><span class="pre">Node3d</span></code></a><ul>
+<li><a class="reference internal" href="#_CPPv4N6Node3d6Node3dEv"><code class="docutils literal notranslate"><span class="pre">Node3d::Node3d()</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv4N6Node3d6Node3dEj"><code class="docutils literal notranslate"><span class="pre">Node3d::Node3d()</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv4N6Node3d6Node3dE1T1T1T1TP6Node3d"><code class="docutils literal notranslate"><span class="pre">Node3d::Node3d()</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv4NK6Node3d10distanceToERK6Node3d"><code class="docutils literal notranslate"><span class="pre">Node3d::distanceTo()</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv4NK6Node3d7isEqualERK6Node3d1T"><code class="docutils literal notranslate"><span class="pre">Node3d::isEqual()</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv4N6Node3d1xE"><code class="docutils literal notranslate"><span class="pre">Node3d::x</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv4N6Node3d1yE"><code class="docutils literal notranslate"><span class="pre">Node3d::y</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv4N6Node3d1zE"><code class="docutils literal notranslate"><span class="pre">Node3d::z</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv4N6Node3d8sum_costE"><code class="docutils literal notranslate"><span class="pre">Node3d::sum_cost</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv4N6Node3d6p_nodeE"><code class="docutils literal notranslate"><span class="pre">Node3d::p_node</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv4N6Node3d1rE"><code class="docutils literal notranslate"><span class="pre">Node3d::r</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv4N6Node3d1gE"><code class="docutils literal notranslate"><span class="pre">Node3d::g</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv4N6Node3d1bE"><code class="docutils literal notranslate"><span class="pre">Node3d::b</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#_CPPv410isPlyValidKNSt6stringE"><code class="docutils literal notranslate"><span class="pre">isPlyValid()</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv4I00E11readPlyNode8NodeTypeRKNSt6stringEK6size_t"><code class="docutils literal notranslate"><span class="pre">readPlyNode()</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv416drawFilledCirclePhiiPK6CirclePK5Color"><code class="docutils literal notranslate"><span class="pre">drawFilledCircle()</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv417drawFilledCirclesPhiiPKiPKiPKhPKhPKhid"><code class="docutils literal notranslate"><span class="pre">drawFilledCircles()</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv419savePointCloudImagePKciiPKiPKiPKhPKhPKhid"><code class="docutils literal notranslate"><span class="pre">savePointCloudImage()</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv4I0E19array2PointCloudImgvPK8NodeTypeiPKcdd"><code class="docutils literal notranslate"><span class="pre">array2PointCloudImg()</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv414getPlyPointNumKNSt6stringE"><code class="docutils literal notranslate"><span class="pre">getPlyPointNum()</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv4I00E13updateNearestvP8NodeTypeP1TRK8NodeTypeRK8NodeTypei"><code class="docutils literal notranslate"><span class="pre">updateNearest()</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv4I00E24computeHeuristicDistancevRK8NodeTypeRK8NodeTypeP1T"><code class="docutils literal notranslate"><span class="pre">computeHeuristicDistance()</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv4I00E25computeNodeTrajectoryCostvRK8NodeTypeRK8NodeTypeP1T"><code class="docutils literal notranslate"><span class="pre">computeNodeTrajectoryCost()</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv4I00E21computeTrajectoryCostvPK8NodeTypeiP1T"><code class="docutils literal notranslate"><span class="pre">computeTrajectoryCost()</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv415threadsPerBlock"><code class="docutils literal notranslate"><span class="pre">threadsPerBlock</span></code></a></li>
+</ul>
+</li>
+</ul>
+</div>
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="#">cuAstar</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="#" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Welcome to cuAstar's documentation!</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="welcome-to-cuastar-s-documentation">
+<h1>Welcome to cuAstar's documentation!<a class="headerlink" href="#welcome-to-cuastar-s-documentation" title="Link to this heading"></a></h1>
+<div class="toctree-wrapper compound">
+</div>
+<dl class="simple">
+<dt>introduction</dt><dd><p>usage
+api</p>
+</dd>
+</dl>
+</section>
+<section id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Link to this heading"></a></h1>
+<ul class="simple">
+<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
+<li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
+</ul>
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4I00E12AstarPlanner">
+<span id="_CPPv3I00E12AstarPlanner"></span><span id="_CPPv2I00E12AstarPlanner"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">NodeType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="class_astar_planner"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AstarPlanner</span></span></span><a class="headerlink" href="#_CPPv4I00E12AstarPlanner" title="Link to this definition"></a><br /></dt>
+<dd><div class="docutils container">
+<em>#include &lt;<a class="reference internal" href="#cu_a_star_8hpp"><span class="std std-ref">cuAStar.hpp</span></a>&gt;</em></div>
+<p>divide the datset into chunks of max 1024 node, maxium , compute the best node into, each chunk on a single grid block, each block , writes the best node (wich is the closed to target), to the global device memory,each chunk has a root node and a sucessor the sucessor parent points to the root,and the cost function , the chunk sum_cost of root is 0 and for the child is the distance btewwen the both , start with the chunk wich have the mimum cost function, (p_sum + heursitic) wich is assumed to be the final chunk that have the goal node, named the endChunk, now we sav the nodes into a new_array include the start and gaolnode and the chunks 2-nodes , we llok fro the trajectory that pass from all thes points , with minium path cost, so, we allocte this array on the device global meomry, and for a single block each thread compute, 1 &lt; chunk_size &lt; 1024, each thred within the same only block will compute a possible combinition, each thred will loop all the nodes in the array, starting from the endnode, if this has a parent it go throug else , it computes the nereast neighbood node , and if this also</p>
+<p>after computing the chunks and save each chunk nodes (2*NodeType), and the matric: cost to got from chunk root to child chunk + the heuristic % to-go node the number of chunks is : N/threadsPerBlock afther constructing the nodes grid </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N12AstarPlanner12AstarPlannerEv">
+<span id="_CPPv3N12AstarPlanner12AstarPlannerEv"></span><span id="_CPPv2N12AstarPlanner12AstarPlannerEv"></span><span id="AstarPlanner::AstarPlanner"></span><span class="target" id="class_astar_planner_1a7572fa53d40fbcee001b3be86598c069"></span><span class="sig-name descname"><span class="n"><span class="pre">AstarPlanner</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N12AstarPlanner12AstarPlannerEv" title="Link to this definition"></a><br /></dt>
+<dd><p>default constructor, allocate momory for class attributes on host and device, this function, sets the node number to thredsPerBlock var and allocate memeory </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N12AstarPlanner12AstarPlannerER8NodeTypei">
+<span id="_CPPv3N12AstarPlanner12AstarPlannerER8NodeTypei"></span><span id="_CPPv2N12AstarPlanner12AstarPlannerER8NodeTypei"></span><span id="AstarPlanner::AstarPlanner__NodeTypeR.i"></span><span class="target" id="class_astar_planner_1aad3480b3923834d9e5fb9ed52531f6b1"></span><span class="sig-name descname"><span class="n"><span class="pre">AstarPlanner</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I00E12AstarPlanner" title="AstarPlanner::NodeType"><span class="n"><span class="pre">NodeType</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">h_nodesArray_</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">numNodes_</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N12AstarPlanner12AstarPlannerER8NodeTypei" title="Link to this definition"></a><br /></dt>
+<dd><p>construct from a user defined point clouds array init number nodes allocate and fill member attributes , copy them to device and init memebr attributes device vars </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N12AstarPlanner12AstarPlannerERKNSt6stringE">
+<span id="_CPPv3N12AstarPlanner12AstarPlannerERKNSt6stringE"></span><span id="_CPPv2N12AstarPlanner12AstarPlannerERKNSt6stringE"></span><span id="AstarPlanner::AstarPlanner__ssCR"></span><span class="target" id="class_astar_planner_1af74bae5418000d635d97f91d84846f2f"></span><span class="sig-name descname"><span class="n"><span class="pre">AstarPlanner</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">plyFilePath</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N12AstarPlanner12AstarPlannerERKNSt6stringE" title="Link to this definition"></a><br /></dt>
+<dd><p>fill the host and device memory with the nodes from the a point cloud data file .ply </p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>this method fill only host attributes class mmeber, no device initlisation when need create a device var and copy from it </p>
+</div>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N12AstarPlanner12AstarPlannerEij">
+<span id="_CPPv3N12AstarPlanner12AstarPlannerEij"></span><span id="_CPPv2N12AstarPlanner12AstarPlannerEij"></span><span id="AstarPlanner::AstarPlanner__i.unsigned-i"></span><span class="target" id="class_astar_planner_1ab344ed0178b64f88dda3d5b1124464bf"></span><span class="sig-name descname"><span class="n"><span class="pre">AstarPlanner</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">numNodes_</span></span>, <span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">seed</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N12AstarPlanner12AstarPlannerEij" title="Link to this definition"></a><br /></dt>
+<dd><p>init the host and device memory with random nodes, if the number of ndodes given os diffrent from class alraedy vars old, ovveride them </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>seed</strong> -- : random seed initilization </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N12AstarPlanner14setInitialNodeEP8NodeType">
+<span id="_CPPv3N12AstarPlanner14setInitialNodeEP8NodeType"></span><span id="_CPPv2N12AstarPlanner14setInitialNodeEP8NodeType"></span><span id="AstarPlanner::setInitialNode__NodeTypeP"></span><span class="target" id="class_astar_planner_1ada592b22f903df88596e6011b10a9cbc"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">setInitialNode</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I00E12AstarPlanner" title="AstarPlanner::NodeType"><span class="n"><span class="pre">NodeType</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">startNode_</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N12AstarPlanner14setInitialNodeEP8NodeType" title="Link to this definition"></a><br /></dt>
+<dd><p>set the start nodes either in 3d or 2d, check if the node exsits in the h_nodesArray first, if the start are set, it defaulted to the first and last node in the nodes array. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>startNode_</strong> -- a construted nodeType for the given node the given node should exsit in the point cloud, </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N12AstarPlanner13setTargetNodeEP8NodeType">
+<span id="_CPPv3N12AstarPlanner13setTargetNodeEP8NodeType"></span><span id="_CPPv2N12AstarPlanner13setTargetNodeEP8NodeType"></span><span id="AstarPlanner::setTargetNode__NodeTypeP"></span><span class="target" id="class_astar_planner_1a5202f6fd1f8e7abc691be171f1707de8"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">setTargetNode</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I00E12AstarPlanner" title="AstarPlanner::NodeType"><span class="n"><span class="pre">NodeType</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">endNode_</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N12AstarPlanner13setTargetNodeEP8NodeType" title="Link to this definition"></a><br /></dt>
+<dd><p>set the end node , it should exsit in the point cloud and it should be diffrent from </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N12AstarPlanner19computeChunkOpenSetEKi">
+<span id="_CPPv3N12AstarPlanner19computeChunkOpenSetEKi"></span><span id="_CPPv2N12AstarPlanner19computeChunkOpenSetEKi"></span><span id="AstarPlanner::computeChunkOpenSet__iC"></span><span class="target" id="class_astar_planner_1a919df809be6ad72ecf24b5b42a21f157"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">computeChunkOpenSet</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">chunkSize_</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv415threadsPerBlock" title="threadsPerBlock"><span class="n"><span class="pre">threadsPerBlock</span></span></a><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N12AstarPlanner19computeChunkOpenSetEKi" title="Link to this definition"></a><br /></dt>
+<dd><p>computes he chunks open set array for all chunks in the point cloud array , divide into chunks, compute the knns , reoder by fmin values and append to the h_chunksOpenSetArray , the rest of nodes are divided inti chunks and and reorded, the default size of chunks is the bloc size </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N12AstarPlanner17computeTrajectoryEv">
+<span id="_CPPv3N12AstarPlanner17computeTrajectoryEv"></span><span id="_CPPv2N12AstarPlanner17computeTrajectoryEv"></span><span id="AstarPlanner::computeTrajectory"></span><span class="target" id="class_astar_planner_1a6680617fa915b63bc3f04c0daa226798"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">computeTrajectory</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N12AstarPlanner17computeTrajectoryEv" title="Link to this definition"></a><br /></dt>
+<dd><p>given the the map tree construted, satart from the end node and, given that each node has unique parent, it saves the nodes and copy up to the start node </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N12AstarPlanner19writeTrajectory2csvEKNSt6stringE">
+<span id="_CPPv3N12AstarPlanner19writeTrajectory2csvEKNSt6stringE"></span><span id="_CPPv2N12AstarPlanner19writeTrajectory2csvEKNSt6stringE"></span><span id="AstarPlanner::writeTrajectory2csv__ssC"></span><span class="target" id="class_astar_planner_1ad995f13a8465e6dcd2d438ea12c05419"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">writeTrajectory2csv</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">outputFilePath</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N12AstarPlanner19writeTrajectory2csvEKNSt6stringE" title="Link to this definition"></a><br /></dt>
+<dd><p>saves a trajectory to pointcloud file .ply using happly library </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N12AstarPlanner18saveTrajectory2pngERKNSt6stringE">
+<span id="_CPPv3N12AstarPlanner18saveTrajectory2pngERKNSt6stringE"></span><span id="_CPPv2N12AstarPlanner18saveTrajectory2pngERKNSt6stringE"></span><span id="AstarPlanner::saveTrajectory2png__ssCR"></span><span class="target" id="class_astar_planner_1ac49f8d3c980a6dddf92d82b2760e565b"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">saveTrajectory2png</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">outputFilePath</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N12AstarPlanner18saveTrajectory2pngERKNSt6stringE" title="Link to this definition"></a><br /></dt>
+<dd><p>read a point cloud data file (now only PLy supported) and fill the gridMap object memebr of the class with nodes consruted from the point cloud </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>outputFilePath</strong> -- image fil path to save to </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N12AstarPlanner21visualize2dPointCloudEKNSt6stringE">
+<span id="_CPPv3N12AstarPlanner21visualize2dPointCloudEKNSt6stringE"></span><span id="_CPPv2N12AstarPlanner21visualize2dPointCloudEKNSt6stringE"></span><span id="AstarPlanner::visualize2dPointCloud__ssC"></span><span class="target" id="class_astar_planner_1abeac1ccac7dfd32be8701297f476a5cf"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">visualize2dPointCloud</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">imageFilePath</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N12AstarPlanner21visualize2dPointCloudEKNSt6stringE" title="Link to this definition"></a><br /></dt>
+<dd><p>saves the point cloud data array into a 2d, view along z-axis, to a png file, the setting for this function are taken to default, this function require the host array or nodes filled, the color used for each node is the default in r , g ,b arrtibutes in each node to update them use <a class="reference internal" href="#cu_a_star_8hpp_1a00de2d0d0ab9f396c3e3748eb63cab29"><span class="std std-ref">updateNodesColor()</span></a></p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N12AstarPlanner18visualize2dTreeMapEv">
+<span id="_CPPv3N12AstarPlanner18visualize2dTreeMapEv"></span><span id="_CPPv2N12AstarPlanner18visualize2dTreeMapEv"></span><span id="AstarPlanner::visualize2dTreeMap"></span><span class="target" id="class_astar_planner_1a9588ecdcb3b28c2c1da36e889bed149c"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">visualize2dTreeMap</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N12AstarPlanner18visualize2dTreeMapEv" title="Link to this definition"></a><br /></dt>
+<dd><p>this method take an array reprsent a map and debug it in 2d, nodes are not displayed a unicolor lines between child-parent is ploted </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N12AstarPlannerD0Ev">
+<span id="_CPPv3N12AstarPlannerD0Ev"></span><span id="_CPPv2N12AstarPlannerD0Ev"></span><span id="AstarPlanner::~AstarPlanner"></span><span class="target" id="class_astar_planner_1a4da6d20ce7c7ab434ed446718183e22f"></span><span class="sig-name descname"><span class="n"><span class="pre">~AstarPlanner</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N12AstarPlannerD0Ev" title="Link to this definition"></a><br /></dt>
+<dd><p>free all memory on deice or on host memory allocation in the constructor or over functions </p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-private-functions">Private Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N12AstarPlanner15isTargetReachedEPK8NodeTypeK1T">
+<span id="_CPPv3N12AstarPlanner15isTargetReachedEPK8NodeTypeK1T"></span><span id="_CPPv2N12AstarPlanner15isTargetReachedEPK8NodeTypeK1T"></span><span id="AstarPlanner::isTargetReached__NodeTypeCP.TC"></span><span class="target" id="class_astar_planner_1aeef4955c0397847a5c56a34cc5fb8a42"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">isTargetReached</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I00E12AstarPlanner" title="AstarPlanner::NodeType"><span class="n"><span class="pre">NodeType</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">n</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I00E12AstarPlanner" title="AstarPlanner::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">eps</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N12AstarPlanner15isTargetReachedEPK8NodeTypeK1T" title="Link to this definition"></a><br /></dt>
+<dd><p>Check wahat ever we get into the goal node or not, using a threshold value esplion for proximity checking. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N12AstarPlanner19computeOpenSetArrayEv">
+<span id="_CPPv3N12AstarPlanner19computeOpenSetArrayEv"></span><span id="_CPPv2N12AstarPlanner19computeOpenSetArrayEv"></span><span id="AstarPlanner::computeOpenSetArray"></span><span class="target" id="class_astar_planner_1a7717c75f8108f7f2ec6d995f8a31c432"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">computeOpenSetArray</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N12AstarPlanner19computeOpenSetArrayEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-private-members">Private Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N12AstarPlanner8numNodesE">
+<span id="_CPPv3N12AstarPlanner8numNodesE"></span><span id="_CPPv2N12AstarPlanner8numNodesE"></span><span id="AstarPlanner::numNodes__i"></span><span class="target" id="class_astar_planner_1a3a2934934690ae00af8bfe7b30ac5f5e"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">numNodes</span></span></span><a class="headerlink" href="#_CPPv4N12AstarPlanner8numNodesE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N12AstarPlanner9chunkSizeE">
+<span id="_CPPv3N12AstarPlanner9chunkSizeE"></span><span id="_CPPv2N12AstarPlanner9chunkSizeE"></span><span id="AstarPlanner::chunkSize__i"></span><span class="target" id="class_astar_planner_1a846df03cb9adcaf67f0d8d49a826771e"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">chunkSize</span></span></span><a class="headerlink" href="#_CPPv4N12AstarPlanner9chunkSizeE" title="Link to this definition"></a><br /></dt>
+<dd><p>the chunks size controls the </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N12AstarPlanner12h_nodesArrayE">
+<span id="_CPPv3N12AstarPlanner12h_nodesArrayE"></span><span id="_CPPv2N12AstarPlanner12h_nodesArrayE"></span><span id="AstarPlanner::h_nodesArray__NodeTypeP"></span><span class="target" id="class_astar_planner_1a6a9fd29b001d028423a47914ee90b2b3"></span><a class="reference internal" href="#_CPPv4I00E12AstarPlanner" title="AstarPlanner::NodeType"><span class="n"><span class="pre">NodeType</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">h_nodesArray</span></span></span><a class="headerlink" href="#_CPPv4N12AstarPlanner12h_nodesArrayE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N12AstarPlanner20h_chunksOpenSetArrayE">
+<span id="_CPPv3N12AstarPlanner20h_chunksOpenSetArrayE"></span><span id="_CPPv2N12AstarPlanner20h_chunksOpenSetArrayE"></span><span id="AstarPlanner::h_chunksOpenSetArray__NodeTypeP"></span><span class="target" id="class_astar_planner_1ab455773e03f86215934c5df2d7c70a76"></span><a class="reference internal" href="#_CPPv4I00E12AstarPlanner" title="AstarPlanner::NodeType"><span class="n"><span class="pre">NodeType</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">h_chunksOpenSetArray</span></span></span><a class="headerlink" href="#_CPPv4N12AstarPlanner20h_chunksOpenSetArrayE" title="Link to this definition"></a><br /></dt>
+<dd><p>Pointer to an array of <code class="docutils literal notranslate"><span class="pre">NodeType</span></code> objects, where each element represents the open set of nodes for a specific chunk. The open set is used to store nodes ordered by their <code class="docutils literal notranslate"><span class="pre">f</span></code> value, ranging from minimum to maximum. These nodes are derived from the chunk's k-nearest neighbor (kNN) array. The <code class="docutils literal notranslate"><span class="pre">computeNodesSuccessor</span></code> function is used to sort these nodes, which computes nodes with the minimum <code class="docutils literal notranslate"><span class="pre">f(n)</span></code> values and organizes them in the array. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N12AstarPlanner14h_openSetArrayE">
+<span id="_CPPv3N12AstarPlanner14h_openSetArrayE"></span><span id="_CPPv2N12AstarPlanner14h_openSetArrayE"></span><span id="AstarPlanner::h_openSetArray__NodeTypeP"></span><span class="target" id="class_astar_planner_1a283d781da06d2bbf0504ae6dfcbb1e7f"></span><a class="reference internal" href="#_CPPv4I00E12AstarPlanner" title="AstarPlanner::NodeType"><span class="n"><span class="pre">NodeType</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">h_openSetArray</span></span></span><a class="headerlink" href="#_CPPv4N12AstarPlanner14h_openSetArrayE" title="Link to this definition"></a><br /></dt>
+<dd><p>form a new arra and compute the gloabl openset, n pallel way </p>
+<p>given the local opensets, of chunks, it gets the roots of each chunk, </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N12AstarPlanner16h_closedSetArrayE">
+<span id="_CPPv3N12AstarPlanner16h_closedSetArrayE"></span><span id="_CPPv2N12AstarPlanner16h_closedSetArrayE"></span><span id="AstarPlanner::h_closedSetArray__NodeTypeP"></span><span class="target" id="class_astar_planner_1a9ae9917803b7486fad90addba1db5c4f"></span><a class="reference internal" href="#_CPPv4I00E12AstarPlanner" title="AstarPlanner::NodeType"><span class="n"><span class="pre">NodeType</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">h_closedSetArray</span></span></span><a class="headerlink" href="#_CPPv4N12AstarPlanner16h_closedSetArrayE" title="Link to this definition"></a><br /></dt>
+<dd><p>any node not in openset is in closed set, </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N12AstarPlanner9startNodeE">
+<span id="_CPPv3N12AstarPlanner9startNodeE"></span><span id="_CPPv2N12AstarPlanner9startNodeE"></span><span id="AstarPlanner::startNode__NodeTypeP"></span><span class="target" id="class_astar_planner_1a668e114e6061ff8fe86afd2b2bcb5d7a"></span><a class="reference internal" href="#_CPPv4I00E12AstarPlanner" title="AstarPlanner::NodeType"><span class="n"><span class="pre">NodeType</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">startNode</span></span></span><a class="headerlink" href="#_CPPv4N12AstarPlanner9startNodeE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N12AstarPlanner7endNodeE">
+<span id="_CPPv3N12AstarPlanner7endNodeE"></span><span id="_CPPv2N12AstarPlanner7endNodeE"></span><span id="AstarPlanner::endNode__NodeTypeP"></span><span class="target" id="class_astar_planner_1a160591b95c51825e7a1f56cfc970c9c3"></span><a class="reference internal" href="#_CPPv4I00E12AstarPlanner" title="AstarPlanner::NodeType"><span class="n"><span class="pre">NodeType</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">endNode</span></span></span><a class="headerlink" href="#_CPPv4N12AstarPlanner7endNodeE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N12AstarPlanner11h_pathArrayE">
+<span id="_CPPv3N12AstarPlanner11h_pathArrayE"></span><span id="_CPPv2N12AstarPlanner11h_pathArrayE"></span><span id="AstarPlanner::h_pathArray__NodeTypeP"></span><span class="target" id="class_astar_planner_1a3a1ec67dac7f7be5b79cdb4f5944d10d"></span><a class="reference internal" href="#_CPPv4I00E12AstarPlanner" title="AstarPlanner::NodeType"><span class="n"><span class="pre">NodeType</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">h_pathArray</span></span></span><a class="headerlink" href="#_CPPv4N12AstarPlanner11h_pathArrayE" title="Link to this definition"></a><br /></dt>
+<dd><p>for storing the final computed traj on host , </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N12AstarPlanner11d_pathArrayE">
+<span id="_CPPv3N12AstarPlanner11d_pathArrayE"></span><span id="_CPPv2N12AstarPlanner11d_pathArrayE"></span><span id="AstarPlanner::d_pathArray__NodeTypeP"></span><span class="target" id="class_astar_planner_1acc95fb229d706135d526301313a09d6e"></span><a class="reference internal" href="#_CPPv4I00E12AstarPlanner" title="AstarPlanner::NodeType"><span class="n"><span class="pre">NodeType</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">d_pathArray</span></span></span><a class="headerlink" href="#_CPPv4N12AstarPlanner11d_pathArrayE" title="Link to this definition"></a><br /></dt>
+<dd><p>..... on device; </p>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv46Circle">
+<span id="_CPPv36Circle"></span><span id="_CPPv26Circle"></span><span id="Circle"></span><span class="target" id="struct_circle"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Circle</span></span></span><a class="headerlink" href="#_CPPv46Circle" title="Link to this definition"></a><br /></dt>
+<dd><div class="docutils container">
+<em>#include &lt;<a class="reference internal" href="#cu_a_star_8hpp"><span class="std std-ref">cuAStar.hpp</span></a>&gt;</em></div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6Circle1xE">
+<span id="_CPPv3N6Circle1xE"></span><span id="_CPPv2N6Circle1xE"></span><span id="Circle::x__i"></span><span class="target" id="struct_circle_1abceecd15b990054ddc30441cfcbb205d"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">x</span></span></span><a class="headerlink" href="#_CPPv4N6Circle1xE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6Circle1yE">
+<span id="_CPPv3N6Circle1yE"></span><span id="_CPPv2N6Circle1yE"></span><span id="Circle::y__i"></span><span class="target" id="struct_circle_1a78aef28b3c176d14e8d25f8cd84e7dfd"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">y</span></span></span><a class="headerlink" href="#_CPPv4N6Circle1yE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6Circle6radiusE">
+<span id="_CPPv3N6Circle6radiusE"></span><span id="_CPPv2N6Circle6radiusE"></span><span id="Circle::radius__i"></span><span class="target" id="struct_circle_1a897ad7e556f1e90142093c69079d8b05"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">radius</span></span></span><a class="headerlink" href="#_CPPv4N6Circle6radiusE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv45Color">
+<span id="_CPPv35Color"></span><span id="_CPPv25Color"></span><span id="Color"></span><span class="target" id="struct_color"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Color</span></span></span><a class="headerlink" href="#_CPPv45Color" title="Link to this definition"></a><br /></dt>
+<dd><div class="docutils container">
+<em>#include &lt;<a class="reference internal" href="#cu_a_star_8hpp"><span class="std std-ref">cuAStar.hpp</span></a>&gt;</em></div>
+<p>rgb color base struture </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5Color1rE">
+<span id="_CPPv3N5Color1rE"></span><span id="_CPPv2N5Color1rE"></span><span id="Color::r__unsigned-c"></span><span class="target" id="struct_color_1ab9a9c7134511f9b116a6fcc81a303ba6"></span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">r</span></span></span><a class="headerlink" href="#_CPPv4N5Color1rE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5Color1gE">
+<span id="_CPPv3N5Color1gE"></span><span id="_CPPv2N5Color1gE"></span><span id="Color::g__unsigned-c"></span><span class="target" id="struct_color_1adc506c5063609cacdda2c007da3b7a5f"></span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">g</span></span></span><a class="headerlink" href="#_CPPv4N5Color1gE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5Color1bE">
+<span id="_CPPv3N5Color1bE"></span><span id="_CPPv2N5Color1bE"></span><span id="Color::b__unsigned-c"></span><span class="target" id="struct_color_1a9f00605f7024dcb79342e97fae52c1bd"></span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">b</span></span></span><a class="headerlink" href="#_CPPv4N5Color1bE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4I0E6Node2d">
+<span id="_CPPv3I0E6Node2d"></span><span id="_CPPv2I0E6Node2d"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="class_node2d"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Node2d</span></span></span><a class="headerlink" href="#_CPPv4I0E6Node2d" title="Link to this definition"></a><br /></dt>
+<dd><div class="docutils container">
+<em>#include &lt;<a class="reference internal" href="#cu_a_star_8hpp"><span class="std std-ref">cuAStar.hpp</span></a>&gt;</em></div>
+<p>Base class for 2D nodes representation. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>T</strong> -- Numeric type for the sum_cost (e.g., T, float) </p>
+</dd>
+<dt class="field-even">Param x<span class="colon">:</span></dt>
+<dd class="field-even"><p>: x-coordinate in the grid </p>
+</dd>
+<dt class="field-odd">Param y<span class="colon">:</span></dt>
+<dd class="field-odd"><p>: y-coordinate in the grid </p>
+</dd>
+<dt class="field-even">Param z<span class="colon">:</span></dt>
+<dd class="field-even"><p>= 0 : this coordinate is used only to ensure generic function call that do not throw an error in using 3d nodes specific operations to 2d nodes based template methods. </p>
+</dd>
+<dt class="field-odd">Param sum_cost<span class="colon">:</span></dt>
+<dd class="field-odd"><p>: cumulative cost from the start node to the current node </p>
+</dd>
+<dt class="field-even">Param p_node<span class="colon">:</span></dt>
+<dd class="field-even"><p>: pointer to the parent node </p>
+</dd>
+</dl>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6Node2d6Node2dEv">
+<span id="_CPPv3N6Node2d6Node2dEv"></span><span id="_CPPv2N6Node2d6Node2dEv"></span><span id="Node2d::Node2d"></span><span class="target" id="class_node2d_1a1e14fcc5340d9f8011e5cc6ffd3abb9f"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Node2d</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Node2d6Node2dEv" title="Link to this definition"></a><br /></dt>
+<dd><p>default constructor for the <a class="reference internal" href="#class_node2d"><span class="std std-ref">Node2d</span></a> class </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6Node2d6Node2dE1T1T1TP6Node2d">
+<span id="_CPPv3N6Node2d6Node2dE1T1T1TP6Node2d"></span><span id="_CPPv2N6Node2d6Node2dE1T1T1TP6Node2d"></span><span id="Node2d::Node2d__T.T.T.Node2dP"></span><span class="target" id="class_node2d_1a31af4fda372a965ba15bacd22012294a"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Node2d</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0E6Node2d" title="Node2d::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">x_</span></span>, <a class="reference internal" href="#_CPPv4I0E6Node2d" title="Node2d::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">y_</span></span>, <a class="reference internal" href="#_CPPv4I0E6Node2d" title="Node2d::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">sum_cost_</span></span>, <a class="reference internal" href="#_CPPv4N6Node2d6Node2dE1T1T1TP6Node2d" title="Node2d::Node2d"><span class="n"><span class="pre">Node2d</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">p_node_</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Node2d6Node2dE1T1T1TP6Node2d" title="Link to this definition"></a><br /></dt>
+<dd><p>Constructor for the <a class="reference internal" href="#class_node2d"><span class="std std-ref">Node2d</span></a> class. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6Node2d6Node2dE1T1T1T">
+<span id="_CPPv3N6Node2d6Node2dE1T1T1T"></span><span id="_CPPv2N6Node2d6Node2dE1T1T1T"></span><span id="Node2d::Node2d__T.T.T"></span><span class="target" id="class_node2d_1a517fa7d79fe533add98dc8b3c6bece3b"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Node2d</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0E6Node2d" title="Node2d::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">x_</span></span>, <a class="reference internal" href="#_CPPv4I0E6Node2d" title="Node2d::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">y_</span></span>, <a class="reference internal" href="#_CPPv4I0E6Node2d" title="Node2d::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">z_</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Node2d6Node2dE1T1T1T" title="Link to this definition"></a><br /></dt>
+<dd><p>Overlaoding Constructor for the general puropse template calls. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6Node2d7isEqualERK6Node2d1T">
+<span id="_CPPv3NK6Node2d7isEqualERK6Node2d1T"></span><span id="_CPPv2NK6Node2d7isEqualERK6Node2d1T"></span><span id="Node2d::isEqual__Node2dCR.TC"></span><span class="target" id="class_node2d_1a1a33a4b7484c03502669e48d656508b9"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">isEqual</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0E6Node2d" title="Node2d"><span class="n"><span class="pre">Node2d</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">other</span></span>, <a class="reference internal" href="#_CPPv4I0E6Node2d" title="Node2d::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">eps</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">static_cast</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0E6Node2d" title="Node2d::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">(</span></span><span class="m"><span class="pre">1e-6</span></span><span class="p"><span class="pre">)</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6Node2d7isEqualERK6Node2d1T" title="Link to this definition"></a><br /></dt>
+<dd><p>Checks if two nodes are equal based on their positions. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6Node2d10distanceToERK6Node2d">
+<span id="_CPPv3NK6Node2d10distanceToERK6Node2d"></span><span id="_CPPv2NK6Node2d10distanceToERK6Node2d"></span><span id="Node2d::distanceTo__Node2dCRC"></span><span class="target" id="class_node2d_1a4e13e20edf03428abb09ee0a6872dd46"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0E6Node2d" title="Node2d::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">distanceTo</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0E6Node2d" title="Node2d"><span class="n"><span class="pre">Node2d</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">other</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6Node2d10distanceToERK6Node2d" title="Link to this definition"></a><br /></dt>
+<dd><p>Computes the Euclidean distance to another node. </p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6Node2d1xE">
+<span id="_CPPv3N6Node2d1xE"></span><span id="_CPPv2N6Node2d1xE"></span><span id="Node2d::x__T"></span><span class="target" id="class_node2d_1a7f0a33591d0f5a4e39e58cba57ad3f9e"></span><a class="reference internal" href="#_CPPv4I0E6Node2d" title="Node2d::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">x</span></span></span><a class="headerlink" href="#_CPPv4N6Node2d1xE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6Node2d1yE">
+<span id="_CPPv3N6Node2d1yE"></span><span id="_CPPv2N6Node2d1yE"></span><span id="Node2d::y__T"></span><span class="target" id="class_node2d_1a25ac692d4b55f05b438944aa454ce47e"></span><a class="reference internal" href="#_CPPv4I0E6Node2d" title="Node2d::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">y</span></span></span><a class="headerlink" href="#_CPPv4N6Node2d1yE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6Node2d1zE">
+<span id="_CPPv3N6Node2d1zE"></span><span id="_CPPv2N6Node2d1zE"></span><span id="Node2d::z__T"></span><span class="target" id="class_node2d_1a387f967ea488e06539aa7948a0405632"></span><a class="reference internal" href="#_CPPv4I0E6Node2d" title="Node2d::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">z</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">static_cast</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0E6Node2d" title="Node2d::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">(</span></span><span class="m"><span class="pre">0</span></span><span class="p"><span class="pre">)</span></span><a class="headerlink" href="#_CPPv4N6Node2d1zE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6Node2d8sum_costE">
+<span id="_CPPv3N6Node2d8sum_costE"></span><span id="_CPPv2N6Node2d8sum_costE"></span><span id="Node2d::sum_cost__T"></span><span class="target" id="class_node2d_1adc956e5291ef12d5df35f976dbcc360f"></span><a class="reference internal" href="#_CPPv4I0E6Node2d" title="Node2d::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">sum_cost</span></span></span><a class="headerlink" href="#_CPPv4N6Node2d8sum_costE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6Node2d6p_nodeE">
+<span id="_CPPv3N6Node2d6p_nodeE"></span><span id="_CPPv2N6Node2d6p_nodeE"></span><span id="Node2d::p_node__Node2dP"></span><span class="target" id="class_node2d_1a5640841633b719a8c76ee90c130db49b"></span><a class="reference internal" href="#_CPPv4I0E6Node2d" title="Node2d"><span class="n"><span class="pre">Node2d</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">p_node</span></span></span><a class="headerlink" href="#_CPPv4N6Node2d6p_nodeE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6Node2d1rE">
+<span id="_CPPv3N6Node2d1rE"></span><span id="_CPPv2N6Node2d1rE"></span><span id="Node2d::r__i"></span><span class="target" id="class_node2d_1a93fa9074e91b43e3b35175d02b2009e1"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">r</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">125</span></span><a class="headerlink" href="#_CPPv4N6Node2d1rE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6Node2d1gE">
+<span id="_CPPv3N6Node2d1gE"></span><span id="_CPPv2N6Node2d1gE"></span><span id="Node2d::g__i"></span><span class="target" id="class_node2d_1aa1c504e34e096c348347d0d5ac5d6e9e"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">g</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">100</span></span><a class="headerlink" href="#_CPPv4N6Node2d1gE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6Node2d1bE">
+<span id="_CPPv3N6Node2d1bE"></span><span id="_CPPv2N6Node2d1bE"></span><span id="Node2d::b__i"></span><span class="target" id="class_node2d_1a54b104bf3bc639906eecdd2aa75422f8"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">b</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">120</span></span><a class="headerlink" href="#_CPPv4N6Node2d1bE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4I0E6Node3d">
+<span id="_CPPv3I0E6Node3d"></span><span id="_CPPv2I0E6Node3d"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="class_node3d"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Node3d</span></span></span><a class="headerlink" href="#_CPPv4I0E6Node3d" title="Link to this definition"></a><br /></dt>
+<dd><div class="docutils container">
+<em>#include &lt;<a class="reference internal" href="#cu_a_star_8hpp"><span class="std std-ref">cuAStar.hpp</span></a>&gt;</em></div>
+<p>Base class for 3D nodes representation. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>T</strong> -- Numeric type for the sum_cost (e.g., T, float) </p>
+</dd>
+<dt class="field-even">Param x<span class="colon">:</span></dt>
+<dd class="field-even"><p>: x-coordinate in the grid </p>
+</dd>
+<dt class="field-odd">Param y<span class="colon">:</span></dt>
+<dd class="field-odd"><p>: y-coordinate in the grid </p>
+</dd>
+<dt class="field-even">Param z<span class="colon">:</span></dt>
+<dd class="field-even"><p>: z-coordinate in the grid </p>
+</dd>
+<dt class="field-odd">Param sum_cost<span class="colon">:</span></dt>
+<dd class="field-odd"><p>: cumulative cost from the start node to the current node </p>
+</dd>
+<dt class="field-even">Param p_node<span class="colon">:</span></dt>
+<dd class="field-even"><p>: pointer to the parent node </p>
+</dd>
+</dl>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6Node3d6Node3dEv">
+<span id="_CPPv3N6Node3d6Node3dEv"></span><span id="_CPPv2N6Node3d6Node3dEv"></span><span id="Node3d::Node3d"></span><span class="target" id="class_node3d_1aafbd4c0fe3ea50106ab11ac2c3e77e2f"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Node3d</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Node3d6Node3dEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Default constructor for the <a class="reference internal" href="#class_node3d"><span class="std std-ref">Node3d</span></a> class. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6Node3d6Node3dEj">
+<span id="_CPPv3N6Node3d6Node3dEj"></span><span id="_CPPv2N6Node3d6Node3dEj"></span><span id="Node3d::Node3d__unsigned-i"></span><span class="target" id="class_node3d_1ad5c7d953e67fedd2d56f74304685f533"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Node3d</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">seed</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Node3d6Node3dEj" title="Link to this definition"></a><br /></dt>
+<dd><p>init a random node, position bounds is in [0,1] </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6Node3d6Node3dE1T1T1T1TP6Node3d">
+<span id="_CPPv3N6Node3d6Node3dE1T1T1T1TP6Node3d"></span><span id="_CPPv2N6Node3d6Node3dE1T1T1T1TP6Node3d"></span><span id="Node3d::Node3d__T.T.T.T.Node3dP"></span><span class="target" id="class_node3d_1a4d02136dd2179bc7e9e386a21223bdc6"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Node3d</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0E6Node3d" title="Node3d::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">x_</span></span>, <a class="reference internal" href="#_CPPv4I0E6Node3d" title="Node3d::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">y_</span></span>, <a class="reference internal" href="#_CPPv4I0E6Node3d" title="Node3d::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">z_</span></span>, <a class="reference internal" href="#_CPPv4I0E6Node3d" title="Node3d::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">sum_cost_</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span>, <a class="reference internal" href="#_CPPv4N6Node3d6Node3dE1T1T1T1TP6Node3d" title="Node3d::Node3d"><span class="n"><span class="pre">Node3d</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">p_node_</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Node3d6Node3dE1T1T1T1TP6Node3d" title="Link to this definition"></a><br /></dt>
+<dd><p>Constructor for the <a class="reference internal" href="#class_node3d"><span class="std std-ref">Node3d</span></a> class. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6Node3d10distanceToERK6Node3d">
+<span id="_CPPv3NK6Node3d10distanceToERK6Node3d"></span><span id="_CPPv2NK6Node3d10distanceToERK6Node3d"></span><span id="Node3d::distanceTo__Node3dCRC"></span><span class="target" id="class_node3d_1a1975adadd6d078946c2994e4b1bb3bc4"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0E6Node3d" title="Node3d::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">distanceTo</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0E6Node3d" title="Node3d"><span class="n"><span class="pre">Node3d</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">other</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6Node3d10distanceToERK6Node3d" title="Link to this definition"></a><br /></dt>
+<dd><p>Computes the Euclidean distance to another node. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6Node3d7isEqualERK6Node3d1T">
+<span id="_CPPv3NK6Node3d7isEqualERK6Node3d1T"></span><span id="_CPPv2NK6Node3d7isEqualERK6Node3d1T"></span><span id="Node3d::isEqual__Node3dCR.TC"></span><span class="target" id="class_node3d_1a5f10c454d1cf4dbb01f356f957e5230d"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">isEqual</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0E6Node3d" title="Node3d"><span class="n"><span class="pre">Node3d</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">other</span></span>, <a class="reference internal" href="#_CPPv4I0E6Node3d" title="Node3d::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">eps</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">static_cast</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0E6Node3d" title="Node3d::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">(</span></span><span class="m"><span class="pre">1e-6</span></span><span class="p"><span class="pre">)</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6Node3d7isEqualERK6Node3d1T" title="Link to this definition"></a><br /></dt>
+<dd><p>Checks if two nodes are equal based on their positions. </p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6Node3d1xE">
+<span id="_CPPv3N6Node3d1xE"></span><span id="_CPPv2N6Node3d1xE"></span><span id="Node3d::x__T"></span><span class="target" id="class_node3d_1a880ff1c6b515074aba76d3bc9bb57986"></span><a class="reference internal" href="#_CPPv4I0E6Node3d" title="Node3d::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">x</span></span></span><a class="headerlink" href="#_CPPv4N6Node3d1xE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6Node3d1yE">
+<span id="_CPPv3N6Node3d1yE"></span><span id="_CPPv2N6Node3d1yE"></span><span id="Node3d::y__T"></span><span class="target" id="class_node3d_1a0f83bfe660734ce20618c2d719eb3753"></span><a class="reference internal" href="#_CPPv4I0E6Node3d" title="Node3d::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">y</span></span></span><a class="headerlink" href="#_CPPv4N6Node3d1yE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6Node3d1zE">
+<span id="_CPPv3N6Node3d1zE"></span><span id="_CPPv2N6Node3d1zE"></span><span id="Node3d::z__T"></span><span class="target" id="class_node3d_1aaccb19aa47451a8ff7afaeb7015dd183"></span><a class="reference internal" href="#_CPPv4I0E6Node3d" title="Node3d::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">z</span></span></span><a class="headerlink" href="#_CPPv4N6Node3d1zE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6Node3d8sum_costE">
+<span id="_CPPv3N6Node3d8sum_costE"></span><span id="_CPPv2N6Node3d8sum_costE"></span><span id="Node3d::sum_cost__T"></span><span class="target" id="class_node3d_1a8245c6abc8c81e087af1c1212075a5ba"></span><a class="reference internal" href="#_CPPv4I0E6Node3d" title="Node3d::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">sum_cost</span></span></span><a class="headerlink" href="#_CPPv4N6Node3d8sum_costE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6Node3d6p_nodeE">
+<span id="_CPPv3N6Node3d6p_nodeE"></span><span id="_CPPv2N6Node3d6p_nodeE"></span><span id="Node3d::p_node__Node3dP"></span><span class="target" id="class_node3d_1a00d107f9c9a72082fdb069cc35e2b234"></span><a class="reference internal" href="#_CPPv4I0E6Node3d" title="Node3d"><span class="n"><span class="pre">Node3d</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">p_node</span></span></span><a class="headerlink" href="#_CPPv4N6Node3d6p_nodeE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6Node3d1rE">
+<span id="_CPPv3N6Node3d1rE"></span><span id="_CPPv2N6Node3d1rE"></span><span id="Node3d::r__i"></span><span class="target" id="class_node3d_1a87519fd11d106242674ce915df035f33"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">r</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">125</span></span><a class="headerlink" href="#_CPPv4N6Node3d1rE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6Node3d1gE">
+<span id="_CPPv3N6Node3d1gE"></span><span id="_CPPv2N6Node3d1gE"></span><span id="Node3d::g__i"></span><span class="target" id="class_node3d_1a11458c52d4a55911346225f624c09eab"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">g</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">100</span></span><a class="headerlink" href="#_CPPv4N6Node3d1gE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6Node3d1bE">
+<span id="_CPPv3N6Node3d1bE"></span><span id="_CPPv2N6Node3d1bE"></span><span id="Node3d::b__i"></span><span class="target" id="class_node3d_1a00c0fd5df6f0d9b46c24c6c28fa9dc91"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">b</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">120</span></span><a class="headerlink" href="#_CPPv4N6Node3d1bE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+<dl>
+<dt class="sig sig-object cpp">
+<span class="target" id="cu_a_star_8hpp"></span><em><span class="pre">file</span></em> <span class="sig-name descname"><span class="pre">cuAStar.hpp</span></span></dt>
+<dd><div class="docutils container">
+<em>#include &lt;cstdint&gt;</em></div>
+<div class="docutils container">
+<em>#include &lt;cfloat&gt;</em></div>
+<div class="docutils container">
+<em>#include &lt;array&gt;</em></div>
+<div class="docutils container">
+<em>#include &lt;chrono&gt;</em></div>
+<div class="docutils container">
+<em>#include &lt;ctime&gt;</em></div>
+<div class="docutils container">
+<em>#include &lt;string&gt;</em></div>
+<div class="docutils container">
+<em>#include &lt;stdexcept&gt;</em></div>
+<div class="docutils container">
+<em>#include &lt;algorithm&gt;</em></div>
+<div class="docutils container">
+<em>#include &lt;filesystem&gt;</em></div>
+<div class="docutils container">
+<em>#include &lt;vector&gt;</em></div>
+<div class="docutils container">
+<em>#include &lt;cmath&gt;</em></div>
+<div class="docutils container">
+<em>#include &quot;../extern/rapidcsv/rapidcsv.h&quot;</em></div>
+<div class="docutils container">
+<em>#include &quot;../extern/happly/happly.h&quot;</em></div>
+<div class="docutils container">
+<em>#include &quot;../extern/stb/stb_image.h&quot;</em></div>
+<div class="docutils container">
+<em>#include &quot;../extern/stb/stb_image_write.h&quot;</em></div>
+<p>https://towardsdatascience.com/understanding-a-path-algorithms-and-implementation-with-python-4d8458d6ccc7<dl class="simple">
+<dt><strong>Version</strong></dt><dd><p>0.1.0 </p>
+</dd>
+<dt><strong>Author</strong></dt><dd><p>wissem chiha </p>
+</dd>
+<dt><strong>Date</strong></dt><dd><p>03-09-2024</p>
+</dd>
+</dl>
+</p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-defines">Defines</p>
+<dl class="cpp macro">
+<dt class="sig sig-object cpp" id="c.HOST_FUN">
+<span class="target" id="cu_a_star_8hpp_1aefcc44be8b6c53830108f016df64b467"></span><span class="sig-name descname"><span class="n"><span class="pre">HOST_FUN</span></span></span><a class="headerlink" href="#c.HOST_FUN" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp macro">
+<dt class="sig sig-object cpp" id="c.DEVICE_FUN">
+<span class="target" id="cu_a_star_8hpp_1ac61c3ab4b97cab0aa211d11865027114"></span><span class="sig-name descname"><span class="n"><span class="pre">DEVICE_FUN</span></span></span><a class="headerlink" href="#c.DEVICE_FUN" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp macro">
+<dt class="sig sig-object cpp" id="c.HOST_DEVICE_FUN">
+<span class="target" id="cu_a_star_8hpp_1ae00f3eca79281b4503d41fc4872505e7"></span><span class="sig-name descname"><span class="n"><span class="pre">HOST_DEVICE_FUN</span></span></span><a class="headerlink" href="#c.HOST_DEVICE_FUN" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp macro">
+<dt class="sig sig-object cpp" id="c.STB_IMAGE_WRITE_IMPLEMENTATION">
+<span class="target" id="cu_a_star_8hpp_1aefe397a94e8feddc652f92ef40ce9597"></span><span class="sig-name descname"><span class="n"><span class="pre">STB_IMAGE_WRITE_IMPLEMENTATION</span></span></span><a class="headerlink" href="#c.STB_IMAGE_WRITE_IMPLEMENTATION" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp macro">
+<dt class="sig sig-object cpp" id="c.ARRAY_SIZE">
+<span class="target" id="cu_a_star_8hpp_1a3c7c6a69f690fc8d2abf0e385280a532"></span><span class="sig-name descname"><span class="n"><span class="pre">ARRAY_SIZE</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">arr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.ARRAY_SIZE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp macro">
+<dt class="sig sig-object cpp" id="c.CUDA_CHECK_ERROR">
+<span class="target" id="cu_a_star_8hpp_1a6e60499e9937c6e404c17566ddf9be68"></span><span class="sig-name descname"><span class="n"><span class="pre">CUDA_CHECK_ERROR</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">err</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.CUDA_CHECK_ERROR" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp macro">
+<dt class="sig sig-object cpp" id="c.LOG_MESSAGE">
+<span class="target" id="cu_a_star_8hpp_1a5e4927b850a7043bbacfa9f8c473d02b"></span><span class="sig-name descname"><span class="n"><span class="pre">LOG_MESSAGE</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">level</span></span>, <span class="n"><span class="pre">format</span></span>, <span class="p"><span class="pre">...</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.LOG_MESSAGE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-functions">Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp">
+<span class="target" id="cu_a_star_8hpp_1a00de2d0d0ab9f396c3e3748eb63cab29"></span><span class="sig-name descname"><span class="pre">template&lt;typename</span> <span class="pre">T&gt;</span> <span class="pre">__global__</span> <span class="pre">void</span> <span class="pre">curandx</span> <span class="pre">(unsigned</span> <span class="pre">int</span> <span class="pre">seed,</span> <span class="pre">T</span> <span class="pre">*d_val)</span></span></dt>
+<dd><p>Generates a random float between 0 and 1 with precision up to 1e-6. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp">
+<span class="target" id="cu_a_star_8hpp_1a16651693cf5a213c0673281e4203e4b1"></span><span class="sig-name descname"><span class="pre">__device__</span> <span class="pre">float</span> <span class="pre">fatomicMin</span> <span class="pre">(float</span> <span class="pre">*addr,</span> <span class="pre">float</span> <span class="pre">value)</span></span></dt>
+<dd><p>implemntation of atomic min for float type as cuda do not support it original implentation by : <a class="reference external" href="https://forums.developer.nvidia.com/t/atomicmin-with-float/22033">https://forums.developer.nvidia.com/t/atomicmin-with-float/22033</a></p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp">
+<span class="target" id="cu_a_star_8hpp_1a5592ade9221f3b2760f0bb21e1c5c395"></span><span class="sig-name descname"><span class="pre">__device__</span> <span class="pre">float</span> <span class="pre">fatomicMax</span> <span class="pre">(float</span> <span class="pre">*addr,</span> <span class="pre">float</span> <span class="pre">value)</span></span></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv410isPlyValidKNSt6stringE">
+<span id="_CPPv310isPlyValidKNSt6stringE"></span><span id="_CPPv210isPlyValidKNSt6stringE"></span><span id="isPlyValid__ssC"></span><span class="target" id="cu_a_star_8hpp_1ab4061b927ba0dfa51ed9dc013d88f5ee"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">isPlyValid</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">plyFilePath</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv410isPlyValidKNSt6stringE" title="Link to this definition"></a><br /></dt>
+<dd><p>Check if a given point cloud data file .ply file path exists or not. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Throws<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span><span class="cpp-expr sig sig-inline cpp"><span class="n">a</span></span></span> -- user error to cmd in debug mode, else none. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I00E11readPlyNode8NodeTypeRKNSt6stringEK6size_t">
+<span id="_CPPv3I00E11readPlyNodeRKNSt6stringEK6size_t"></span><span id="_CPPv2I00E11readPlyNodeRKNSt6stringEK6size_t"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">NodeType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="cu_a_star_8hpp_1aad3b8cbfc84cd3cc466027c20c6bc79c"></span><a class="reference internal" href="#_CPPv4I00E11readPlyNode8NodeTypeRKNSt6stringEK6size_t" title="readPlyNode::NodeType"><span class="n"><span class="pre">NodeType</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">readPlyNode</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">plyFilePath</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">idx</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I00E11readPlyNode8NodeTypeRKNSt6stringEK6size_t" title="Link to this definition"></a><br /></dt>
+<dd><p>extract a Node object from a .ply file defined by index idx, in the file, reprsent the line number of point coordiantes, it is computioanlly slow , not use in loops or other , just for single node extrcation, this method will be decapred in other versions </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv416drawFilledCirclePhiiPK6CirclePK5Color">
+<span id="_CPPv316drawFilledCirclePhiiPK6CirclePK5Color"></span><span id="_CPPv216drawFilledCirclePhiiPK6CirclePK5Color"></span><span id="drawFilledCircle__unsigned-cP.i.i.CircleCP.ColorCP"></span><span class="target" id="cu_a_star_8hpp_1a7e0ed87ff5900e1728f96391de1df6f0"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">drawFilledCircle</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">image</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">width</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">height</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv46Circle" title="Circle"><span class="n"><span class="pre">Circle</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">circle</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv45Color" title="Color"><span class="n"><span class="pre">Color</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">color</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416drawFilledCirclePhiiPK6CirclePK5Color" title="Link to this definition"></a><br /></dt>
+<dd><p>Draw a 2D sphere (plain circle) given radius, center, and color. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv417drawFilledCirclesPhiiPKiPKiPKhPKhPKhid">
+<span id="_CPPv317drawFilledCirclesPhiiPKiPKiPKhPKhPKhid"></span><span id="_CPPv217drawFilledCirclesPhiiPKiPKiPKhPKhPKhid"></span><span id="drawFilledCircles__unsigned-cP.i.i.iCP.iCP.unsigned-cCP.unsigned-cCP.unsigned-cCP.i.double"></span><span class="target" id="cu_a_star_8hpp_1acc9032d75e0dcde90b01cb771dfb5a53"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">drawFilledCircles</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">image</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">width</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">height</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">centersX</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">centersY</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">colorsR</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">colorsG</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">colorsB</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">numCircles</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">radiusRatio</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417drawFilledCirclesPhiiPKiPKiPKhPKhPKhid" title="Link to this definition"></a><br /></dt>
+<dd><p>Draw a sample of point cloud nodes as 2D colored circles. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv419savePointCloudImagePKciiPKiPKiPKhPKhPKhid">
+<span id="_CPPv319savePointCloudImagePKciiPKiPKiPKhPKhPKhid"></span><span id="_CPPv219savePointCloudImagePKciiPKiPKiPKhPKhPKhid"></span><span id="savePointCloudImage__cCP.i.i.iCP.iCP.unsigned-cCP.unsigned-cCP.unsigned-cCP.i.double"></span><span class="target" id="cu_a_star_8hpp_1a4ca72b8d450b30bfb31eb69c9f8ee462"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">savePointCloudImage</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">filePath</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">width</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">height</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">centersX</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">centersY</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">colorsR</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">colorsG</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">colorsB</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">numCircles</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">radiusRatio</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419savePointCloudImagePKciiPKiPKiPKhPKhPKhid" title="Link to this definition"></a><br /></dt>
+<dd><p>Draw and save a given 2D points cloud of nodes as an image. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp">
+<span class="target" id="cu_a_star_8hpp_1a316cbf30ba668f1d82c60d6b9b296773"></span><span class="sig-name descname"><span class="pre">template&lt;typename</span> <span class="pre">NodeType&gt;</span> <span class="pre">__global__</span> <span class="pre">void</span> <span class="pre">computePointCloudBoundBox</span> <span class="pre">(const</span> <span class="pre">NodeType</span> <span class="pre">*h_arrayNodes,</span> <span class="pre">int</span> <span class="pre">N,</span> <span class="pre">float</span> <span class="pre">*minX,</span> <span class="pre">float</span> <span class="pre">*maxX,</span> <span class="pre">float</span> <span class="pre">*minY,</span> <span class="pre">float</span> <span class="pre">*maxY)</span></span></dt>
+<dd><p>compute the 2d bound box dimension for 2d plotting scaling issues for N nodes elments the minimal block grid number is : (N + thredsPerBlock - 1) / thredsPerBlock; interblock synhonization , usen shared memory Thread 0 of each block updates the global min/max values using atomic operations note we cannot template the function with double , because cuda cannot use atomic operation for doubles , just for cuda computation cabolit &gt;6.0 see: <a class="reference external" href="https://forums.developer.nvidia.com/t/atomic-functions-for-double-precision/9963">https://forums.developer.nvidia.com/t/atomic-functions-for-double-precision/9963</a> <a class="reference external" href="https://forums.developer.nvidia.com/t/why-does-atomicadd-not-work-with-doubles-as-input/56429">https://forums.developer.nvidia.com/t/why-does-atomicadd-not-work-with-doubles-as-input/56429</a> atomic operations is only supported by devices of compute capability 5.0 and higher. </p>
+<p><dl>
+<dt class="sig sig-object cpp">
+<a class="reference internal" href="#todo_1_todo000001"><span class="std std-ref"><span class="pre">Todo:</span></span></a></dt>
+<dd><p>Use of Local Reductions per Block </p>
+</dd></dl>
+
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0E19array2PointCloudImgvPK8NodeTypeiPKcdd">
+<span id="_CPPv3I0E19array2PointCloudImgPK8NodeTypeiPKcdd"></span><span id="_CPPv2I0E19array2PointCloudImgPK8NodeTypeiPKcdd"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">NodeType</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="cu_a_star_8hpp_1a428d84ee7512c8650a6a4b22f2a42a4d"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">array2PointCloudImg</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0E19array2PointCloudImgvPK8NodeTypeiPKcdd" title="array2PointCloudImg::NodeType"><span class="n"><span class="pre">NodeType</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">h_arrayNodes</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">numNodes</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">pngFilePath</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">scaleFactor</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">100</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">radiusRatio</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0.01</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0E19array2PointCloudImgvPK8NodeTypeiPKcdd" title="Link to this definition"></a><br /></dt>
+<dd><p>Draw and save a given 2D point cloud of nodes as an image, the data is given as a 1d host array of NodeType template objects. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>scaleFactor</strong> -- : zoom image coffienct </p></li>
+<li><p><strong>radiusRatio</strong> -- : </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv414getPlyPointNumKNSt6stringE">
+<span id="_CPPv314getPlyPointNumKNSt6stringE"></span><span id="_CPPv214getPlyPointNumKNSt6stringE"></span><span id="getPlyPointNum__ssC"></span><span class="target" id="cu_a_star_8hpp_1a77267fd54ae06d1f5e981e8d3a398789"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getPlyPointNum</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">plyFilePath</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv414getPlyPointNumKNSt6stringE" title="Link to this definition"></a><br /></dt>
+<dd><p>Return the number of points stored in a .ply file. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp">
+<span class="target" id="cu_a_star_8hpp_1ab58b4d31652def04ee9f1bd339a9d3c0"></span><span class="sig-name descname"><span class="pre">template&lt;typename</span> <span class="pre">T&gt;</span> <span class="pre">__global__</span> <span class="pre">void</span> <span class="pre">enumerationSort</span> <span class="pre">(T</span> <span class="pre">*a,</span> <span class="pre">int</span> <span class="pre">N,</span> <span class="pre">T</span> <span class="pre">*b)</span></span></dt>
+<dd><p>CUDA kernel for sorting a numerical array using the enumeration sort algorithm. Original implementation by: Meng Hongyu, Guo Fangjin, UCAS, China <a class="reference external" href="https://arxiv.org/pdf/1505.07605">https://arxiv.org/pdf/1505.07605</a> Modified by: Wissem Chiha, 01-09-2024, using templates. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp">
+<span class="target" id="cu_a_star_8hpp_1af5cb5a4814b6ee7a4d14a4086873defa"></span><span class="sig-name descname"><span class="pre">template&lt;typename</span> <span class="pre">NodeType,</span> <span class="pre">typename</span> <span class="pre">T&gt;</span> <span class="pre">__global__</span> <span class="pre">void</span> <span class="pre">enumerationSortNodes</span> <span class="pre">(NodeType</span> <span class="pre">*d_nodesArray,</span> <span class="pre">int</span> <span class="pre">N,</span> <span class="pre">int</span> <span class="pre">ax,</span> <span class="pre">NodeType</span> <span class="pre">*d_nodesArraySorted)</span></span></dt>
+<dd><p>CUDA kernel that sorts an array of nodes based on a specified axis. This kernel sorts the nodes in ascending order according to their value along the given axis (1: x, 2: y, 3: z). </p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>the call of this kernel with ax = 3 and <a class="reference internal" href="#class_node2d"><span class="std std-ref">Node2d</span></a> class has no effect, and it do not throw any error </p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>d_nodesArray</strong> -- Device pointer to the array of nodes to be sorted. </p></li>
+<li><p><strong>ax</strong> -- Axis to sort by (1: x, 2: y, 3: z). </p></li>
+<li><p><strong>N</strong> -- Number of nodes in the array. </p></li>
+<li><p><strong>d_nodesArraySorted</strong> -- Device pointer to the array where sorted nodes will be stored. </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I00E13updateNearestvP8NodeTypeP1TRK8NodeTypeRK8NodeTypei">
+<span id="_CPPv3I00E13updateNearestP8NodeTypeP1TRK8NodeTypeRK8NodeTypei"></span><span id="_CPPv2I00E13updateNearestP8NodeTypeP1TRK8NodeTypeRK8NodeTypei"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">NodeType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="cu_a_star_8hpp_1a2fe34b190acaec408cfb1806e8a402b2"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">updateNearest</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I00E13updateNearestvP8NodeTypeP1TRK8NodeTypeRK8NodeTypei" title="updateNearest::NodeType"><span class="n"><span class="pre">NodeType</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">nearestNodes</span></span>, <a class="reference internal" href="#_CPPv4I00E13updateNearestvP8NodeTypeP1TRK8NodeTypeRK8NodeTypei" title="updateNearest::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">distances</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I00E13updateNearestvP8NodeTypeP1TRK8NodeTypeRK8NodeTypei" title="updateNearest::NodeType"><span class="n"><span class="pre">NodeType</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">node</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I00E13updateNearestvP8NodeTypeP1TRK8NodeTypeRK8NodeTypei" title="updateNearest::NodeType"><span class="n"><span class="pre">NodeType</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">otherNode</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">k</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I00E13updateNearestvP8NodeTypeP1TRK8NodeTypeRK8NodeTypei" title="Link to this definition"></a><br /></dt>
+<dd><p>Update nearest neighbors list if the new node is closer </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp">
+<span class="target" id="cu_a_star_8hpp_1a666ce1d82eff31579dc8e1269a657897"></span><span class="sig-name descname"><span class="pre">template&lt;typename</span> <span class="pre">NodeType,</span> <span class="pre">typename</span> <span class="pre">T&gt;</span> <span class="pre">__global__</span> <span class="pre">void</span> <span class="pre">computeKnnNodes</span> <span class="pre">(NodeType</span> <span class="pre">*d_sortedX,</span> <span class="pre">NodeType</span> <span class="pre">*d_sortedY,</span> <span class="pre">NodeType</span> <span class="pre">*d_sortedZ,</span> <span class="pre">NodeType</span> <span class="pre">targetNode,</span> <span class="pre">int</span> <span class="pre">N,</span> <span class="pre">int</span> <span class="pre">k,</span> <span class="pre">int</span> <span class="pre">range,</span> <span class="pre">NodeType</span> <span class="pre">*d_kNodes)</span></span></dt>
+<dd><p>Computes the K-nereast neighoods of a given node in a device array structure , by sorting x, y, z attributes, without using the K-D tree this kernel should excute on 1 block, so the maxium nodes number sorted arrays is 1024. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>range</strong> -- control the exploration range of the KNN, fixed , adjustee based on the point cloud distribution density , low for high dense data and high for low dense distrubution </p></li>
+<li><p><strong>k</strong> -- should be &lt; threadsPerBlock </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp">
+<span class="target" id="cu_a_star_8hpp_1a6f2eba50d6ae3533f741db37b4f467f9"></span><span class="sig-name descname"><span class="pre">template&lt;typename</span> <span class="pre">NodeType,</span> <span class="pre">typename</span> <span class="pre">T&gt;</span> <span class="pre">__global__</span> <span class="pre">void</span> <span class="pre">checkNodeExsist</span> <span class="pre">(const</span> <span class="pre">NodeType</span> <span class="pre">*d_nodesArray,</span> <span class="pre">int</span> <span class="pre">numNodes,</span> <span class="pre">const</span> <span class="pre">NodeType</span> <span class="pre">*nodeToCheck,</span> <span class="pre">int</span> <span class="pre">*status)</span></span></dt>
+<dd><p>Checks if a given node exists in the device nodes array. </p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This method will be deprecated in future versions. </p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>we use atomic exchange to ensure thred safty writtin value to the we reprsent by : 0 FALSE and any other int the TRUE value, perform chek if only nly perform check if the index is within bounds and status is still false (0) </p>
+</div>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I00E24computeHeuristicDistancevRK8NodeTypeRK8NodeTypeP1T">
+<span id="_CPPv3I00E24computeHeuristicDistanceRK8NodeTypeRK8NodeTypeP1T"></span><span id="_CPPv2I00E24computeHeuristicDistanceRK8NodeTypeRK8NodeTypeP1T"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">NodeType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="cu_a_star_8hpp_1a05dd45f4d59d43e636bd7d24ef4f06f9"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">computeHeuristicDistance</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I00E24computeHeuristicDistancevRK8NodeTypeRK8NodeTypeP1T" title="computeHeuristicDistance::NodeType"><span class="n"><span class="pre">NodeType</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">node</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I00E24computeHeuristicDistancevRK8NodeTypeRK8NodeTypeP1T" title="computeHeuristicDistance::NodeType"><span class="n"><span class="pre">NodeType</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">targetNode</span></span>, <a class="reference internal" href="#_CPPv4I00E24computeHeuristicDistancevRK8NodeTypeRK8NodeTypeP1T" title="computeHeuristicDistance::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">hfun</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I00E24computeHeuristicDistancevRK8NodeTypeRK8NodeTypeP1T" title="Link to this definition"></a><br /></dt>
+<dd><p>heuristic function which computes the estimated cost to the goal node, starting from the current given node, it simply the euclidian distances or the manthetn distance could be used </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I00E25computeNodeTrajectoryCostvRK8NodeTypeRK8NodeTypeP1T">
+<span id="_CPPv3I00E25computeNodeTrajectoryCostRK8NodeTypeRK8NodeTypeP1T"></span><span id="_CPPv2I00E25computeNodeTrajectoryCostRK8NodeTypeRK8NodeTypeP1T"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">NodeType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="cu_a_star_8hpp_1a3d4328759a867cba46265a3a7946b6ff"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">computeNodeTrajectoryCost</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I00E25computeNodeTrajectoryCostvRK8NodeTypeRK8NodeTypeP1T" title="computeNodeTrajectoryCost::NodeType"><span class="n"><span class="pre">NodeType</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">node</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I00E25computeNodeTrajectoryCostvRK8NodeTypeRK8NodeTypeP1T" title="computeNodeTrajectoryCost::NodeType"><span class="n"><span class="pre">NodeType</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">targetNode</span></span>, <a class="reference internal" href="#_CPPv4I00E25computeNodeTrajectoryCostvRK8NodeTypeRK8NodeTypeP1T" title="computeNodeTrajectoryCost::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">p_cost_</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I00E25computeNodeTrajectoryCostvRK8NodeTypeRK8NodeTypeP1T" title="Link to this definition"></a><br /></dt>
+<dd><p>Computes the trajectory cost metric starting from a given node. The objective function is: f(n) = g(n) + h(n), where g(n) is the path cost from the start node to the current node, and h(n) is the heuristic function value. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>node</strong> -- The current node representing the position in the trajectory. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp">
+<span class="target" id="cu_a_star_8hpp_1a0c0549cd79c9d185720fafa2c7899d9f"></span><span class="sig-name descname"><span class="pre">template&lt;typename</span> <span class="pre">NodeType,</span> <span class="pre">typename</span> <span class="pre">T&gt;</span> <span class="pre">__global__</span> <span class="pre">void</span> <span class="pre">computeSucessorNode</span> <span class="pre">(const</span> <span class="pre">NodeType</span> <span class="pre">*d_knnNodesArray,</span> <span class="pre">int</span> <span class="pre">k,</span> <span class="pre">const</span> <span class="pre">NodeType</span> <span class="pre">*endNode,</span> <span class="pre">NodeType</span> <span class="pre">*d_bestNode)</span></span></dt>
+<dd><p>Computes the best successor node based on path metric f(n) = g(n) + h(n) from the k nearest neighbor nodes. Each thread will compute the trajectory cost and then determine the node with the minimum cost. This function is designed to execute within a single block. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>d_knnNodesArray</strong> -- Array of k-nearest neighbor nodes of the current node to be checked. The maximum size is 1024. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I00E21computeTrajectoryCostvPK8NodeTypeiP1T">
+<span id="_CPPv3I00E21computeTrajectoryCostPK8NodeTypeiP1T"></span><span id="_CPPv2I00E21computeTrajectoryCostPK8NodeTypeiP1T"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">NodeType</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="cu_a_star_8hpp_1abaa77acabcc127284c67343f27a1de0d"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">computeTrajectoryCost</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I00E21computeTrajectoryCostvPK8NodeTypeiP1T" title="computeTrajectoryCost::NodeType"><span class="n"><span class="pre">NodeType</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">d_tarjNodesArray</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">N</span></span>, <a class="reference internal" href="#_CPPv4I00E21computeTrajectoryCostvPK8NodeTypeiP1T" title="computeTrajectoryCost::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">cost_</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I00E21computeTrajectoryCostvPK8NodeTypeiP1T" title="Link to this definition"></a><br /></dt>
+<dd><p>Given a trajectory path represented by a device array of nodes, it computes the path cost: the Euclidean distance between the start and destination nodes. The start node is the first node in the array, and the destination node is the last node. </p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Boundary checks are not performed; N is assumed to be within the array size range. </p>
+</div>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp">
+<span class="target" id="cu_a_star_8hpp_1a426c920bb07f8d227c73aa66f0363b4a"></span><span class="sig-name descname"><span class="pre">template&lt;typename</span> <span class="pre">NodeType,</span> <span class="pre">typename</span> <span class="pre">T&gt;</span> <span class="pre">__global__</span> <span class="pre">void</span> <span class="pre">smoothTrajectory</span> <span class="pre">(const</span> <span class="pre">NodeType</span> <span class="pre">*d_trajNodesArray,</span> <span class="pre">int</span> <span class="pre">N,</span> <span class="pre">int</span> <span class="pre">k,</span> <span class="pre">NodeType</span> <span class="pre">*d_trajNodesArraySmooth)</span></span></dt>
+<dd><p>soothing the distcreate computed trajectory, using either spline basis or bezier curves , or just normale interpolations. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>N</strong> -- number of points or control points in the trajectory </p></li>
+<li><p><strong>k</strong> -- number of the evaulation point of the new trajectory </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp">
+<span class="target" id="cu_a_star_8hpp_1adbd3b26368dcfe82c77fd4c53256e322"></span><span class="sig-name descname"><span class="pre">template&lt;typename</span> <span class="pre">NodeType,</span> <span class="pre">typename</span> <span class="pre">T&gt;</span> <span class="pre">__global__</span> <span class="pre">void</span> <span class="pre">getRootNodes</span> <span class="pre">(const</span> <span class="pre">NodeType</span> <span class="pre">*d_nodesArray,</span> <span class="pre">int</span> <span class="pre">numNodes,</span> <span class="pre">NodeType</span> <span class="pre">*d_rootsArray)</span></span></dt>
+<dd><p>Extracts nodes without a parent from an array of N nodes. Iterates over the input array, where each node has a p_node attribute (pointer to its parent). Constructs a new array containing only nodes where p_node == nullptr (i.e., no parent). </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp">
+<span class="target" id="cu_a_star_8hpp_1a4280ade50d5e58fa0fd067e62f4f7089"></span><span class="sig-name descname"><span class="pre">template&lt;typename</span> <span class="pre">NodeType,</span> <span class="pre">typename</span> <span class="pre">T&gt;</span> <span class="pre">__global__</span> <span class="pre">void</span> <span class="pre">hasOrphanNodes</span> <span class="pre">(const</span> <span class="pre">NodeType</span> <span class="pre">*d_nodesArray,</span> <span class="pre">int</span> <span class="pre">N,</span> <span class="pre">bool</span> <span class="pre">*status)</span></span></dt>
+<dd><p>Given an array of nodes, checks if there are any nodes without a parent, referred to as orphan nodes. Each thread in each block checks its assigned node. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>N</strong> -- The number of nodes. </p></li>
+<li><p><strong>status</strong> -- A boolean flag to indicate if an orphan node is found. </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-variables">Variables</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv415threadsPerBlock">
+<span id="_CPPv315threadsPerBlock"></span><span id="_CPPv215threadsPerBlock"></span><span id="threadsPerBlock__iC"></span><span class="target" id="cu_a_star_8hpp_1a05ee3af5827954aa76446ebc72dcb5a5"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">threadsPerBlock</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">1024</span></span><a class="headerlink" href="#_CPPv415threadsPerBlock" title="Link to this definition"></a><br /></dt>
+<dd><p>This is the default threads number, but you can choose up to 1024. </p>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+<dl>
+<dt class="sig sig-object cpp">
+<span class="target" id="todo"></span><em><span class="pre">page</span></em> <span class="sig-name descname"><span class="pre">todo</span></span></dt>
+<dd><p><dl>
+<dt class="sig sig-object cpp">
+<span class="pre">Member</span> <a class="reference internal" href="#cu_a_star_8hpp_1a316cbf30ba668f1d82c60d6b9b296773"><span class="std std-ref"><span class="pre">computePointCloudBoundBox</span></span></a>&#160; <span class="pre">(const</span> <span class="pre">NodeType</span> <span class="pre">*h_arrayNodes,</span> <span class="pre">int</span> <span class="pre">N,</span> <span class="pre">float</span> <span class="pre">*minX,</span> <span class="pre">float</span> <span class="pre">*maxX,</span> <span class="pre">float</span> <span class="pre">*minY,</span> <span class="pre">float</span> <span class="pre">*maxY)</span></dt>
+<dd><p><span class="target" id="todo_1_todo000001"></span>Use of Local Reductions per Block </p>
+</dd></dl>
+
+</p>
+</dd></dl>
+
+<dl>
+<dt class="sig sig-object cpp">
+<span class="target" id="dir_d44c64559bbebec7f509842c48db8b23"></span><em><span class="pre">dir</span></em> <span class="sig-name descname"><span class="pre">include</span></span></dt>
+<dd></dd></dl>
+
+<dl>
+<dt class="sig sig-object cpp">
+<span class="target" id="indexpage"></span><em><span class="pre">page</span></em> <span class="sig-name descname"><span class="pre">index</span></span></dt>
+<dd><p>If there are no blocked cells/obstacles then we can just find the exact value of h without any pre-computation using the distance formula/Euclidean Distance all memory errors checks foe cuda are in debug mode ! $ g++ -std=c++0x main.cpp -pthread nvcc -o random_gen_example random_gen_example.cu -lcurand divide the point cloud data into small region called bubles a N pt cloud is divided into N/k where k is the window size , for each subarea , inti a substarting node explore (like running the normal A star on that subgroups nodes) with one setp the surouding and at each step , synchonize all subregions</p>
+<p><a class="reference external" href="https://pantelis.github.io/artificial-intelligence/aiml-common/lectures/planning/search/a-star/index.html">https://pantelis.github.io/artificial-intelligence/aiml-common/lectures/planning/search/a-star/index.html</a></p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>for the multithreding and concurrency support computations support the c++ 11 standard is required More Info : <a class="reference external" href="https://en.cppreference.com/w/cpp/thread">https://en.cppreference.com/w/cpp/thread</a> <a class="reference external" href="https://github.com/arvkr/ransac_cuda_eecse4750">https://github.com/arvkr/ransac_cuda_eecse4750</a></p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>: 3D visulisation and rending is enabled only throut VTK,wich should be installed , we use VTK version 9.3.1, for more information refre to VTK installation guide </p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>hhh </p>
+</div>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Wissem CHIHA.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,112 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygenindex xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="index.xsd" version="1.10.0" xml:lang="en-US">
+  <compound refid="class_astar_planner" kind="class"><name>AstarPlanner</name>
+    <member refid="class_astar_planner_1a3a2934934690ae00af8bfe7b30ac5f5e" kind="variable"><name>numNodes</name></member>
+    <member refid="class_astar_planner_1a846df03cb9adcaf67f0d8d49a826771e" kind="variable"><name>chunkSize</name></member>
+    <member refid="class_astar_planner_1a6a9fd29b001d028423a47914ee90b2b3" kind="variable"><name>h_nodesArray</name></member>
+    <member refid="class_astar_planner_1ab455773e03f86215934c5df2d7c70a76" kind="variable"><name>h_chunksOpenSetArray</name></member>
+    <member refid="class_astar_planner_1a283d781da06d2bbf0504ae6dfcbb1e7f" kind="variable"><name>h_openSetArray</name></member>
+    <member refid="class_astar_planner_1a9ae9917803b7486fad90addba1db5c4f" kind="variable"><name>h_closedSetArray</name></member>
+    <member refid="class_astar_planner_1a668e114e6061ff8fe86afd2b2bcb5d7a" kind="variable"><name>startNode</name></member>
+    <member refid="class_astar_planner_1a160591b95c51825e7a1f56cfc970c9c3" kind="variable"><name>endNode</name></member>
+    <member refid="class_astar_planner_1a3a1ec67dac7f7be5b79cdb4f5944d10d" kind="variable"><name>h_pathArray</name></member>
+    <member refid="class_astar_planner_1acc95fb229d706135d526301313a09d6e" kind="variable"><name>d_pathArray</name></member>
+    <member refid="class_astar_planner_1a7572fa53d40fbcee001b3be86598c069" kind="function"><name>AstarPlanner</name></member>
+    <member refid="class_astar_planner_1aad3480b3923834d9e5fb9ed52531f6b1" kind="function"><name>AstarPlanner</name></member>
+    <member refid="class_astar_planner_1af74bae5418000d635d97f91d84846f2f" kind="function"><name>AstarPlanner</name></member>
+    <member refid="class_astar_planner_1ab344ed0178b64f88dda3d5b1124464bf" kind="function"><name>AstarPlanner</name></member>
+    <member refid="class_astar_planner_1ada592b22f903df88596e6011b10a9cbc" kind="function"><name>setInitialNode</name></member>
+    <member refid="class_astar_planner_1a5202f6fd1f8e7abc691be171f1707de8" kind="function"><name>setTargetNode</name></member>
+    <member refid="class_astar_planner_1a41593614b392639d4d18771d59f6e4b9" kind="function"><name>computeChunkOpenSet</name></member>
+    <member refid="class_astar_planner_1a6680617fa915b63bc3f04c0daa226798" kind="function"><name>computeTrajectory</name></member>
+    <member refid="class_astar_planner_1aeea62c3ef001d04c0111cc964c827170" kind="function"><name>writeTrajectory2csv</name></member>
+    <member refid="class_astar_planner_1afc1b128499c568331c9430c85391f7b6" kind="function"><name>visualize2dTrajectory</name></member>
+    <member refid="class_astar_planner_1abeac1ccac7dfd32be8701297f476a5cf" kind="function"><name>visualize2dPointCloud</name></member>
+    <member refid="class_astar_planner_1a4da6d20ce7c7ab434ed446718183e22f" kind="function"><name>~AstarPlanner</name></member>
+    <member refid="class_astar_planner_1aeef4955c0397847a5c56a34cc5fb8a42" kind="function"><name>isTargetReached</name></member>
+    <member refid="class_astar_planner_1a7717c75f8108f7f2ec6d995f8a31c432" kind="function"><name>computeOpenSetArray</name></member>
+  </compound>
+  <compound refid="struct_circle" kind="struct"><name>Circle</name>
+    <member refid="struct_circle_1abceecd15b990054ddc30441cfcbb205d" kind="variable"><name>x</name></member>
+    <member refid="struct_circle_1a78aef28b3c176d14e8d25f8cd84e7dfd" kind="variable"><name>y</name></member>
+    <member refid="struct_circle_1a897ad7e556f1e90142093c69079d8b05" kind="variable"><name>radius</name></member>
+  </compound>
+  <compound refid="struct_color" kind="struct"><name>Color</name>
+    <member refid="struct_color_1ab9a9c7134511f9b116a6fcc81a303ba6" kind="variable"><name>r</name></member>
+    <member refid="struct_color_1adc506c5063609cacdda2c007da3b7a5f" kind="variable"><name>g</name></member>
+    <member refid="struct_color_1a9f00605f7024dcb79342e97fae52c1bd" kind="variable"><name>b</name></member>
+  </compound>
+  <compound refid="class_node2d" kind="class"><name>Node2d</name>
+    <member refid="class_node2d_1a7f0a33591d0f5a4e39e58cba57ad3f9e" kind="variable"><name>x</name></member>
+    <member refid="class_node2d_1a25ac692d4b55f05b438944aa454ce47e" kind="variable"><name>y</name></member>
+    <member refid="class_node2d_1a387f967ea488e06539aa7948a0405632" kind="variable"><name>z</name></member>
+    <member refid="class_node2d_1adc956e5291ef12d5df35f976dbcc360f" kind="variable"><name>sum_cost</name></member>
+    <member refid="class_node2d_1a5640841633b719a8c76ee90c130db49b" kind="variable"><name>p_node</name></member>
+    <member refid="class_node2d_1a93fa9074e91b43e3b35175d02b2009e1" kind="variable"><name>r</name></member>
+    <member refid="class_node2d_1aa1c504e34e096c348347d0d5ac5d6e9e" kind="variable"><name>g</name></member>
+    <member refid="class_node2d_1a54b104bf3bc639906eecdd2aa75422f8" kind="variable"><name>b</name></member>
+    <member refid="class_node2d_1a1e14fcc5340d9f8011e5cc6ffd3abb9f" kind="function"><name>Node2d</name></member>
+    <member refid="class_node2d_1a31af4fda372a965ba15bacd22012294a" kind="function"><name>Node2d</name></member>
+    <member refid="class_node2d_1a517fa7d79fe533add98dc8b3c6bece3b" kind="function"><name>Node2d</name></member>
+    <member refid="class_node2d_1a1a33a4b7484c03502669e48d656508b9" kind="function"><name>isEqual</name></member>
+    <member refid="class_node2d_1a4e13e20edf03428abb09ee0a6872dd46" kind="function"><name>distanceTo</name></member>
+  </compound>
+  <compound refid="class_node3d" kind="class"><name>Node3d</name>
+    <member refid="class_node3d_1a880ff1c6b515074aba76d3bc9bb57986" kind="variable"><name>x</name></member>
+    <member refid="class_node3d_1a0f83bfe660734ce20618c2d719eb3753" kind="variable"><name>y</name></member>
+    <member refid="class_node3d_1aaccb19aa47451a8ff7afaeb7015dd183" kind="variable"><name>z</name></member>
+    <member refid="class_node3d_1a8245c6abc8c81e087af1c1212075a5ba" kind="variable"><name>sum_cost</name></member>
+    <member refid="class_node3d_1a00d107f9c9a72082fdb069cc35e2b234" kind="variable"><name>p_node</name></member>
+    <member refid="class_node3d_1a87519fd11d106242674ce915df035f33" kind="variable"><name>r</name></member>
+    <member refid="class_node3d_1a11458c52d4a55911346225f624c09eab" kind="variable"><name>g</name></member>
+    <member refid="class_node3d_1a00c0fd5df6f0d9b46c24c6c28fa9dc91" kind="variable"><name>b</name></member>
+    <member refid="class_node3d_1aafbd4c0fe3ea50106ab11ac2c3e77e2f" kind="function"><name>Node3d</name></member>
+    <member refid="class_node3d_1ad5c7d953e67fedd2d56f74304685f533" kind="function"><name>Node3d</name></member>
+    <member refid="class_node3d_1a4d02136dd2179bc7e9e386a21223bdc6" kind="function"><name>Node3d</name></member>
+    <member refid="class_node3d_1a1975adadd6d078946c2994e4b1bb3bc4" kind="function"><name>distanceTo</name></member>
+    <member refid="class_node3d_1a5f10c454d1cf4dbb01f356f957e5230d" kind="function"><name>isEqual</name></member>
+  </compound>
+  <compound refid="cu_a_star_8hpp" kind="file"><name>cuAStar.hpp</name>
+    <member refid="cu_a_star_8hpp_1aefcc44be8b6c53830108f016df64b467" kind="define"><name>HOST_FUN</name></member>
+    <member refid="cu_a_star_8hpp_1ac61c3ab4b97cab0aa211d11865027114" kind="define"><name>DEVICE_FUN</name></member>
+    <member refid="cu_a_star_8hpp_1ae00f3eca79281b4503d41fc4872505e7" kind="define"><name>HOST_DEVICE_FUN</name></member>
+    <member refid="cu_a_star_8hpp_1aefe397a94e8feddc652f92ef40ce9597" kind="define"><name>STB_IMAGE_WRITE_IMPLEMENTATION</name></member>
+    <member refid="cu_a_star_8hpp_1a6e60499e9937c6e404c17566ddf9be68" kind="define"><name>CUDA_CHECK_ERROR</name></member>
+    <member refid="cu_a_star_8hpp_1a5e4927b850a7043bbacfa9f8c473d02b" kind="define"><name>LOG_MESSAGE</name></member>
+    <member refid="cu_a_star_8hpp_1a05ee3af5827954aa76446ebc72dcb5a5" kind="variable"><name>threadsPerBlock</name></member>
+    <member refid="cu_a_star_8hpp_1a00de2d0d0ab9f396c3e3748eb63cab29" kind="function"><name>curandx</name></member>
+    <member refid="cu_a_star_8hpp_1a16651693cf5a213c0673281e4203e4b1" kind="function"><name>fatomicMin</name></member>
+    <member refid="cu_a_star_8hpp_1a5592ade9221f3b2760f0bb21e1c5c395" kind="function"><name>fatomicMax</name></member>
+    <member refid="cu_a_star_8hpp_1ac45f33250b838b27c42a3266aeb3cb56" kind="function"><name>atomicExchNode</name></member>
+    <member refid="cu_a_star_8hpp_1ab4061b927ba0dfa51ed9dc013d88f5ee" kind="function"><name>isPlyValid</name></member>
+    <member refid="cu_a_star_8hpp_1aad3b8cbfc84cd3cc466027c20c6bc79c" kind="function"><name>readPlyNode</name></member>
+    <member refid="cu_a_star_8hpp_1a7e0ed87ff5900e1728f96391de1df6f0" kind="function"><name>drawFilledCircle</name></member>
+    <member refid="cu_a_star_8hpp_1acc9032d75e0dcde90b01cb771dfb5a53" kind="function"><name>drawFilledCircles</name></member>
+    <member refid="cu_a_star_8hpp_1a4ca72b8d450b30bfb31eb69c9f8ee462" kind="function"><name>savePointCloudImage</name></member>
+    <member refid="cu_a_star_8hpp_1a316cbf30ba668f1d82c60d6b9b296773" kind="function"><name>computePointCloudBoundBox</name></member>
+    <member refid="cu_a_star_8hpp_1a428d84ee7512c8650a6a4b22f2a42a4d" kind="function"><name>array2PointCloudImg</name></member>
+    <member refid="cu_a_star_8hpp_1a06d7a738419e51455e54ec370d30bb67" kind="function"><name>array2PointCloudImgBound</name></member>
+    <member refid="cu_a_star_8hpp_1a77267fd54ae06d1f5e981e8d3a398789" kind="function"><name>getPlyPointNum</name></member>
+    <member refid="cu_a_star_8hpp_1ab58b4d31652def04ee9f1bd339a9d3c0" kind="function"><name>enumerationSort</name></member>
+    <member refid="cu_a_star_8hpp_1af5cb5a4814b6ee7a4d14a4086873defa" kind="function"><name>enumerationSortNodes</name></member>
+    <member refid="cu_a_star_8hpp_1a2fe34b190acaec408cfb1806e8a402b2" kind="function"><name>updateNearest</name></member>
+    <member refid="cu_a_star_8hpp_1a666ce1d82eff31579dc8e1269a657897" kind="function"><name>computeKnnNodes</name></member>
+    <member refid="cu_a_star_8hpp_1a6f2eba50d6ae3533f741db37b4f467f9" kind="function"><name>checkNodeExsist</name></member>
+    <member refid="cu_a_star_8hpp_1a05dd45f4d59d43e636bd7d24ef4f06f9" kind="function"><name>computeHeuristicDistance</name></member>
+    <member refid="cu_a_star_8hpp_1a3d4328759a867cba46265a3a7946b6ff" kind="function"><name>computeNodeTrajectoryCost</name></member>
+    <member refid="cu_a_star_8hpp_1a99425d10120723d2125f7a54cb975f06" kind="function"><name>computeSortedNodes</name></member>
+    <member refid="cu_a_star_8hpp_1abaa77acabcc127284c67343f27a1de0d" kind="function"><name>computeTrajectoryCost</name></member>
+    <member refid="cu_a_star_8hpp_1a426c920bb07f8d227c73aa66f0363b4a" kind="function"><name>smoothTrajectory</name></member>
+    <member refid="cu_a_star_8hpp_1adbd3b26368dcfe82c77fd4c53256e322" kind="function"><name>getRootNodes</name></member>
+    <member refid="cu_a_star_8hpp_1a4280ade50d5e58fa0fd067e62f4f7089" kind="function"><name>hasOrphanNodes</name></member>
+    <member refid="cu_a_star_8hpp_1a0ee0ad8ebca0fc3c56b1a4cbe6f435c4" kind="function"><name>getChunkArray</name></member>
+    <member refid="cu_a_star_8hpp_1a114da2ca8a3fa97e9b4923bb990646d5" kind="function"><name>getChunk</name></member>
+    <member refid="cu_a_star_8hpp_1a082fedce9958e17d9345c6f80a19f047" kind="function"><name>computeOptimalNode</name></member>
+  </compound>
+  <compound refid="todo" kind="page"><name>todo</name>
+  </compound>
+  <compound refid="dir_d44c64559bbebec7f509842c48db8b23" kind="dir"><name>include</name>
+  </compound>
+  <compound refid="indexpage" kind="page"><name>index</name>
+  </compound>
+</doxygenindex>

@@ -1,0 +1,62 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.10.0" xml:lang="en-US">
+  <compounddef id="struct_color" kind="struct" language="C++" prot="public">
+    <compoundname>Color</compoundname>
+    <includes refid="cu_a_star_8hpp" local="no">cuAStar.hpp</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="struct_color_1ab9a9c7134511f9b116a6fcc81a303ba6" prot="public" static="no" mutable="no">
+        <type><ref refid="cu_a_star_8hpp_1a00de2d0d0ab9f396c3e3748eb63cab29" kindref="member">unsigned</ref> <ref refid="cu_a_star_8hpp_1a00de2d0d0ab9f396c3e3748eb63cab29" kindref="member">char</ref></type>
+        <definition>unsigned char Color::r</definition>
+        <argsstring></argsstring>
+        <name>r</name>
+        <qualifiedname>Color::r</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/cuAStar.hpp" line="391" column="19" bodyfile="include/cuAStar.hpp" bodystart="391" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="struct_color_1adc506c5063609cacdda2c007da3b7a5f" prot="public" static="no" mutable="no">
+        <type><ref refid="cu_a_star_8hpp_1a00de2d0d0ab9f396c3e3748eb63cab29" kindref="member">unsigned</ref> <ref refid="cu_a_star_8hpp_1a00de2d0d0ab9f396c3e3748eb63cab29" kindref="member">char</ref></type>
+        <definition>unsigned char Color::g</definition>
+        <argsstring></argsstring>
+        <name>g</name>
+        <qualifiedname>Color::g</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/cuAStar.hpp" line="392" column="19" bodyfile="include/cuAStar.hpp" bodystart="392" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="struct_color_1a9f00605f7024dcb79342e97fae52c1bd" prot="public" static="no" mutable="no">
+        <type><ref refid="cu_a_star_8hpp_1a00de2d0d0ab9f396c3e3748eb63cab29" kindref="member">unsigned</ref> <ref refid="cu_a_star_8hpp_1a00de2d0d0ab9f396c3e3748eb63cab29" kindref="member">char</ref></type>
+        <definition>unsigned char Color::b</definition>
+        <argsstring></argsstring>
+        <name>b</name>
+        <qualifiedname>Color::b</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/cuAStar.hpp" line="393" column="19" bodyfile="include/cuAStar.hpp" bodystart="393" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>rgb color base struture </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="include/cuAStar.hpp" line="390" column="1" bodyfile="include/cuAStar.hpp" bodystart="390" bodyend="394"/>
+    <listofallmembers>
+      <member refid="struct_color_1a9f00605f7024dcb79342e97fae52c1bd" prot="public" virt="non-virtual"><scope>Color</scope><name>b</name></member>
+      <member refid="struct_color_1adc506c5063609cacdda2c007da3b7a5f" prot="public" virt="non-virtual"><scope>Color</scope><name>g</name></member>
+      <member refid="struct_color_1ab9a9c7134511f9b116a6fcc81a303ba6" prot="public" virt="non-virtual"><scope>Color</scope><name>r</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>
