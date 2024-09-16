@@ -1,40 +1,27 @@
-name: Deploy Documentation
+name: documentation
 
-on:
-  push:
-    branches: [ main ]
+on: [push, pull_request, workflow_dispatch]
+
+permissions:
+  contents: write
 
 jobs:
-  build-documentation:
+  docs:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-      
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: '3.x'
-
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
       - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip
-          pip install sphinx sphinx-rtd-theme
-
-      - name: Build Sphinx Documentation
+          pip install sphinx sphinx_rtd_theme myst_parser
+      - name: Sphinx build
         run: |
-          cd docs
-          make html 
-
-      - name: List documentation directory
-        run: ls -R docs/build/
-
+          sphinx-build doc _build
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
         with:
+          publish_branch: gh-pages
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./docs/build/
-          enable_jekyll: false
-          allow_empty_commit: false
+          publish_dir: docs/build
           force_orphan: true
-          publish_branch: gh-pages  # Ensure this matches your Pages branch setting
