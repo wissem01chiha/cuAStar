@@ -1,4 +1,4 @@
-// // nvcc -std=c++17 -o build/testTrajectory test/testTrajectory.cu
+// // nvcc -std=c++17 --diag-suppress=20054 -o build/testTrajectory test/testTrajectory.cu
 #define CUASTAR_IMPLEMENTATION 
 #define CUASTAR_DEBUG
 
@@ -15,6 +15,7 @@ int main(){
     planner.setInitialNode(&start);
     planner.computeChunkOpenSet();
     planner.computeTrajectory();
-
+    planner.visualize2dTrajectory("traj2d.png");
+    //planner.writeTrajectory2csv("traj.csv");
     return 0;
 }

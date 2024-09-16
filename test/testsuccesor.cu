@@ -13,7 +13,7 @@ int main() {
     using T = float; // Set the data type for Node3d (float in this case)
 
     // Define the number of k-nearest neighbors
-    const int k = 8;
+    const int k = 128;
 
     // Initialize host data
     std::vector<Node3d<T>> h_knnNodesArray(k);
@@ -22,7 +22,7 @@ int main() {
     }
 
     Node3d<T> h_bestNode;
-    Node3d<T> h_endNode = Node3d<T>(static_cast<T>(5.5), static_cast<T>(2.5), static_cast<T>(3));
+    Node3d<T> h_endNode = Node3d<T>(static_cast<T>(100), static_cast<T>(101), static_cast<T>(103));
 
     // Allocate device memory
     Node3d<T>* d_knnNodesArray;

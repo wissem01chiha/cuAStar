@@ -123,8 +123,6 @@
 
 #define STB_IMAGE_WRITE_IMPLEMENTATION 
 
-#define ARRAY_SIZE(arr) (sizeof(arr) / sizeof((arr)[0]))
-
 #ifdef CUASTAR_DEBUG
     #if defined(__CUDACC__)
     #define CUDA_CHECK_ERROR(err) \
@@ -1095,12 +1093,8 @@ __global__ void computeOptimalNode(const NodeType* d_nodesArray, int k, const No
                                     NodeType* d_bestNode){
 
     int idx  = threadIdx.x;
-    extern __shared__ T sharedCost[];
-    extern __shared__ int sharedIndex[];
+    __shared__ T sharedCost[1024];
 
-    if (idx < k) {
-        sharedIndex[idx] = idx;
-    }
     if ( idx < k  ){
         T cost;
         T* idx_cost = &cost;
@@ -1215,7 +1209,7 @@ public:
     /** 
      * @brief saves a trajectory to pointcloud file .ply using happly library 
      */
-    HOST_FUN void writeTrajectory2csv(const std::string outputFilePath);
+    HOST_FUN void writeTrajectory2csv(const std::string& outputFilePath);
 
     /** 
      * @brief read a point cloud data file (now only PLy supported) and fill the gridMap
@@ -1232,25 +1226,29 @@ public:
     */
    HOST_FUN void visualize2dPointCloud(const std::string imageFilePath);
 
-   /**
-    * @brief this method take an array reprsent a map and debug it in 2d, nodes 
-    * are not displayed a unicolor lines between child-parent is ploted
-    */
-   HOST_FUN void visualize2dChunks();
-
    #ifdef CUASTAR_USE_VTK
     /**
-    * @brief given an array of 3d points cloud in node3d type, wich each node
-    * has parent-child, viuslize the 3d map using lines, in VTK, displaying
-    * points as sphres is not supported, the array is  h_mapArray 
-    */
-    HOST_FUN void visualize3dPointCloud();
+     * @brief Visualizes the entire 3D point cloud from a specified .ply file.
+     * This function renders the point cloud contained in the given .ply file, 
+     * preserving the original RGBA colors.
+     * @note This function does not have an implementation using OpenCV (cv2).
+     * It relies on external visualization libraries, and the point cloud data
+     * must include RGBA color information.
+     * @param inputFilePath The path to the input .ply file containing the 3D point 
+     * cloud data.
+     * @param pointsRadius The radius for all points in the visualization. 
+     * @note Use a smaller radius for large point clouds to 
+     * ensure clarity and performance. The default value is 0.01.
+     */
+    HOST_FUN void visualize3dPointCloud(const std::string inputFilePath, 
+                                    const double pointsRadius=0.01);
 
     /**
      * @brief render the computed trajectory i point cloud, with the path in 
-     * continus lines in specifc color 
+     * continus lines in specifc color
+     * @note this function require that the d_pathArray is filled properlly ! 
      */
-    HOST_FUN void visualize3dTrajectory();
+    HOST_FUN void visualize3dTrajectory(const double pointsRadius=0.01);
 
     /**
      * @brief visulize the 3d grid map in only lines with the same color
@@ -1477,7 +1475,7 @@ private:
        
         cudaMemcpy(d_nodesArray, h_nodesArray, sizeof(NodeType) * numNodes, cudaMemcpyHostToDevice);
 
-        h_chunksOpenSetArray = new NodeType[numNodes]();
+        h_chunksOpenSetArray = new NodeType[chunksNum * k]();
 
         for (int i = 0; i < chunksNum; i++) {
 
@@ -1538,7 +1536,7 @@ private:
             cudaMemcpy(h_chunkSortedNodes, d_chunkSortedNodes, k * sizeof(NodeType), cudaMemcpyDeviceToHost);
 
             for (int s = 0; s < k; s++) {
-                h_chunksOpenSetArray[i * k + s] = h_chunkSortedNodes[s]; // it size is k * (chunksNum + 1)
+                h_chunksOpenSetArray[i * k + s] = h_chunkSortedNodes[s]; 
                 if (s + 1 < k) { 
                     h_chunksOpenSetArray[i * k + s + 1].p_node = &h_chunksOpenSetArray[i * k + s];
                 }
@@ -1550,12 +1548,12 @@ private:
             cudaFree(d_chunkSortedZ);
             cudaFree(d_kNodes);
         }
-        NodeType* h_plot = new NodeType[numNodes];
-        for (int p = 0; p < numNodes; ++p) { 
+        NodeType* h_plot = new NodeType[chunksNum * k];
+        for (int p = 0; p < chunksNum * k; ++p) { 
             h_plot[p] = NodeType(h_chunksOpenSetArray[p].x, h_chunksOpenSetArray[p].y, h_chunksOpenSetArray[p].z);
         }
             int validCount = 0;
-            for (int p = 0; p < numNodes; ++p) {
+            for (int p = 0; p < chunksNum * k; ++p) {
                 if ((h_chunksOpenSetArray[p].x != 0 || h_chunksOpenSetArray[p].y != 0 || h_chunksOpenSetArray[p].z != 0) &&
                     (abs(h_chunksOpenSetArray[p].x) <= 1000 && abs(h_chunksOpenSetArray[p].y) <= 1000 && abs(h_chunksOpenSetArray[p].z) <= 1000)) {
                     validCount++;
@@ -1564,7 +1562,7 @@ private:
             NodeType* valid_h_plot = new NodeType[validCount];
 
             int index = 0;
-            for (int p = 0; p < numNodes; ++p) {
+            for (int p = 0; p < chunksNum * k; ++p) {
                 if ((h_chunksOpenSetArray[p].x != 0 || h_chunksOpenSetArray[p].y != 0 || 
                     h_chunksOpenSetArray[p].z != 0) &&
                     (abs(h_chunksOpenSetArray[p].x) <= 1e3 && abs(h_chunksOpenSetArray[p].y) <= 1e3 
@@ -1591,117 +1589,105 @@ private:
         chunkSize = 128;
         int k = chunkSize-30;
         int chunksNum = numNodes / chunkSize;
-   
-        int blocksNum = (numNodes + threadsPerBlock - 1) / threadsPerBlock;
 
-        NodeType* h_pathArray = new NodeType[numNodes];
-        NodeType* d_pathArray;
-        cudaMalloc(&d_pathArray, numNodes * sizeof(NodeType));
+        NodeType* h_pathArray = new NodeType[chunksNum];
 
         NodeType* d_endNode;
         cudaMalloc((void**)&d_endNode, sizeof(NodeType));
         cudaMemcpy(d_endNode, endNode, sizeof(NodeType), cudaMemcpyHostToDevice);
 
-        NodeType* h_optNode = new NodeType;
-        NodeType* d_optNode;
-        cudaMalloc(&d_optNode, sizeof(NodeType));
+        for (int i = 0; i < chunksNum; i++) {
+           
+            NodeType* h_guessArray = new NodeType[k];
 
-        for (int i = 0; i < k; i++) {
-            std::cout << "step" << i << std::endl;
-
-            NodeType* h_guessArray = new NodeType[chunksNum];
             NodeType* d_guessArray;
-            cudaMalloc(&d_guessArray, chunksNum * sizeof(NodeType));
-           std::cout << "guess number " << i << std::endl;
-            for (int s = 0; s < chunksNum; s++) {
-                if (i + s * k < numNodes) {
-                    h_guessArray[s] = h_chunksOpenSetArray[i + s * k];
-                    
-                }
-            }
-        
-            cudaError_t err = cudaMemcpy(d_guessArray, h_guessArray, chunksNum * sizeof(NodeType), cudaMemcpyHostToDevice);
-            if (err != cudaSuccess) {
-                std::cout << "CUDA error: " << cudaGetErrorString(err) << std::endl;
-                break;  
-            }
+            cudaMalloc(&d_guessArray, k *  sizeof(NodeType));
 
-            computeOptimalNode<NodeType,T><<<blocksNum, threadsPerBlock>>>(d_guessArray, chunksNum, d_endNode, d_optNode);
+            NodeType* h_optNode = new NodeType;
+            NodeType* d_optNode;
+            cudaMalloc(&d_optNode, sizeof(NodeType));
 
-            err = cudaDeviceSynchronize();
-            if (err != cudaSuccess) {
-                std::cout << "CUDA error: " << cudaGetErrorString(err) << std::endl;
-                break;  
+            for (int j = 0; j < k ; j++) {
+                h_guessArray[j] = h_chunksOpenSetArray[i * k + j ];
             }
-/*
+          
+            cudaMemcpy(d_guessArray, h_guessArray, k * sizeof(NodeType), cudaMemcpyHostToDevice);
+            computeOptimalNode<NodeType,T><<<1, k>>>(d_guessArray, k, d_endNode, d_optNode);
+            cudaError_t err = cudaDeviceSynchronize();
+            if (err != cudaSuccess) {
+                std::cout << "CUDA error: " << cudaGetErrorString(err) << std::endl; 
+            }
             cudaMemcpy(h_optNode, d_optNode, sizeof(NodeType), cudaMemcpyDeviceToHost);
             h_pathArray[i] = *h_optNode;
 
             cudaFree(d_guessArray);
             delete[] h_guessArray;
+            cudaFree(d_optNode);
+            delete h_optNode;
         }
-
-        cudaMemcpy(d_pathArray, h_pathArray, numNodes * sizeof(NodeType), cudaMemcpyHostToDevice);
-
-        for (int i = 0; i < chunksNum; i++ ) {
-            std::cout << "Node" << i << "(" << h_pathArray[i].x << "," << h_pathArray[i].y << "," << 
-            h_pathArray[i].z << ")" << std::endl;
-        }
-
-        array2PointCloudImgBound<NodeType>(h_pathArray, chunksNum, "traj.png", startNode, endNode, 800, 0.002);
-
-        cudaFree(d_pathArray);
-        cudaFree(d_optNode);
         cudaFree(d_endNode);
-        delete[] h_pathArray;
-        delete h_optNode;
-         */
-    }}
+        this->h_pathArray = h_pathArray;
+    }
 
     template<typename NodeType, typename T>
-    HOST_FUN void AstarPlanner<NodeType, T>::writeTrajectory2csv(const std::string outputFilePath) {
+    HOST_FUN void AstarPlanner<NodeType, T>::writeTrajectory2csv(const std::string& outputFilePath) {
+
+        int chunkSize = 128;
+        int chunksNum = numNodes / chunkSize;
 
         std::vector<float> x_coords;
         std::vector<float> y_coords;
         std::vector<float> z_coords;
 
-        for (int i = 0; i < numNodes; i++) {
-            NodeType& node = h_pathArray[i];  
-
-            x_coords.push_back(node.x);
-            y_coords.push_back(node.y);
-            z_coords.push_back(node.z);
+        if (h_pathArray == nullptr || chunksNum <= 0) {
+            std::cerr << "Error: h_pathArray is not initialized or chunksNum is invalid." << std::endl;
+            std::cerr << "h_pathArray is null: " << (h_pathArray == nullptr) << std::endl;
+            std::cerr << "chunksNum: " << chunksNum << " numNodes: " << numNodes << std::endl;
+            return;
         }
 
-        rapidcsv::Document doc;
+        std::filesystem::path outputPath(outputFilePath);
+        std::filesystem::path outputDir = outputPath.parent_path();
 
-        doc.SetColumn<float>("x", x_coords);
-        doc.SetColumn<float>("y", y_coords);
-        doc.SetColumn<float>("z", z_coords);
-
-        doc.Save(outputFilePath);
-    }
-    
-    template <typename NodeType, typename T>
-    HOST_FUN void AstarPlanner<NodeType, T>::visualize2dTrajectory(const std::string& outputFilePath){
-
-       namespace fs = std::filesystem;
-       try {
-            fs::path outputPath(outputFilePath);
-            fs::path directory = outputPath.parent_path();
-            if (!directory.empty() && !fs::exists(directory)){
-                fs::create_directories(directory);
+        if (!outputDir.empty() && !std::filesystem::exists(outputDir)) {
+            std::cout << "Directory does not exist. Creating directory: " << outputDir.string() << std::endl;
+            try {
+                std::filesystem::create_directories(outputDir);
+            } catch (const std::exception& e) {
+                std::cerr << "Error creating directory: " << e.what() << std::endl;
+                return;
             }
-            if (fs::exists(outputPath)) {
-                fs::remove(outputPath);
-            }
-            array2PointCloudImg<NodeType>(h_nodesArray, numNodes, outputFilePath.c_str(),800, 0.001);
-        } catch (const fs::filesystem_error& e) {
-            std::cerr << "Filesystem error: " << e.what() << '\n';
+        }
+
+        for (int i = 0; i < chunksNum; i++) {
+            NodeType& node = h_pathArray[i];
+            std::cout << "Processing node " << i << " with coordinates (" << node.x << ", " 
+            << node.y << ", " << node.z << ")" << std::endl;
+
+            x_coords.push_back(static_cast<float>(node.x));
+            y_coords.push_back(static_cast<float>(node.y));
+            z_coords.push_back(static_cast<float>(node.z));
+        }
+
+        std::filesystem::path filePath(outputFilePath);
+        if (!std::filesystem::exists(filePath.parent_path())) {
+            std::cerr << "Error: Output directory does not exist or cannot be written to." << std::endl;
+            std::cerr << "Directory path: " << filePath.parent_path() << std::endl;
+            return;
+        }
+
+        try {
+            rapidcsv::Document doc("traj.csv", rapidcsv::LabelParams(0, 0), rapidcsv::SeparatorParams(','));
+            doc.SetColumn<float>("x", x_coords);
+            doc.SetColumn<float>("y", y_coords);
+            doc.SetColumn<float>("z", z_coords);
+
+            doc.Save(outputFilePath);
+            std::cout << "CSV file saved successfully at: " << outputFilePath << std::endl;
         } catch (const std::exception& e) {
-            std::cerr << "Error: " << e.what() << '\n';
+            std::cerr << "Error saving CSV file: " << e.what() << std::endl;
         }
-    };
+    }
 
     template <typename NodeType, typename T>
     HOST_DEVICE_FUN bool  AstarPlanner<NodeType,T>::isTargetReached(const NodeType* n, const T eps){
@@ -1723,6 +1709,61 @@ private:
             array2PointCloudImg<NodeType>(h_nodesArray, numNodes, imageFilePath.c_str(),800, 0.001);
     }
 
+    template<typename NodeType, typename T>
+    HOST_FUN void  AstarPlanner<NodeType,T>::visualize2dTrajectory(const std::string& outputFilePath){
+
+        chunkSize = 128;
+        int k = chunkSize-30;
+        int chunksNum = numNodes / chunkSize;
+
+        
+        NodeType* h_plot = new NodeType[chunksNum * k];
+        for (int p = 0; p < chunksNum * k; ++p) { 
+            h_plot[p] = NodeType(h_chunksOpenSetArray[p].x, h_chunksOpenSetArray[p].y, h_chunksOpenSetArray[p].z);
+        }
+            int validCount = 0;
+            for (int p = 0; p < chunksNum * k; ++p) {
+                if ((h_chunksOpenSetArray[p].x != 0 || h_chunksOpenSetArray[p].y != 0 || h_chunksOpenSetArray[p].z != 0) &&
+                    (abs(h_chunksOpenSetArray[p].x) <= 1000 && abs(h_chunksOpenSetArray[p].y) <= 1000 && abs(h_chunksOpenSetArray[p].z) <= 1000)) {
+                    validCount++;
+                }
+            }
+            NodeType* valid_h_plot = new NodeType[validCount];
+
+            int index = 0;
+            for (int p = 0; p < chunksNum * k; ++p) {
+                if ((h_chunksOpenSetArray[p].x != 0 || h_chunksOpenSetArray[p].y != 0 || 
+                    h_chunksOpenSetArray[p].z != 0) &&
+                    (abs(h_chunksOpenSetArray[p].x) <= 1e3 && abs(h_chunksOpenSetArray[p].y) <= 1e3 
+                            && abs(h_chunksOpenSetArray[p].z) <= 1e3)) {
+                    valid_h_plot[index++] = NodeType(h_chunksOpenSetArray[p].x, 
+                            h_chunksOpenSetArray[p].y, h_chunksOpenSetArray[p].z);
+                }
+            }
+            NodeType* newArray = new NodeType[validCount + 1];
+            for (int i = 0; i < validCount; ++i) {
+                newArray[i] = valid_h_plot[i];
+            }
+            newArray[validCount] = NodeType(startNode->x, startNode->y, startNode->z);
+             
+            valid_h_plot = newArray;
+            validCount++;
+
+            for ( int  i =0; i < validCount + 1; i++){
+
+                for (int j=0; j < chunksNum; j ++){
+                    if (newArray[i].isEqual(h_pathArray[j], 1e-2)){
+                        
+                        newArray[i].r =0;
+                        newArray[i].g =0;
+                        newArray[i].b =0;
+                    }
+                }
+        }
+            array2PointCloudImgBound<NodeType>(newArray, validCount, outputFilePath.c_str(), startNode, endNode, 800, 0.003);
+
+    }
+
     template <typename NodeType, typename T>
     HOST_FUN AstarPlanner<NodeType, T>::~AstarPlanner(){
 
@@ -1735,8 +1776,78 @@ private:
     #ifdef CUASTAR_USE_VTK
 
         template <typename NodeType, typename T>
-        HOST_FUN void AstarPlanner<NodeType, T>::visualize3dPointCloud(){
+        HOST_FUN void AstarPlanner<NodeType, T>::visualize3dPointCloud(const std::string inputFilePath, 
+                                                                    const double pointsRadius=0.01){
 
+            vtkNew<vtkNamedColors> colors;
+            vtkNew<vtkPLYReader> reader;
+            reader->SetFileName(inputFilePath.c_str());
+            reader->Update();                           
+
+            vtkPolyData* polyData = reader->GetOutput();
+            vtkPointData* pointData = polyData->GetPointData();
+
+            vtkUnsignedCharArray* colorsArray=
+            vtkUnsignedCharArray::SafeDownCast(pointData->GetArray("RGBA"));
+            if (!colorsArray){
+                std::cerr << 
+                "Error:The PLY file does not contain an array named 'RGBA'!"<<std::endl;
+            }
+            vtkIdType numPoints = polyData->GetNumberOfPoints();
+            std::cout << "Number of points: " << numPoints << std::endl;
+
+            vtkNew<vtkAppendPolyData> appendFilter;
+
+            for (vtkIdType i = 0; i < numPoints; ++i){
+            double p[3];
+            polyData->GetPoint(i, p);
+            unsigned char* color = colorsArray->GetPointer(4 * i);
+            unsigned char rgba[4] = {
+                color[0],  
+                color[1],  
+                color[2],  
+                color[3]   
+            };
+
+            vtkNew<vtkSphereSource> sphereSource;
+            sphereSource->SetCenter(p);
+            sphereSource->SetRadius(pointsRadius); 
+            sphereSource->SetThetaResolution(8);
+            sphereSource->SetPhiResolution(8);
+            sphereSource->Update();
+
+            vtkIdType numSpherePoints = sphereSource->GetOutput()->GetNumberOfPoints();
+
+            vtkNew<vtkUnsignedCharArray> colorArray;
+            colorArray->SetNumberOfComponents(4); 
+            colorArray->SetName("Colors");
+            for (vtkIdType j = 0; j < numSpherePoints; ++j){
+                colorArray->InsertNextTypedTuple(rgba);
+            }
+            sphereSource->GetOutput()->GetPointData()->SetScalars(colorArray);
+            appendFilter->AddInputConnection(sphereSource->GetOutputPort());
+            };
+
+            vtkNew<vtkRenderer> renderer;
+            vtkNew<vtkRenderWindow> renderWindow;
+            renderWindow->AddRenderer(renderer);
+            vtkNew<vtkRenderWindowInteractor> renderWindowInteractor;
+            renderWindowInteractor->SetRenderWindow(renderWindow);
+        
+            vtkNew<vtkPolyDataMapper> mapper;
+            mapper->SetInputConnection(appendFilter->GetOutputPort());
+            mapper->ScalarVisibilityOn();  
+            mapper->SetScalarModeToUsePointData(); 
+            mapper->SelectColorArray("Colors");
+
+            vtkNew<vtkActor> pointCloudActor;
+            pointCloudActor->SetMapper(mapper);
+
+            renderer->AddActor(pointCloudActor);
+            renderer->SetBackground(colors->GetColor3d("White").GetData());
+            renderWindow->Render();
+            renderWindowInteractor->Start();
+    
         }
 
         template <typename NodeType, typename T>
@@ -1792,91 +1903,7 @@ private:
         renderWindowInteractor->Start();
     };
 
-    /**
-     * @brief Visualizes the entire 3D point cloud from a specified .ply file.
-     * This function renders the point cloud contained in the given .ply file, 
-     * preserving the original RGBA colors.
-     * @note This function does not have an implementation using OpenCV (cv2).
-     * It relies on external visualization libraries, and the point cloud data
-     * must include RGBA color information.
-     * @param inputFilePath The path to the input .ply file containing the 3D point 
-     * cloud data.
-     * @param pointsRadius The radius for all points in the visualization. 
-     * @note Use a smaller radius for large point clouds to 
-     * ensure clarity and performance. The default value is 0.01.
-     */
-    void vizWorld3d(const std::string inputFilePath,const double pointsRadius=0.01){
-
-        vtkNew<vtkNamedColors> colors;
-        vtkNew<vtkPLYReader> reader;
-        reader->SetFileName(inputFilePath.c_str());
-        reader->Update();                           
-
-        vtkPolyData* polyData = reader->GetOutput();
-        vtkPointData* pointData = polyData->GetPointData();
-
-        vtkUnsignedCharArray* colorsArray=
-        vtkUnsignedCharArray::SafeDownCast(pointData->GetArray("RGBA"));
-        if (!colorsArray){
-            std::cerr << 
-            "Error:The PLY file does not contain an array named 'RGBA'!"<<std::endl;
-        }
-        vtkIdType numPoints = polyData->GetNumberOfPoints();
-        std::cout << "Number of points: " << numPoints << std::endl;
-
-        vtkNew<vtkAppendPolyData> appendFilter;
-
-        for (vtkIdType i = 0; i < numPoints; ++i){
-        double p[3];
-        polyData->GetPoint(i, p);
-        unsigned char* color = colorsArray->GetPointer(4 * i);
-        unsigned char rgba[4] = {
-            color[0],  
-            color[1],  
-            color[2],  
-            color[3]   
-        };
-
-        vtkNew<vtkSphereSource> sphereSource;
-        sphereSource->SetCenter(p);
-        sphereSource->SetRadius(pointsRadius); 
-        sphereSource->SetThetaResolution(8);
-        sphereSource->SetPhiResolution(8);
-        sphereSource->Update();
-
-        vtkIdType numSpherePoints = sphereSource->GetOutput()->GetNumberOfPoints();
-
-        vtkNew<vtkUnsignedCharArray> colorArray;
-        colorArray->SetNumberOfComponents(4); 
-        colorArray->SetName("Colors");
-        for (vtkIdType j = 0; j < numSpherePoints; ++j){
-            colorArray->InsertNextTypedTuple(rgba);
-        }
-        sphereSource->GetOutput()->GetPointData()->SetScalars(colorArray);
-        appendFilter->AddInputConnection(sphereSource->GetOutputPort());
-        };
-
-        vtkNew<vtkRenderer> renderer;
-        vtkNew<vtkRenderWindow> renderWindow;
-        renderWindow->AddRenderer(renderer);
-        vtkNew<vtkRenderWindowInteractor> renderWindowInteractor;
-        renderWindowInteractor->SetRenderWindow(renderWindow);
     
-        vtkNew<vtkPolyDataMapper> mapper;
-        mapper->SetInputConnection(appendFilter->GetOutputPort());
-        mapper->ScalarVisibilityOn();  
-        mapper->SetScalarModeToUsePointData(); 
-        mapper->SelectColorArray("Colors");
-
-        vtkNew<vtkActor> pointCloudActor;
-        pointCloudActor->SetMapper(mapper);
-
-        renderer->AddActor(pointCloudActor);
-        renderer->SetBackground(colors->GetColor3d("White").GetData());
-        renderWindow->Render();
-        renderWindowInteractor->Start();
-    };
-
     /**
      * @brief display the 2d trajectory data using a 3d trajectory file 
      * a 3d trajectory file is a non rgba point cloud file stored in .ply 
