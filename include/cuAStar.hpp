@@ -1479,8 +1479,6 @@ private:
 
         for (int i = 0; i < chunksNum; i++) {
 
-            std::cout << "process step " << i << "/" << chunksNum << std::endl;
-
             NodeType* h_chunkNodesArray = (NodeType*)malloc(chunkSize * sizeof(NodeType));
             
             getChunk<NodeType>(h_nodesArray, numNodes, chunkSize, i, h_chunkNodesArray);

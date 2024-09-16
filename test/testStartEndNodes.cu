@@ -1,4 +1,3 @@
-// nvcc -std=c++17 -o build/teststartend test/testStartEndNodes.cu
 #define CUASTAR_IMPLEMENTATION 
 #define CUASTAR_DEBUG
 #include "../include/cuAStar.hpp"

@@ -1,4 +1,3 @@
-// // nvcc -std=c++17 -o build/testChunkOpenSet test/testChunkOpenSet.cu
 #define CUASTAR_IMPLEMENTATION 
 #define CUASTAR_DEBUG
 

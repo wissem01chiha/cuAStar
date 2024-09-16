@@ -1,4 +1,3 @@
-// nvcc -std=c++17 -o build/testply test/testply.cu
 #define CUASTAR_DEBUG
 #include "../include/cuAStar.hpp"
 
