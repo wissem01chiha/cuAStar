@@ -6,14 +6,14 @@ set(CMAKE_CUDA_STANDARD 17)
 set(CMAKE_CUDA_STANDARD_REQUIRED ON)
 set(CMAKE_VERBOSE_MAKEFILE ON)
 
-option(BUILD_TESTS "Building CXX or CUDA Tests" OFF)
+option(BUILD_TESTS "Building CXX or CUDA Tests" ON)
 option(BUILD_EXEMPLES "Building CXX or CUDA Exemples " OFF)
 option(BUILD_DOCS "Build documentation or not" OFF)
 option(USE_CUDA "Building with CUDA Support " ON)
 option(USE_VTK "Building with VTK Support " OFF)
 
 option(USE_CPM   "Whether to use CPM."  OFF)
-option(USE_CONAN "Whether to use Conan." ON)
+option(USE_CONAN "Whether to use Conan." OFF)
 option(USE_VCPKG "Whether to use VCPKG." OFF)
 
 if(USE_CPM)

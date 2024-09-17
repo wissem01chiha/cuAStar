@@ -1,24 +1,39 @@
-## cuAStar 
-A Fast Lightweight Single-File, Header-Only Parallel Implementation of the A Trajectory Planner for Dense Point Cloud Datasets
+# cuAStar
 
-dataset : OpenTrench3D https://www.kaggle.com/datasets/hestogpony/opentrench3d  
-"C:\Program Files (x86)\Microsoft Visual   Studio\2022\BuildTools\Common7\Tools\VsDevCmd.bat"  
-cmake -G "Visual Studio 17 2022" ..  
-cmake --build . --config Release  
+cuAStar is a fast, lightweight, single-file, header-only parallel implementation of the A* trajectory planner designed for dense point cloud datasets.
 
+## Dataset
+The dataset used for this project is [OpenTrench3D](https://www.kaggle.com/datasets/hestogpony/opentrench3d).
 
-# tests
- to build the test cmake isnot ready yet run the batch script 
+## Environment Setup
+To set up your environment, follow these steps:
 
- ## documentation 
- ![Alt text](build/VTK_trench.png)
+1. Open the Visual Studio Developer Command Prompt:
+"C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\Tools\VsDevCmd.bat"
 
- ![Alt test](build/traj2d.png)
-![Alt text](build/traj2d_clear.png)
+2. Generate Visual Studio project files using CMake:
 
-## bbenchmark
-Node setup time: 74 ms
-Chunk open set computation time: 13562 ms
-Trajectory computation time: 47 ms
-2D Trajectory visualization time: 1970 ms
-Total execution time: 21189 ms
+3. Build the project in Release configuration:
+
+## Tests
+Currently, building the test suite requires a batch script which is not yet available.
+
+## Examples
+build exempleare intred to  be placed in ![examples](exemple/) folder, 
+d
+f
+## Documentation
+the daetailed documenattaion of class and function in [cuAStar](https://wissem01chiha.github.io/cuAStar/)
+
+![VTK_trench](build/VTK_trench.png)
+![Trajectory 2D](build/traj2d.png)
+![Clear Trajectory 2D](build/traj2d_clear.png)
+
+## Benchmark
+Performance benchmarks:
+
+- Node setup time: 74 ms
+- Chunk open set computation time: 13562 ms
+- Trajectory computation time: 47 ms
+- 2D Trajectory visualization time: 1970 ms
+- Total execution time: 21189 ms
