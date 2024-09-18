@@ -1,6 +1,6 @@
 # cuAStar
 
-cuAStar is a fast, lightweight, single-file, header-only parallel implementation of the A* trajectory planner designed for dense point cloud datasets.
+cuAStar is a fast, lightweight, fully template,  single-file, header-only parallel implementation of the A* trajectory planner designed for dense point cloud datasets.
 
 ## Dataset
 The dataset used for this project is [OpenTrench3D](https://www.kaggle.com/datasets/hestogpony/opentrench3d).
@@ -20,8 +20,7 @@ Currently, building the test suite requires a batch script which is not yet avai
 
 ## Examples
 build exempleare intred to  be placed in ![examples](exemple/) folder, 
-d
-f
+
 ## Documentation
 the daetailed documenattaion of class and function in [cuAStar](https://wissem01chiha.github.io/cuAStar/)
 

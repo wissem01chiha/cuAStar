@@ -33,7 +33,7 @@ endif()
 
 if(USE_CUDA)
     find_package(CUDAToolkit REQUIRED)
-    target_link_libraries(${PROJECT_NAME} CUDA::cudart)
+    enable_language(CUDA)
 else()
 
 endif()
@@ -72,6 +72,8 @@ if(USE_VTK)
         MODULES ${VTK_LIBRARIES}
     )
 endif()
+
+add_library(LOGURU STATIC ${PROJECT_SOURCE_DIR}/extern/loguru/loguru.cpp)
 
 if(BUILD_TESTS)
     add_subdirectory(test)

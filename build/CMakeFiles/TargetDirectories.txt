@@ -1,0 +1,15 @@
+C:/Users/chiha/OneDrive/Documents/cuAStar/build/CMakeFiles/LOGURU.dir
+C:/Users/chiha/OneDrive/Documents/cuAStar/build/CMakeFiles/ALL_BUILD.dir
+C:/Users/chiha/OneDrive/Documents/cuAStar/build/CMakeFiles/ZERO_CHECK.dir
+C:/Users/chiha/OneDrive/Documents/cuAStar/build/test/CMakeFiles/testAstarPlanner.dir
+C:/Users/chiha/OneDrive/Documents/cuAStar/build/test/CMakeFiles/testCheckNodeExsist.dir
+C:/Users/chiha/OneDrive/Documents/cuAStar/build/test/CMakeFiles/testComputeChunkOpenSet.dir
+C:/Users/chiha/OneDrive/Documents/cuAStar/build/test/CMakeFiles/testComputeKnnNodes.dir
+C:/Users/chiha/OneDrive/Documents/cuAStar/build/test/CMakeFiles/testComputeOptimalNode.dir
+C:/Users/chiha/OneDrive/Documents/cuAStar/build/test/CMakeFiles/testComputeTrajectory.dir
+C:/Users/chiha/OneDrive/Documents/cuAStar/build/test/CMakeFiles/testEnumerationSortNodes.dir
+C:/Users/chiha/OneDrive/Documents/cuAStar/build/test/CMakeFiles/testGetPlyPointNum.dir
+C:/Users/chiha/OneDrive/Documents/cuAStar/build/test/CMakeFiles/testIsPlyValid.dir
+C:/Users/chiha/OneDrive/Documents/cuAStar/build/test/CMakeFiles/testNode2d.dir
+C:/Users/chiha/OneDrive/Documents/cuAStar/build/test/CMakeFiles/testNode3d.dir
+C:/Users/chiha/OneDrive/Documents/cuAStar/build/test/CMakeFiles/testSetInitialNode.dir

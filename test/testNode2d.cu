@@ -1,11 +1,17 @@
-#include "../include/cuAStar.hpp"
+#define STBI_MSC_SECURE_CRT
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#define STB_IMAGE_IMPLEMENTATION
+#define CUASTAR_DEBUG
+#define CUASTAR_IMPLEMENTATION
+#include "cuAstar/cuAStar.hpp"
+
 
 __global__ void testNode2dKernel(Node2d<float>* d_nodes, bool* results) {
     int tid = blockIdx.x * blockDim.x + threadIdx.x;
 
     if (tid == 0) {
      
-        Node2d<float> node1(1.0f, 2.0f);
+        Node2d<float> node1(1.0, 2.0);
         Node2d<float> node2(1.0f, 2.0f);
         Node2d<float> node3(2.0f, 3.0f);
 
