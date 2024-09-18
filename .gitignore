@@ -18,3 +18,5 @@ data/OpenTrench3D/
 *.yaml
 *.stamp.list
 *.check_cache
+build/CMakeFiles/
+build/CMakeCache.txt
