@@ -36,6 +36,8 @@
 > [!NOTE]  
 > This is an experimental version. Trajectory computation time and optimality may not be the best, and optimizations are required. Check the [To-Do](#to-do) section for more information.
 
+> There is no CPU version of **cuAstar** this is a work in progress.
+  
 ## Dependencies
 
 Building the library requires an NVIDIA-capable device with the CUDA Toolkit installed, as well as CMake.
@@ -58,7 +60,7 @@ The library is designed to maintain a header-only structure, so lightweight head
 For building platform-specific binaries and test executables:
 
 ```shell
-git clone https://github.com/wissem01chiha/cuAStar
+   git clone https://github.com/wissem01chiha/cuAStar
 ```
 
 Build the code in Release configuration with default CMake options and flags:
@@ -96,105 +98,109 @@ cuAstar includes internal debugging features which are non-dependent on compiler
 > When the debug macro is not set, cuAstar uses a default shell logging format, so there is no need to link against the [loguru](https://github.com/emilk/loguru) library.
 
 
+**VTK Integration**
 
-> [!IMPORTANT]  
-> 3D Renaering using VTK is not offically supported, exepriemtal tests are using VTK 9.3.1, ensure building to Release version, enable cuAstar building with VTK support  
-> cmake -G "Visual Studio 17 2022" -DUSE_VTK=ON ..
+3D Point cloud enviroment and trajectory debuging data uses [Visualization Toolkit](https://vtk.org/), while is not offically tested or supported, by cuAstar, for any bugs encountered during installation, please make sure to open an issue at: [Issues](https://github.com/wissem01chiha/cuAStar),
+
+```shell
+   cmake -G "Visual Studio 17 2022" -DUSE_VTK=ON  ..
+``` 
+For building and installing the Visualization Toolkit, refer to the official documentation: [install VTK](https://docs.vtk.org/en/latest/build_instructions/build.html)
  
 
-
-> There is no CPU version of the code. work in prgress.
-        
-
-
-
-<details>
-  <summary>Click to expand</summary>
-  
-see this issue :  [CUDA compile problems on Windows, Cmake error: No CUDA toolset found](https://stackoverflow.com/questions/56636714/cuda-compile-problems-on-windows-cmake-error-no-cuda-toolset-found)
-> [!IMPORTANT] 
-</details>
-
-
-
-
 ## Dataset
-we use as a test dataset used for this project is [OpenTrench3D](https://www.kaggle.com/datasets/hestogpony/opentrench3d).
+We used a random sample of the [OpenTrench3D](https://www.kaggle.com/datasets/hestogpony/opentrench3d) dataset as a test dataset for this project. The original data files (containing more than 1 million points) were downsampled using [MeshLab](https://www.meshlab.net/) software to a maximum of 100,000 points.
 
-## Environment Setup
-To set up your environment, follow these steps:
-
-1. Open the Visual Studio Developer Command Prompt:
-"C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\Tools\VsDevCmd.bat"
-
-2. Generate Visual Studio project files using CMake:
-
-3. Build the project in Release configuration:
+other data samples could be found at [Point Cloud Datasets](https://github.com/antao97/PointCloudDatasets)
 
 
 ## Examples
 exempl scripts intend to be placed in AN [examples](exemple/) folder,
-build exempleare intred to  be placed in 
-```cpp
-#include 
-```
-## Documentation
-the daetailed documenattaion of class and function in [cuAStar](https://wissem01chiha.github.io/cuAStar/)
+build exempleare intred to  be placed in
 
-![VTK_trench](build/VTK_trench.png)
-![Trajectory 2D](build/traj2d.png)
-![Clear Trajectory 2D](build/traj2d_clear.png)
+initlize the planner with point cloud datset file 
+```cpp
+   #define CUASTAR_IMPLEMENTATION
+   #include "cuAstar/cuAStar.hpp"
+
+   AstarPlanner<Node3d<T>,T> planner("point_cloud_file.ply");
+
+```
+init the pallner with random 2d or 3d point cloud 
+```cpp
+   #define CUASTAR_IMPLEMENTATION
+   #include "cuAstar/cuAStar.hpp"
+
+   int pointNum = 1000;
+   unsigned int seed = 50;
+
+   AstarPlanner<Node3d<T>,T> planner(pointNum, seed);
+
+```
+inilize the planner with a given 
+
+
+<p align="center">
+  <img src="docs/source/trench_overivew.png" alt="VTK_trench" width="250" height="220"/>
+  <img src="docs/source/trench2d.png" alt="VTK_trench" width="250" height="220"/>
+</p>
+
+
+```cpp
+   #define CUASTAR_IMPLEMENTATION
+   #include "cuAstar/cuAStar.hpp"
+
+   int pointNum = 1000;
+   unsigned int seed = 50;
+
+   AstarPlanner<Node3d<T>,T> planner(pointNum, seed);
+
+```
+
+<p align="center">
+  <img src="docs/source/simple_chunks.png" alt="simple_chunks" width="250" height="220"/>
+   <img src="docs/source/chunks_with_start_en.png" alt="chunks_with_start_end" width="250" height="220"/>
+</p>
+
+
+## Documentation
+The daetailed documenattaion of palnner class members and cuda functions in [cuAStar](https://wissem01chiha.github.io/cuAStar/)
+
+**Building Documentation**
+
+documenation was building using the interpolabilty between doxygen and sphnix tools, 
+you nedd to install doxygen , sphnix and breathe
+
+```shell
+   doxygen Doxyfile 
+   sphinx-build -b html .  docs/build   
+```
 
 ## Benchmark
-Performance benchmarks:
 
-- Node setup time: 74 ms
-- Chunk open set computation time: 13562 ms
-- Trajectory computation time: 47 ms
-- 2D Trajectory visualization time: 1970 ms
-- Total execution time: 21189 ms
+Performance benchmarks for two different node sets are given below:
+
+| Execution Task                 | 93,000 nodes | 24,000 nodes |
+|--------------------------------|--------------|--------------|
+| Node setup                     | 74           | 45           |
+| Chunk open set computation     | 13562        | 8000         |
+| Trajectory computation time    | 47           | 25           |
+| 2D Trajectory visualization    | 1970         | 1300         |
+| Total execution time           | 21189        | 9370         |
+
+> [!IMPORTANT]   
+> The minimum C++ standard required is C++17. Ensure that your compiler supports the standard features.
+
 
 ### TO-DO 
 - intergate a tes cases 
+ 
+
+### TO-DO 
+- intergate a tes cases 
+
+## Contribuation 
+
 ### Reference
 
 ### Cite this Work
-
-
-## Dataset
-The dataset used for this project is [OpenTrench3D](https://www.kaggle.com/datasets/hestogpony/opentrench3d).
-
-## Environment Setup
-To set up your environment, follow these steps:
-
-1. Open the Visual Studio Developer Command Prompt:
-"C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\Tools\VsDevCmd.bat"
-
-2. Generate Visual Studio project files using CMake:
-
-3. Build the project in Release configuration:
-
-## Building Tests
-Currently, building the test suite requires a batch script which is not yet available.
-### 
-## Examples
-build exempleare intred to  be placed in ![examples](exemple/) folder, 
-
-## Documentation
-the daetailed documenattaion of class and function in [cuAStar](https://wissem01chiha.github.io/cuAStar/)
-
-![VTK_trench](build/VTK_trench.png)
-![Trajectory 2D](build/traj2d.png)
-![Clear Trajectory 2D](build/traj2d_clear.png)
-
-## Benchmark
-Performance benchmarks:
-
-- Node setup time: 74 ms
-- Chunk open set computation time: 13562 ms
-- Trajectory computation time: 47 ms
-- 2D Trajectory visualization time: 1970 ms
-- Total execution time: 21189 ms
-
-### TO-DO 
-- intergate a tes cases 
