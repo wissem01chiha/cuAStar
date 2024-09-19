@@ -115,46 +115,72 @@ other data samples could be found at [Point Cloud Datasets](https://github.com/a
 
 
 ## Examples
-exempl scripts intend to be placed in AN [examples](exemple/) folder,
-build exempleare intred to  be placed in
 
-initlize the planner with point cloud datset file 
+**cuAstar** uses basic template classes for 2D and 3D point representation. All data is stored in arrays, and the standard C++ library is avoided for CUDA compatibility issues.
+
+**Construct a Basic 2D and 3D Node**
+
 ```cpp
-   #define CUASTAR_IMPLEMENTATION
-   #include "cuAstar/cuAStar.hpp"
-
-   AstarPlanner<Node3d<T>,T> planner("point_cloud_file.ply");
-
+Node3d<double> node3(1.0, 2.0, 5.0);
+Node2d<double> node2(1.0, 2.0);
 ```
-init the pallner with random 2d or 3d point cloud 
-```cpp
-   #define CUASTAR_IMPLEMENTATION
-   #include "cuAstar/cuAStar.hpp"
 
+**Initialize the Planner with a Given Point Cloud Dataset File**
+```cpp
+   AstarPlanner<Node3d<float>,float> planner("point_cloud_file.ply");
+```
+**Initialize the Planner with a Random 2D or 3D Point Cloud**
+```cpp
    int pointNum = 1000;
    unsigned int seed = 50;
 
-   AstarPlanner<Node3d<T>,T> planner(pointNum, seed);
-
+   AstarPlanner<Node3d<float>,float> planner(pointNum, seed);
 ```
-inilize the planner with a given 
 
+**Initialize the Planner with a Given Array of Nodes**
+```cpp
+   Node3d<float>* h_nodesArray = new NodeType[1024];
+    for (size_t i = 0; i < 1024; ++i) {
+        h_nodesArray[i] = Node3d<float>(i * 1.0, i * 2.0, i * 3.0);
+    }
+   AstarPlanner<Node3d<float>,float> planner(h_nodesArray);
+```
+
+**Project Point Cloud in 2D Plane Along the Z-Axis**
+```cpp 
+   AstarPlanner<Node3d<float>,float> planner("point_cloud_file.ply");
+   planner::visualize2dPointCloud("point_cloud_image.png");
+```
 
 <p align="center">
-  <img src="docs/source/trench_overivew.png" alt="VTK_trench" width="250" height="220"/>
   <img src="docs/source/trench2d.png" alt="VTK_trench" width="250" height="220"/>
 </p>
 
+**Render the Point Cloud Distribution in 3D Using VTK**
 
+```cpp 
+   AstarPlanner<Node3d<float>,float> planner("point_cloud_file.ply");
+   planner::visualize3dPointCloud("point_cloud_image.png");
+```
+
+<img src="docs/source/trench_overivew.png" alt="VTK_trench" width="250" height="220"/>
+
+**Process Data and Compute Chunks Open Set Arrays**
+
+These arrays represent candidate nodes for exploration. For each chunk, a fixed number 𝐾 nodes are computed in the open set based on the minimum value of the cost function:
+$$
+f(n) = g(n) + h(n)
+$$
+The heuristic function ℎ(𝑛) estimates the cost from node 𝑛 to the goal.
+
+This process eliminates far-away nodes from the possible optimal trajectory candidate nodes.
 ```cpp
-   #define CUASTAR_IMPLEMENTATION
-   #include "cuAstar/cuAStar.hpp"
-
-   int pointNum = 1000;
-   unsigned int seed = 50;
-
-   AstarPlanner<Node3d<T>,T> planner(pointNum, seed);
-
+   AstarPlanner<Node3d<float>,float> planner("point_cloud_file.ply");
+   Node3d<float> start(82.029, 48.097, 1.174);
+   Node3d<float> end(84.009, 50.173, 2.073);
+   planner.setTargetNode(&end);
+   planner.setInitialNode(&start);
+   planner.computeChunkOpenSet();
 ```
 
 <p align="center">
@@ -162,14 +188,31 @@ inilize the planner with a given
    <img src="docs/source/chunks_with_start_en.png" alt="chunks_with_start_end" width="250" height="220"/>
 </p>
 
+>[!IMPORTANT]
+> uses chunks to parallelize the computation of the open set across multiple nodes. Each chunk's maximum size is the maximum number of threads per block supported by the GPU device (default value is 128). Increasing this value may slow down chunk processing and create large gaps between nodes.
+
+>[!NOTE]
+> Instead of using long templated expressions for classes and structs, you can define custom types with typedefs by defining the CUASTAR_USE_TYPEDEF macro:
+```cpp
+   Node3d<double> node3(1.0, 2.0, 5.0);
+   Node2d<double> node2(1.0, 2.0);
+```
+This is equivalent to writing:
+```cpp
+   #define CUASTAR_USE_TYPEDEF
+   Node3dDouble node3(1.0, 2.0, 5.0);
+   Node2dDouble node2(1.0, 2.0);
+```
 
 ## Documentation
-The daetailed documenattaion of palnner class members and cuda functions in [cuAStar](https://wissem01chiha.github.io/cuAStar/)
+The detailed documentation of the planner class members and CUDA functions could be found at  [cuAStar](https://wissem01chiha.github.io/cuAStar/)
 
 **Building Documentation**
 
-documenation was building using the interpolabilty between doxygen and sphnix tools, 
-you nedd to install doxygen , sphnix and breathe
+The documentation was built using the interoperability between Doxygen and Sphinx tools.
+You need to install [Doxygen](https://www.doxygen.nl/), [Sphinx](https://www.sphinx-doc.org/), 
+and [Breathe](https://breathe.readthedocs.io/).
+
 
 ```shell
    doxygen Doxyfile 
@@ -178,29 +221,79 @@ you nedd to install doxygen , sphnix and breathe
 
 ## Benchmark
 
-Performance benchmarks for two different node sets are given below:
+Performance benchmarks for two different node sets are provided below. The tests were conducted on an Nvidia RTX GeForce 3050, CUDA 12.5, Microsoft Visual Studio 17 2022, and Windows 11.
 
-| Execution Task                 | 93,000 nodes | 24,000 nodes |
-|--------------------------------|--------------|--------------|
-| Node setup                     | 74           | 45           |
-| Chunk open set computation     | 13562        | 8000         |
-| Trajectory computation time    | 47           | 25           |
-| 2D Trajectory visualization    | 1970         | 1300         |
-| Total execution time           | 21189        | 9370         |
+| Execution Task                  | 93,340 Nodes | 24,463 Nodes |
+|---------------------------------|--------------|--------------|
+| Node Setup                      | 74 ms        | 45 ms        |
+| Chunk Open Set Computation      | 13,562 ms    | 8,000 ms     |
+| Trajectory Computation Time     | 47 ms        | 25 ms        |
+| 2D Trajectory Visualization     | 1,970 ms     | 1,300 ms     |
+| Total Execution Time            | 21,189 ms    | 9,370 ms     |
 
-> [!IMPORTANT]   
-> The minimum C++ standard required is C++17. Ensure that your compiler supports the standard features.
+> [!IMPORTANT]
+> These values are heavily dependent on GPU computing capability, CUDA version, CPU cores, and other hardware configurations. Additionally, these values may vary between different executions even in the same environment. Consider averaging results for more reliable performance metrics.
+
+### To-Do
+
+1. **Improve Memory Management**:
+   - Focus on addressing memory management issues to optimize performance and prevent leaks.
+
+2. **Change Testing Strategy**:
+   - Transition to framework-based tests. We recommend starting with [Catch2](https://github.com/catchorg/Catch2).
+
+3. **Debug VTK Related Helper Functions**:
+   - Fix issues related to VTK helper functions to ensure proper functionality.
+
+4. **Change K-Nearest Neighbor Computation**:
+   - Replace the current distance-based brute force method with more efficient algorithms.
+
+5. **Deployment to Package Managers**:
+   - Prepare deployment to package managers like [vcpkg](https://github.com/microsoft/vcpkg), [Conan](https://conan.io/), and [CPM](https://github.com/cpm-cmake/CPM.cmake) for dependency management.
+
+6. **Implement Stop Condition for Target Reached**:
+   - Include a test based on reached nodes. Currently, there is no stop condition when the target is reached during chunk computation.
+
+7. **Consider Parallel KD-Tree Implementation**:
+   - Explore the implementation of a parallel KD-tree structure for point clouds to improve efficiency.
+
+8. **Use Google Benchmark Framework**:
+   - Integrate [Google Benchmark](https://github.com/google/benchmark) for more accurate benchmarking tasks.
+
+9. **Automate Documentation Build and Deployment**:
+   - Automate the documentation build process and consider deploying it to a dedicated documentation site instead of GitHub Pages.
+
+10. **Add More Tests**:
+    - Expand the test suite to cover additional scenarios and edge cases.
+
+11. **Avoid Dynamic Parallelism in CUDA Kernels**:
+    - Refactor CUDA kernels to avoid using dynamic parallelism to enhance performance.
+
+12. **Standardize Functions for Non-Point Cloud Data**:
+    - Work on standardizing functions to handle various types of data, such as lidar and images.
+
+13. **Explore Python Binding**:
+    - Investigate the feasibility of creating bindings for Python to enhance accessibility.
+
+14. **Dynamic Chunks Sizing or Advanced Exploration Algorithms**:
+    - Consider implementing a dynamic chunks sizing option or explore more advanced exploration algorithms.
 
 
-### TO-DO 
-- intergate a tes cases 
  
+## Contributing
+Contribuation are welcome.  
 
-### TO-DO 
-- intergate a tes cases 
+Feel free to mail to :  
+- chihawissem08@gmail.com 
+## License
+This project is actually under The BSD-2-Clause license, see [License](LICENSE) file for more details.
 
-## Contribuation 
+### Cite This Work
 
-### Reference
-
-### Cite this Work
+```bibtex
+@misc{cuAstar,
+  author       = {wissem chiha},
+  title        = {cuAstar},
+  year         = {2024},
+  url          = {https://github.com/wissem01chiha/cuAStar}
+}

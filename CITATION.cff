@@ -1,0 +1,20 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: cuAstar
+message: >-
+  Fast, modern, fully templated, single-file, header-only,
+  parallel implementation of A* trajectory planner on NVIDIA
+  GPUs in point cloud data.
+type: software
+authors:
+  - given-names: wissem
+    family-names: chiha
+    email: chihawissem08@gmail.com
+    name-particle: wissem
+    affiliation: 'Engineer '
+repository-code: 'https://github.com/wissem01chiha/cuAStar'
+url: 'https://wissem01chiha.github.io/cuAStar/'
+license: BSD-2-Clause
+version: 0.1.0
