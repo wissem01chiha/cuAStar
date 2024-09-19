@@ -153,7 +153,7 @@ Node2d<double> node2(1.0, 2.0);
 ```
 
 <p align="center">
-  <img src="docs/source/trench2d.png" alt="VTK_trench" width="250" height="220"/>
+  <img src="docs/source/trench2d.png" alt="VTK_trench" width="380" height="320"/>
 </p>
 
 **Render the Point Cloud Distribution in 3D Using VTK**
@@ -162,15 +162,14 @@ Node2d<double> node2(1.0, 2.0);
    AstarPlanner<Node3d<float>,float> planner("point_cloud_file.ply");
    planner::visualize3dPointCloud("point_cloud_image.png");
 ```
-
-<img src="docs/source/trench_overivew.png" alt="VTK_trench" width="250" height="220"/>
+<p align="center">
+<img src="docs/source/trench_overivew.png" alt="VTK_trench" width="380" height="320"/>
+</p>
 
 **Process Data and Compute Chunks Open Set Arrays**
 
 These arrays represent candidate nodes for exploration. For each chunk, a fixed number 𝐾 nodes are computed in the open set based on the minimum value of the cost function:
-$$
-f(n) = g(n) + h(n)
-$$
+ $$f(n) = g(n) + h(n)$$
 The heuristic function ℎ(𝑛) estimates the cost from node 𝑛 to the goal.
 
 This process eliminates far-away nodes from the possible optimal trajectory candidate nodes.
@@ -184,8 +183,8 @@ This process eliminates far-away nodes from the possible optimal trajectory cand
 ```
 
 <p align="center">
-  <img src="docs/source/simple_chunks.png" alt="simple_chunks" width="250" height="220"/>
-   <img src="docs/source/chunks_with_start_en.png" alt="chunks_with_start_end" width="250" height="220"/>
+  <img src="docs/source/simple_chunks.png" alt="simple_chunks" width="380" height="320"/>
+   <img src="docs/source/chunks_with_start_en.png" alt="chunks_with_start_end" width="380" height="320"/>
 </p>
 
 >[!IMPORTANT]
@@ -236,47 +235,33 @@ Performance benchmarks for two different node sets are provided below. The tests
 
 ### To-Do
 
-1. **Improve Memory Management**:
-   - Focus on addressing memory management issues to optimize performance and prevent leaks.
+1. **Improve Memory Management**: Focus on addressing memory management issues to optimize performance and prevent leaks.
 
-2. **Change Testing Strategy**:
-   - Transition to framework-based tests. We recommend starting with [Catch2](https://github.com/catchorg/Catch2).
+2. **Change Testing Strategy**: Transition to framework-based tests. We recommend starting with [Catch2](https://github.com/catchorg/Catch2).
 
-3. **Debug VTK Related Helper Functions**:
-   - Fix issues related to VTK helper functions to ensure proper functionality.
+3. **Debug VTK Related Helper Functions**: Fix issues related to VTK helper functions to ensure proper functionality.
 
-4. **Change K-Nearest Neighbor Computation**:
-   - Replace the current distance-based brute force method with more efficient algorithms.
+4. **Change K-Nearest Neighbor Computation**: Replace the current distance-based brute force method with more efficient algorithms.
 
-5. **Deployment to Package Managers**:
-   - Prepare deployment to package managers like [vcpkg](https://github.com/microsoft/vcpkg), [Conan](https://conan.io/), and [CPM](https://github.com/cpm-cmake/CPM.cmake) for dependency management.
+5. **Deployment to Package Managers**: Prepare deployment to package managers like [vcpkg](https://github.com/microsoft/vcpkg), [Conan](https://conan.io/), and [CPM](https://github.com/cpm-cmake/CPM.cmake) for dependency management.
 
-6. **Implement Stop Condition for Target Reached**:
-   - Include a test based on reached nodes. Currently, there is no stop condition when the target is reached during chunk computation.
+6. **Implement Stop Condition for Target Reached**: Include a test based on reached nodes. Currently, there is no stop condition when the target is reached during chunk computation.
 
-7. **Consider Parallel KD-Tree Implementation**:
-   - Explore the implementation of a parallel KD-tree structure for point clouds to improve efficiency.
+7. **Consider Parallel KD-Tree Implementation**: Explore the implementation of a parallel KD-tree structure for point clouds to improve efficiency.
 
-8. **Use Google Benchmark Framework**:
-   - Integrate [Google Benchmark](https://github.com/google/benchmark) for more accurate benchmarking tasks.
+8. **Use Google Benchmark Framework**: Integrate [Google Benchmark](https://github.com/google/benchmark) for more accurate benchmarking tasks.
 
-9. **Automate Documentation Build and Deployment**:
-   - Automate the documentation build process and consider deploying it to a dedicated documentation site instead of GitHub Pages.
+9. **Automate Documentation Build and Deployment**: Automate the documentation build process and consider deploying it to a dedicated documentation site instead of GitHub Pages.
 
-10. **Add More Tests**:
-    - Expand the test suite to cover additional scenarios and edge cases.
+10. **Add More Tests**: Expand the test suite to cover additional scenarios and edge cases.
 
-11. **Avoid Dynamic Parallelism in CUDA Kernels**:
-    - Refactor CUDA kernels to avoid using dynamic parallelism to enhance performance.
+11. **Avoid Dynamic Parallelism in CUDA Kernels**: Refactor CUDA kernels to avoid using dynamic parallelism to enhance performance.
 
-12. **Standardize Functions for Non-Point Cloud Data**:
-    - Work on standardizing functions to handle various types of data, such as lidar and images.
+12. **Standardize Functions for Non-Point Cloud Data**: Work on standardizing functions to handle various types of data, such as lidar and images.
 
-13. **Explore Python Binding**:
-    - Investigate the feasibility of creating bindings for Python to enhance accessibility.
+13. **Explore Python Binding**: Investigate the feasibility of creating bindings for Python to enhance accessibility.
 
-14. **Dynamic Chunks Sizing or Advanced Exploration Algorithms**:
-    - Consider implementing a dynamic chunks sizing option or explore more advanced exploration algorithms.
+14. **Dynamic Chunks Sizing or Advanced Exploration Algorithms**: Consider implementing a dynamic chunks sizing option or explore more advanced exploration algorithms.
 
 
  
